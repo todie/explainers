@@ -1,6 +1,7 @@
 import ProcessingModes from './components/ProcessingModes'
 import GestaltPrinciples from './components/GestaltPrinciples'
 import Ramifications from './components/Ramifications'
+import Research from './components/Research'
 
 export default function GestaltApp() {
   return (
@@ -68,11 +69,13 @@ export default function GestaltApp() {
         <ProcessingModes />
         <GestaltPrinciples />
         <Ramifications />
+        <Research />
 
         <footer style={{ textAlign: 'center', paddingTop: 32, borderTop: '1px solid #1f2937' }}>
           <p style={{ fontSize: 12, color: '#4b5563' }}>
-            Rooted in work by Wertheimer, Koffka, and Kohler (Berlin school, 1920s).
-            Extended with modern cognitive processing research. Built by{' '}
+            Rooted in work by Wertheimer, Koffka, and K&ouml;hler (Berlin school, 1920s).
+            Extended with modern cognitive processing and neuroscience research.
+            Academic citations in the Further Reading section above. Built by{' '}
             <a href="https://todie.io" style={{ color: '#a855f7', textDecoration: 'none' }}>todie.io</a>.
           </p>
         </footer>
