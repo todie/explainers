@@ -5,7 +5,7 @@ export const EXPLAINERS = [
     title: 'Memory Model',
     short: 'How Claude Code remembers',
     icon: '🧠',
-    path: '/explainers/memory-model',
+    path: '/memory-model',
     tags: ['engram', 'context', 'memory', 'retrieval', 'injection', 'claude'],
   },
   {
@@ -13,7 +13,7 @@ export const EXPLAINERS = [
     title: 'Gestalt Thinking',
     short: 'Seeing wholes, not parts',
     icon: '👁',
-    path: '/explainers/gestalt',
+    path: '/gestalt',
     tags: ['gestalt', 'perception', 'thinking', 'cognition', 'patterns', 'holistic'],
   },
   {
@@ -21,7 +21,7 @@ export const EXPLAINERS = [
     title: 'Caching Prompt Proxies',
     short: '90% cheaper API calls',
     icon: '🔄',
-    path: '/explainers/prompt-cache',
+    path: '/prompt-cache',
     tags: ['cache', 'proxy', 'tokens', 'api', 'cost', 'anthropic', 'prefix'],
   },
   {
@@ -29,7 +29,7 @@ export const EXPLAINERS = [
     title: 'Language Server Protocol',
     short: 'How code intelligence works',
     icon: '🔌',
-    path: '/explainers/lsp',
+    path: '/lsp',
     tags: ['lsp', 'language', 'server', 'protocol', 'ide', 'completion', 'diagnostics'],
   },
   {
@@ -37,7 +37,7 @@ export const EXPLAINERS = [
     title: 'Token Optimization',
     short: 'Every technique to spend less',
     icon: '💰',
-    path: '/explainers/token-optimization',
+    path: '/token-optimization',
     tags: ['tokens', 'optimization', 'cost', 'efficiency', 'compression', 'rtk', 'caching'],
   },
 ]

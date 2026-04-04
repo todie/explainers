@@ -95,8 +95,8 @@ export default function Nav() {
         {/* Left: breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontFamily: 'var(--mono, monospace)' }}>
           <a
-            href="/explainers/"
-            onClick={(e) => { e.preventDefault(); navigate('/explainers/') }}
+            href="/"
+            onClick={(e) => { e.preventDefault(); navigate('/') }}
             style={{ color: '#6b7280', textDecoration: 'none', cursor: 'pointer' }}
           >
             explainers
