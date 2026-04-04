@@ -28,6 +28,7 @@ const PHASES = [
       'Hook incremental embedding into engram write path',
       'Add /search/hybrid HTTP endpoint (sidecar or patched into Go)',
       'Run recall benchmark: hybrid vs FTS5-only on 10 conceptual queries',
+      'Per-field vector granularity: split observations into title/content/tags vectors for finer matching',
     ],
   },
   {
@@ -42,6 +43,8 @@ const PHASES = [
       'Update engram-start.sh hook to use /context/smart',
       'Consolidate engram protocol instructions into CLAUDE.md only',
       'Measure post-Phase-2 boot tokens: target 40% reduction',
+      'Add discovery_tokens tracking: token cost of discovery vs retrieval (ROI metrics)',
+      'Progressive disclosure with token cost per result (Claude self-optimizes retrieval budget)',
     ],
   },
   {
@@ -56,6 +59,7 @@ const PHASES = [
       'Migrate existing auto-memory files into engram as canonical source',
       'Add graceful degradation: Claude works without engram daemon (L1 still loads)',
       'End-to-end validation: full memory lifecycle test across 3 sessions',
+      '<private> tag exclusion: mark content as session-only, stripped before storage',
     ],
   },
   {
@@ -73,6 +77,22 @@ const PHASES = [
       'Cutover: replace Go engram with engram-rs, update all configs',
     ],
   },
+  {
+    id: 5,
+    label: 'Phase 5',
+    title: 'Auto-Capture & Compression',
+    color: '#f87171',
+    status: 'planned',
+    items: [
+      'Implement 5-hook lifecycle for automatic observation capture (SessionStart, UserPromptSubmit, PostToolUse, Stop, SessionEnd)',
+      'Build async observation queue with idle timeout (decouple capture from processing)',
+      'AI-powered observation compression via Claude Agent SDK subprocess',
+      'Structured session summaries with searchable fields (request, investigated, learned, completed, next_steps)',
+      'Configurable observation modes (code, code--chill, research) with inheritance',
+      'Signal-to-noise scoring for auto-captured observations (auto-archive low-value after 7 days)',
+      'Endless mode: real-time context compression for long sessions (experimental)',
+    ],
+  },
 ]
 
 export default function Roadmap() {
@@ -84,7 +104,7 @@ export default function Roadmap() {
         engram v2 Roadmap
       </h2>
       <p style={{ fontSize: 14, color: 'var(--muted)', maxWidth: 560, margin: '0 auto 32px', textAlign: 'center' }}>
-        Planned improvements: hybrid search, smart context injection, unified memory, and a full Rust rewrite.
+        Hybrid search, smart injection, auto-capture, Rust rewrite. Informed by competitive analysis of claude-mem.
       </p>
 
       <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12, position: 'relative' }}>
