@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import TableOfContents from '../shared/TableOfContents'
 import { CATEGORIES, TECHNIQUES, HERO_STATS, CLAUDE_PRICING, TOOLS, SOURCES, techniquesByCategory } from './data'
 
 function StatCard({ label, value, sub, color }) {
@@ -77,11 +78,19 @@ function TechniqueCard({ t }) {
 export default function TokenOptimizationApp() {
   const [activeCategory, setActiveCategory] = useState(null)
 
+  const tocSections = [
+    { id: 'overview', title: 'Overview', icon: '#' },
+    ...CATEGORIES.map(c => ({ id: c.id, title: c.title, icon: c.icon })),
+    { id: 'pricing', title: 'Pricing', icon: '$' },
+    { id: 'tools', title: 'Tools', icon: '⚙' },
+  ]
+
   return (
-    <div style={{ minHeight: '100vh' }}>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg, #0a0804 0%, #030712 15%, #030712 100%)' }}>
+      <TableOfContents sections={tocSections} accent="#facc15" />
       <header style={{
         position: 'relative', padding: '80px 24px 56px', textAlign: 'center',
-        background: 'linear-gradient(180deg, #111827 0%, #030712 100%)', overflow: 'hidden',
+        overflow: 'hidden',
       }}>
         <div style={{
           position: 'absolute', top: -100, left: '50%', transform: 'translateX(-50%)',
@@ -117,6 +126,7 @@ export default function TokenOptimizationApp() {
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px 96px', display: 'flex', flexDirection: 'column', gap: 64 }}>
         {/* Stats */}
+        <div id="overview" style={{ scrollMarginTop: 60 }} />
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
           gap: 12, marginTop: -28, position: 'relative', zIndex: 2,
@@ -131,7 +141,7 @@ export default function TokenOptimizationApp() {
           const techs = techniquesByCategory(cat.id)
           const isOpen = activeCategory === cat.id || activeCategory === null
           return (
-            <div key={cat.id}>
+            <div key={cat.id} id={cat.id} style={{ scrollMarginTop: 60 }}>
               <button
                 onClick={() => setActiveCategory(activeCategory === cat.id ? null : cat.id)}
                 style={{
@@ -163,7 +173,7 @@ export default function TokenOptimizationApp() {
         })}
 
         {/* Pricing table */}
-        <div>
+        <div id="pricing" style={{ scrollMarginTop: 60 }}>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: '#e5e7eb', letterSpacing: '-0.02em', marginBottom: 16, textAlign: 'center' }}>
             Claude Pricing (April 2026)
           </h2>
@@ -196,7 +206,7 @@ export default function TokenOptimizationApp() {
         </div>
 
         {/* Tools */}
-        <div>
+        <div id="tools" style={{ scrollMarginTop: 60 }}>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: '#e5e7eb', letterSpacing: '-0.02em', marginBottom: 16, textAlign: 'center' }}>
             Open Source Tools
           </h2>
