@@ -1,7 +1,6 @@
 import ProcessingModes from './components/ProcessingModes'
 import GestaltPrinciples from './components/GestaltPrinciples'
-import ModalityComparison from './components/ModalityComparison'
-import WhenToUse from './components/WhenToUse'
+import Ramifications from './components/Ramifications'
 
 export default function GestaltApp() {
   return (
@@ -41,7 +40,8 @@ export default function GestaltApp() {
           }}>
             Some people think in words. Some in images. Some in sounds.
             Gestalt thinkers process in none of these — they perceive the whole configuration
-            directly, before any representation exists. Here's what that means and why it matters.
+            directly, before any representation exists. This is a model of how that works,
+            what it means, and what it costs.
           </p>
         </div>
       </header>
@@ -54,24 +54,25 @@ export default function GestaltApp() {
           borderRadius: 16,
         }}>
           <div style={{ fontSize: 15, color: '#d1d5db', lineHeight: 1.8 }}>
-            Verbal thinkers generate <strong style={{ color: '#60a5fa' }}>sentences</strong>.
-            Visual thinkers generate <strong style={{ color: '#a855f7' }}>images</strong>.
-            Auditory thinkers generate <strong style={{ color: '#22d3ee' }}>patterns</strong>.
-            Gestalt thinkers generate <strong style={{ color: '#f87171' }}>none of these</strong> — the
-            insight arrives as a direct perception of the whole, pre-verbal and pre-visual.
-            Then they spend the rest of the conversation translating it into a format others can receive.
+            The medium of thought is not neutral. A verbal thinker and a gestalt thinker
+            looking at the same problem are not "thinking different things" — they are
+            <strong style={{ color: '#a855f7' }}> thinking in different dimensions</strong>.
+            The verbal thinker builds understanding sequentially, proposition by proposition.
+            The gestalt thinker perceives the entire configuration at once — then spends
+            the rest of the conversation trying to compress that perception into words.
+            Neither is better. But the mismatch between modes is the source of most
+            communication failures between smart people who agree on the facts.
           </div>
         </div>
 
         <ProcessingModes />
         <GestaltPrinciples />
-        <ModalityComparison />
-        <WhenToUse />
+        <Ramifications />
 
         <footer style={{ textAlign: 'center', paddingTop: 32, borderTop: '1px solid #1f2937' }}>
           <p style={{ fontSize: 12, color: '#4b5563' }}>
             Rooted in work by Wertheimer, Koffka, and Kohler (Berlin school, 1920s).
-            Extended with modern cognitive processing models. Applied to engineering by{' '}
+            Extended with modern cognitive processing research. Built by{' '}
             <a href="https://todie.io" style={{ color: '#a855f7', textDecoration: 'none' }}>todie.io</a>.
           </p>
         </footer>
