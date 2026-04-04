@@ -11,7 +11,7 @@ const SECTIONS = [
   { id: 'roadmap', title: 'Roadmap', icon: '◈' },
 ]
 
-export default function App() {
+export default function MemoryModelApp() {
   return (
     <div style={{
       minHeight: '100vh',
