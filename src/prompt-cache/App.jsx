@@ -1,5 +1,12 @@
+import TableOfContents from '../shared/TableOfContents'
 import CacheArchitecture from './components/CacheArchitecture'
 import ProxyTechniques from './components/ProxyTechniques'
+
+const SECTIONS = [
+  { id: 'stats', title: 'Key Numbers', icon: '#' },
+  { id: 'architecture', title: 'Architecture', icon: '⚙' },
+  { id: 'techniques', title: 'Techniques', icon: '⚡' },
+]
 
 const STATS = [
   { label: 'Cache Discount', value: '90%', sub: 'cached input tokens', color: '#4ade80' },
@@ -10,10 +17,11 @@ const STATS = [
 
 export default function PromptCacheApp() {
   return (
-    <div style={{ minHeight: '100vh' }}>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg, #030d08 0%, #030712 15%, #030712 100%)' }}>
+      <TableOfContents sections={SECTIONS} accent="#4ade80" />
       <header style={{
         position: 'relative', padding: '80px 24px 56px', textAlign: 'center',
-        background: 'linear-gradient(180deg, #111827 0%, #030712 100%)', overflow: 'hidden',
+        overflow: 'hidden',
       }}>
         <div style={{
           position: 'absolute', top: -100, left: '50%', transform: 'translateX(-50%)',
@@ -71,6 +79,7 @@ export default function PromptCacheApp() {
         </div>
 
         {/* Core thesis */}
+        <div id="stats" style={{ scrollMarginTop: 60 }} />
         <div style={{
           maxWidth: 660, margin: '0 auto', padding: '28px', textAlign: 'center',
           background: 'rgba(74, 222, 128, 0.05)', border: '1px solid rgba(74, 222, 128, 0.15)',
@@ -84,8 +93,8 @@ export default function PromptCacheApp() {
           </div>
         </div>
 
-        <CacheArchitecture />
-        <ProxyTechniques />
+        <div id="architecture" style={{ scrollMarginTop: 60 }}><CacheArchitecture /></div>
+        <div id="techniques" style={{ scrollMarginTop: 60 }}><ProxyTechniques /></div>
 
         <footer style={{ textAlign: 'center', paddingTop: 32, borderTop: '1px solid #1f2937' }}>
           <p style={{ fontSize: 12, color: '#4b5563' }}>
