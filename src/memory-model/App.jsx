@@ -23,7 +23,24 @@ export default function App() {
         position: 'relative', padding: '80px 24px 56px', textAlign: 'center',
         overflow: 'hidden',
       }}>
-        {/* Matrix-style green glow — technical, structured */}
+        {/* Matrix rain — faint falling characters in the header */}
+        <div style={{
+          position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', opacity: 0.04,
+          fontFamily: 'var(--mono)', fontSize: 12, color: '#4ade80', lineHeight: 1.8,
+        }}>
+          {Array.from({ length: 12 }, (_, i) => (
+            <div key={i} style={{
+              position: 'absolute',
+              left: `${8 + i * 8}%`,
+              top: -200,
+              animation: `flowDown ${8 + (i % 4) * 3}s linear ${i * 0.7}s infinite`,
+              whiteSpace: 'pre', writingMode: 'vertical-rl',
+            }}>
+              {['mem_save', 'sqlite', 'fts5', 'topic_key', 'context', 'session', 'engram', 'search', 'observe', 'recall', 'inject', 'persist'][i]}
+            </div>
+          ))}
+        </div>
+        {/* Glow */}
         <div style={{
           position: 'absolute', top: -100, left: '50%', transform: 'translateX(-50%)',
           width: 600, height: 350,
