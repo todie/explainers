@@ -18,46 +18,15 @@
 // Types
 // ---------------------------------------------------------------------------
 
-export interface Technique {
-  /** Unique slug */
-  readonly id: string;
-  /** Display name */
-  readonly title: string;
-  /** Category slug (matches a Category.id) */
-  readonly category: string;
-  /** 1-2 sentence explanation */
-  readonly what: string;
-  /** How it saves tokens or cost */
-  readonly howItSaves: string;
-  /** Typical savings expressed as a range string */
-  readonly savings: string;
-  /** Trade-offs, gotchas, limitations */
-  readonly tradeoffs: string;
-  /** Is this technique applicable to Claude specifically? */
-  readonly appliesToClaude: boolean;
-  /** Optional: extra Claude-specific notes */
-  readonly claudeNotes?: string;
-  /** Difficulty to implement: low | medium | high */
-  readonly difficulty: "low" | "medium" | "high";
-  /** Accent color for UI rendering */
-  readonly color: string;
-  /** Primary reference URL */
-  readonly source?: string;
-}
 
-export interface Category {
-  readonly id: string;
-  readonly title: string;
-  readonly description: string;
-  readonly icon: string;
-  readonly color: string;
-}
+
+
 
 // ---------------------------------------------------------------------------
 // Categories
 // ---------------------------------------------------------------------------
 
-export const CATEGORIES: readonly Category[] = [
+export const CATEGORIES = [
   {
     id: "prompt",
     title: "Prompt-Level",
@@ -106,13 +75,13 @@ export const CATEGORIES: readonly Category[] = [
     icon: "$",
     color: "#22d3ee",
   },
-] as const;
+];
 
 // ---------------------------------------------------------------------------
 // Techniques
 // ---------------------------------------------------------------------------
 
-export const TECHNIQUES: readonly Technique[] = [
+export const TECHNIQUES = [
   // =======================================================================
   // PROMPT-LEVEL
   // =======================================================================
@@ -740,23 +709,23 @@ export const TECHNIQUES: readonly Technique[] = [
     color: "#22d3ee",
     source: "https://platform.claude.com/docs/en/build-with-claude/fast-mode",
   },
-] as const;
+];
 
 // ---------------------------------------------------------------------------
 // Derived helpers for React components
 // ---------------------------------------------------------------------------
 
-export function techniquesByCategory(categoryId: string): readonly Technique[] {
+export function techniquesByCategory(categoryId) {
   return TECHNIQUES.filter((t) => t.category === categoryId);
 }
 
-export function claudeOnlyTechniques(): readonly Technique[] {
+export function claudeOnlyTechniques() {
   return TECHNIQUES.filter(
     (t) => t.appliesToClaude && t.claudeNotes !== undefined
   );
 }
 
-export function techniqueById(id: string): Technique | undefined {
+export function techniqueById(id) {
   return TECHNIQUES.find((t) => t.id === id);
 }
 
@@ -796,7 +765,7 @@ export const CLAUDE_PRICING = {
   ],
   unit: "USD per million tokens",
   bestCombo: "Batch + Cache Read on Haiku 4.5 = $0.05/MTok input (95% off base)",
-} as const;
+};
 
 /** Summary stats for the hero section */
 export const HERO_STATS = [
@@ -824,7 +793,7 @@ export const HERO_STATS = [
     sub: "$1 / $3 / $5 per MTok",
     color: "#f59e0b",
   },
-] as const;
+];
 
 /** Open-source tools referenced throughout */
 export const TOOLS = [
@@ -876,7 +845,7 @@ export const TOOLS = [
     url: "https://github.com/Opencode-DCP/opencode-dynamic-context-pruning",
     language: "Go / TypeScript",
   },
-] as const;
+];
 
 /** Key sources for the footer / citations */
 export const SOURCES = [
@@ -895,4 +864,4 @@ export const SOURCES = [
   { label: "Pinecone: Why Use Retrieval", url: "https://www.pinecone.io/blog/why-use-retrieval-instead-of-larger-context/" },
   { label: "Redis Token Optimization Guide", url: "https://redis.io/blog/llm-token-optimization-speed-up-apps/" },
   { label: "PremAI Cost Optimization Guide", url: "https://blog.premai.io/llm-cost-optimization-8-strategies-that-cut-api-spend-by-80-2026-guide/" },
-] as const;
+];
