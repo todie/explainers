@@ -1,5 +1,8 @@
 import ProcessingModes from './components/ProcessingModes'
+import Visualization from './components/Visualization'
+import Examples from './components/Examples'
 import GestaltPrinciples from './components/GestaltPrinciples'
+import ProsCons from './components/ProsCons'
 import Ramifications from './components/Ramifications'
 import Research from './components/Research'
 
@@ -67,7 +70,10 @@ export default function GestaltApp() {
         </div>
 
         <ProcessingModes />
+        <Visualization />
+        <Examples />
         <GestaltPrinciples />
+        <ProsCons />
         <Ramifications />
         <Research />
 
