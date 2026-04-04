@@ -1,12 +1,19 @@
+import TableOfContents from '../shared/TableOfContents'
 import Protocol from './components/Protocol'
 import Servers from './components/Servers'
 
+const SECTIONS = [
+  { id: 'how-it-works', title: 'How It Works', icon: '⚙' },
+  { id: 'servers', title: 'Language Servers', icon: '🧠' },
+]
+
 export default function LSPApp() {
   return (
-    <div style={{ minHeight: '100vh' }}>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg, #0a0904 0%, #030712 15%, #030712 100%)' }}>
+      <TableOfContents sections={SECTIONS} accent="#facc15" />
       <header style={{
         position: 'relative', padding: '80px 24px 56px', textAlign: 'center',
-        background: 'linear-gradient(180deg, #111827 0%, #030712 100%)', overflow: 'hidden',
+        overflow: 'hidden',
       }}>
         <div style={{
           position: 'absolute', top: -100, left: '50%', transform: 'translateX(-50%)',
@@ -59,8 +66,8 @@ export default function LSPApp() {
           </div>
         </div>
 
-        <Protocol />
-        <Servers />
+        <div id="how-it-works" style={{ scrollMarginTop: 60 }}><Protocol /></div>
+        <div id="servers" style={{ scrollMarginTop: 60 }}><Servers /></div>
 
         <footer style={{ textAlign: 'center', paddingTop: 32, borderTop: '1px solid #1f2937' }}>
           <p style={{ fontSize: 12, color: '#4b5563' }}>
