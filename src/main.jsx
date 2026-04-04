@@ -5,6 +5,8 @@ import Nav from './shared/Nav'
 import Home from './shared/Home'
 import MemoryModelApp from './memory-model/App'
 import GestaltApp from './gestalt/App'
+import PromptCacheApp from './prompt-cache/App'
+import LSPApp from './lsp/App'
 import './memory-model/global.css'
 
 function App() {
@@ -16,6 +18,8 @@ function App() {
         <Route path="/explainers/" element={<Home />} />
         <Route path="/explainers/memory-model" element={<MemoryModelApp />} />
         <Route path="/explainers/gestalt" element={<GestaltApp />} />
+        <Route path="/explainers/prompt-cache" element={<PromptCacheApp />} />
+        <Route path="/explainers/lsp" element={<LSPApp />} />
         <Route path="*" element={<Home />} />
       </Routes>
     </BrowserRouter>
