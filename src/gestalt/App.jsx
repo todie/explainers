@@ -1,3 +1,4 @@
+import TableOfContents from '../shared/TableOfContents'
 import ProcessingModes from './components/ProcessingModes'
 import Visualization from './components/Visualization'
 import Examples from './components/Examples'
@@ -6,18 +7,39 @@ import ProsCons from './components/ProsCons'
 import Ramifications from './components/Ramifications'
 import Research from './components/Research'
 
+const SECTIONS = [
+  { id: 'thesis', title: 'Thesis', icon: '◉' },
+  { id: 'thoughtforms', title: 'Thoughtforms', icon: '💬' },
+  { id: 'visualization', title: 'What It Looks Like', icon: '👁' },
+  { id: 'examples', title: 'In the Wild', icon: '⚡' },
+  { id: 'principles', title: 'Principles', icon: '◫' },
+  { id: 'pros-cons', title: 'Pros & Cons', icon: '⚖' },
+  { id: 'ramifications', title: 'Ramifications', icon: '↯' },
+  { id: 'research', title: 'Further Reading', icon: '📄' },
+]
+
 export default function GestaltApp() {
   return (
-    <div style={{ minHeight: '100vh' }}>
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #0a0510 0%, #030712 15%, #030712 100%)',
+    }}>
+      <TableOfContents sections={SECTIONS} accent="#a855f7" />
+
       <header style={{
         position: 'relative', padding: '80px 24px 56px', textAlign: 'center',
-        background: 'linear-gradient(180deg, #111827 0%, #030712 100%)', overflow: 'hidden',
+        overflow: 'hidden',
       }}>
+        {/* Organic flowing glow — gestalt = perception, warmth, non-linear */}
         <div style={{
-          position: 'absolute', top: -100, left: '50%', transform: 'translateX(-50%)',
-          width: 500, height: 350,
-          background: 'radial-gradient(ellipse, rgba(248, 113, 113, 0.06) 0%, rgba(168, 85, 247, 0.04) 40%, transparent 70%)',
-          pointerEvents: 'none', animation: 'pulse 6s ease-in-out infinite',
+          position: 'absolute', top: -120, left: '30%', width: 400, height: 400,
+          background: 'radial-gradient(ellipse, rgba(248, 113, 113, 0.07) 0%, transparent 70%)',
+          pointerEvents: 'none', animation: 'pulse 8s ease-in-out infinite',
+        }} />
+        <div style={{
+          position: 'absolute', top: -60, right: '20%', width: 300, height: 300,
+          background: 'radial-gradient(ellipse, rgba(168, 85, 247, 0.06) 0%, transparent 70%)',
+          pointerEvents: 'none', animation: 'pulse 6s ease-in-out 2s infinite',
         }} />
 
         <div style={{ position: 'relative', zIndex: 1 }}>
@@ -51,11 +73,10 @@ export default function GestaltApp() {
       </header>
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px 96px', display: 'flex', flexDirection: 'column', gap: 80 }}>
-        {/* Core thesis */}
-        <div style={{
+        <div id="thesis" style={{
           maxWidth: 660, margin: '0 auto', padding: '28px', textAlign: 'center',
-          background: 'rgba(168, 85, 247, 0.05)', border: '1px solid rgba(168, 85, 247, 0.15)',
-          borderRadius: 16,
+          background: 'rgba(168, 85, 247, 0.04)', border: '1px solid rgba(168, 85, 247, 0.12)',
+          borderRadius: 16, scrollMarginTop: 60,
         }}>
           <div style={{ fontSize: 15, color: '#d1d5db', lineHeight: 1.8 }}>
             The medium of thought is not neutral. A verbal thinker and a gestalt thinker
@@ -69,13 +90,13 @@ export default function GestaltApp() {
           </div>
         </div>
 
-        <ProcessingModes />
-        <Visualization />
-        <Examples />
-        <GestaltPrinciples />
-        <ProsCons />
-        <Ramifications />
-        <Research />
+        <div id="thoughtforms" style={{ scrollMarginTop: 60 }}><ProcessingModes /></div>
+        <div id="visualization" style={{ scrollMarginTop: 60 }}><Visualization /></div>
+        <div id="examples" style={{ scrollMarginTop: 60 }}><Examples /></div>
+        <div id="principles" style={{ scrollMarginTop: 60 }}><GestaltPrinciples /></div>
+        <div id="pros-cons" style={{ scrollMarginTop: 60 }}><ProsCons /></div>
+        <div id="ramifications" style={{ scrollMarginTop: 60 }}><Ramifications /></div>
+        <div id="research" style={{ scrollMarginTop: 60 }}><Research /></div>
 
         <footer style={{ textAlign: 'center', paddingTop: 32, borderTop: '1px solid #1f2937' }}>
           <p style={{ fontSize: 12, color: '#4b5563' }}>
