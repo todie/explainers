@@ -40,4 +40,12 @@ export const EXPLAINERS = [
     path: '/token-optimization',
     tags: ['tokens', 'optimization', 'cost', 'efficiency', 'compression', 'rtk', 'caching'],
   },
+  {
+    id: 'reverie',
+    title: 'Reverie',
+    short: 'Neuroscience-grounded memory consolidation',
+    icon: '💤',
+    path: '/reverie',
+    tags: ['reverie', 'memory', 'neuroscience', 'consolidation', 'sleep', 'engram', 'locomo', 'daemon', 'hierarchy'],
+  },
 ]

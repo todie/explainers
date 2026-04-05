@@ -8,6 +8,7 @@ import GestaltApp from './gestalt/App'
 import PromptCacheApp from './prompt-cache/App'
 import LSPApp from './lsp/App'
 import TokenOptimizationApp from './token-optimization/App'
+import ReverieApp from './reverie/App'
 import './memory-model/global.css'
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/prompt-cache" element={<PromptCacheApp />} />
         <Route path="/lsp" element={<LSPApp />} />
         <Route path="/token-optimization" element={<TokenOptimizationApp />} />
+        <Route path="/reverie" element={<ReverieApp />} />
         <Route path="*" element={<Home />} />
       </Routes>
     </BrowserRouter>
