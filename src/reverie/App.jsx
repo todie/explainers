@@ -1,4 +1,5 @@
 import TableOfContents from '../shared/TableOfContents'
+import ArchitectureGraph from './components/ArchitectureGraph'
 import HierarchyDiagram from './components/HierarchyDiagram'
 import NeuroscienceMap from './components/NeuroscienceMap'
 import DreamPipeline from './components/DreamPipeline'
@@ -8,6 +9,7 @@ import AntiPatterns from './components/AntiPatterns'
 import References from './components/References'
 
 const SECTIONS = [
+  { id: 'architecture', title: 'Architecture', icon: '⬡' },
   { id: 'hierarchy', title: 'Memory Hierarchy', icon: '▤' },
   { id: 'neuroscience', title: 'Neuroscience', icon: '🧬' },
   { id: 'dream-pipeline', title: 'Dream Pipeline', icon: '💤' },
@@ -94,6 +96,7 @@ export default function ReverieApp() {
       </header>
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px 96px', display: 'flex', flexDirection: 'column', gap: 80 }}>
+        <div id="architecture" style={{ scrollMarginTop: 60 }}><ArchitectureGraph /></div>
         <div id="hierarchy" style={{ scrollMarginTop: 60 }}><HierarchyDiagram /></div>
         <div id="neuroscience" style={{ scrollMarginTop: 60 }}><NeuroscienceMap /></div>
         <div id="dream-pipeline" style={{ scrollMarginTop: 60 }}><DreamPipeline /></div>
