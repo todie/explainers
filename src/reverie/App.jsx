@@ -1,6 +1,9 @@
 import TableOfContents from '../shared/TableOfContents'
 import ArchitectureGraph from './components/ArchitectureGraph'
 import HierarchyDiagram from './components/HierarchyDiagram'
+import ObjectModel from './components/ObjectModel'
+import CrateFlows from './components/CrateFlows'
+import SequenceDiagrams from './components/SequenceDiagrams'
 import NeuroscienceMap from './components/NeuroscienceMap'
 import DreamPipeline from './components/DreamPipeline'
 import LeaderboardChart from './components/LeaderboardChart'
@@ -11,6 +14,9 @@ import References from './components/References'
 const SECTIONS = [
   { id: 'architecture', title: 'Architecture', icon: '⬡' },
   { id: 'hierarchy', title: 'Memory Hierarchy', icon: '▤' },
+  { id: 'object-model', title: 'Object Model', icon: '◈' },
+  { id: 'crate-flows', title: 'Crate Data Flows', icon: '↔' },
+  { id: 'sequences', title: 'Sequence Diagrams', icon: '↓' },
   { id: 'neuroscience', title: 'Neuroscience', icon: '🧬' },
   { id: 'dream-pipeline', title: 'Dream Pipeline', icon: '💤' },
   { id: 'leaderboard', title: 'LoCoMo Benchmark', icon: '📊' },
@@ -98,6 +104,9 @@ export default function ReverieApp() {
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px 96px', display: 'flex', flexDirection: 'column', gap: 80 }}>
         <div id="architecture" style={{ scrollMarginTop: 60 }}><ArchitectureGraph /></div>
         <div id="hierarchy" style={{ scrollMarginTop: 60 }}><HierarchyDiagram /></div>
+        <div id="object-model" style={{ scrollMarginTop: 60 }}><ObjectModel /></div>
+        <div id="crate-flows" style={{ scrollMarginTop: 60 }}><CrateFlows /></div>
+        <div id="sequences" style={{ scrollMarginTop: 60 }}><SequenceDiagrams /></div>
         <div id="neuroscience" style={{ scrollMarginTop: 60 }}><NeuroscienceMap /></div>
         <div id="dream-pipeline" style={{ scrollMarginTop: 60 }}><DreamPipeline /></div>
         <div id="leaderboard" style={{ scrollMarginTop: 60 }}><LeaderboardChart /></div>
