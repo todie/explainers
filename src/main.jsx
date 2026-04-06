@@ -15,7 +15,7 @@ import './memory-model/global.css'
 
 function App() {
   return (
-    <BrowserRouter basename="/explainers">
+    <BrowserRouter>
       <Nav />
       <Routes>
         <Route path="/" element={<Home />} />
