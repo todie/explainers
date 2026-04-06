@@ -7,7 +7,7 @@
 /** @type {import('@todie/uri-snapshot').SnapshotOptions} */
 export default {
   outDir: './public/previews',
-  format: 'webp',
+  format: 'jpeg',
   quality: 85,
   viewport: { width: 1200, height: 630 },
   timeout: 20000,

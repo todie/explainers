@@ -32,7 +32,7 @@ export const PROJECTS = [
     tagline: 'controlled absurdism',
     accentColor: '#60a5fa',
     url: 'https://github.com/todie/revenant',
-    preview: '/explainers/previews/revenant.webp',
+    preview: '/explainers/previews/revenant.jpeg',
     scores: { vulnerability: 15, control: 85, defiance: 60, curiosity: 45, mastery: 50 },
     quotes: [
       '"you are a daemon, not a person \u2014 act like it"',
@@ -48,7 +48,7 @@ export const PROJECTS = [
     tagline: 'defiance',
     accentColor: '#fb923c',
     url: 'https://nahbro.dev',
-    preview: '/explainers/previews/nahbro.webp',
+    preview: '/explainers/previews/nahbro.jpeg',
     scores: { vulnerability: 10, control: 40, defiance: 95, curiosity: 20, mastery: 30 },
     quotes: [
       '"nah bro"',
@@ -64,7 +64,7 @@ export const PROJECTS = [
     tagline: 'clinical precision',
     accentColor: '#34d399',
     url: 'https://github.com/todie/reach',
-    preview: '/explainers/previews/reach.webp',
+    preview: '/explainers/previews/reach.jpeg',
     scores: { vulnerability: 5, control: 90, defiance: 15, curiosity: 50, mastery: 85 },
     quotes: [
       '"measure twice, emit once"',
@@ -80,7 +80,7 @@ export const PROJECTS = [
     tagline: 'nostalgia / preservation',
     accentColor: '#a78bfa',
     url: 'https://github.com/todie/sessionswipe',
-    preview: '/explainers/previews/sessionswipe.webp',
+    preview: '/explainers/previews/sessionswipe.jpeg',
     scores: { vulnerability: 40, control: 55, defiance: 10, curiosity: 70, mastery: 40 },
     quotes: [
       '"every session is a conversation that deserves to exist"',
@@ -112,7 +112,7 @@ export const PROJECTS = [
     tagline: 'adversarial curiosity',
     accentColor: '#f43f5e',
     url: 'https://honeypot.vip',
-    preview: '/explainers/previews/mcp-honeypot.webp',
+    preview: '/explainers/previews/mcp-honeypot.jpeg',
     scores: { vulnerability: 10, control: 70, defiance: 45, curiosity: 95, mastery: 55 },
     quotes: [
       '"you are not the defender \u2014 you are the bait"',
@@ -144,7 +144,7 @@ export const PROJECTS = [
     tagline: 'assertive identity',
     accentColor: '#06b6d4',
     url: 'https://github.com/todie/engram-rs',
-    preview: '/explainers/previews/tradecraft.webp',
+    preview: '/explainers/previews/tradecraft.jpeg',
     scores: { vulnerability: 20, control: 75, defiance: 35, curiosity: 65, mastery: 90 },
     quotes: [
       '"you have a point of view \u2014 use it"',
