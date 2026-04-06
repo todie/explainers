@@ -17,8 +17,11 @@ import { dirname } from 'path'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, '..')
 const DIST = join(ROOT, 'dist')
-const SITE = 'https://todie.io'
-const BASE = '/explainers'
+// Canonical URL — explain.todie.io is the official home; rant.todie.io is
+// an alias served from the same origin. All OG/canonical tags point at the
+// canonical so search engines and link unfurlers see one source of truth.
+const SITE = 'https://explain.todie.io'
+const BASE = ''
 
 // Parse the explainers registry from source (CJS module with `export const`)
 // We extract the array literal rather than importing, since the project is type:commonjs
@@ -38,6 +41,7 @@ for (const ex of EXPLAINERS) {
   // Replace the generic OG tags with per-route values
   let html = template
     .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
+    .replace(/<link rel="canonical" href="[^"]*"/, `<link rel="canonical" href="${url}"`)
     .replace(/og:title" content="[^"]*"/, `og:title" content="${title}"`)
     .replace(/og:description" content="[^"]*"/, `og:description" content="${description}"`)
     .replace(/og:url" content="[^"]*"/, `og:url" content="${url}"`)
