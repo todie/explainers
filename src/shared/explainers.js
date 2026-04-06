@@ -56,4 +56,12 @@ export const EXPLAINERS = [
     path: '/emotional-topology',
     tags: ['emotion', 'prompts', 'affect', 'vulnerability', 'control', 'defiance', 'curiosity', 'mastery', 'todie'],
   },
+  {
+    id: 'pidgin-tokens',
+    title: 'Pidgin Tokens',
+    short: 'Pirate vs caveman vs eight pidgins',
+    icon: '🏴‍☠️',
+    path: '/pidgin-tokens',
+    tags: ['tokens', 'tokenizer', 'bpe', 'pidgin', 'creole', 'naija', 'singlish', 'krio', 'pirate', 'caveman', 'cost', 'optimization'],
+  },
 ]
