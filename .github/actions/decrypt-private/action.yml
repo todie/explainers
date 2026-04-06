@@ -1,0 +1,45 @@
+# ──────────────────────────────────────────────────────────────────────────
+#  decrypt-private — install git-crypt and unlock src/private/content/
+#
+#  Used by deploy.yml and generate-previews.yml. Both workflows run
+#  `npm run build`, which imports the encrypted markdown files via Vite's
+#  `?raw` import. Without this step the build either fails or ships
+#  encrypted blobs to users (worse).
+#
+#  The GIT_CRYPT_KEY secret is the base64-encoded output of
+#  `git-crypt export-key`. To rotate: run export-key locally, base64 it,
+#  paste into the GitHub repo secrets.
+#
+#  curious about how this works? chris@todie.io
+# ──────────────────────────────────────────────────────────────────────────
+name: Decrypt private content
+description: Install git-crypt and unlock encrypted files using a base64 symmetric key
+
+inputs:
+  git-crypt-key:
+    description: Base64-encoded git-crypt symmetric key
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install git-crypt
+      shell: bash
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y git-crypt
+
+    - name: Unlock repository
+      shell: bash
+      env:
+        KEY_B64: ${{ inputs.git-crypt-key }}
+      run: |
+        if [ -z "$KEY_B64" ]; then
+          echo "::error::GIT_CRYPT_KEY secret is empty — set it in repo Settings → Secrets and variables → Actions"
+          exit 1
+        fi
+        KEY_FILE=$(mktemp)
+        trap "shred -u '$KEY_FILE' 2>/dev/null || rm -f '$KEY_FILE'" EXIT
+        printf '%s' "$KEY_B64" | base64 -d > "$KEY_FILE"
+        git-crypt unlock "$KEY_FILE"
+        echo "✓ Decrypted $(git-crypt status -e | wc -l) files"
