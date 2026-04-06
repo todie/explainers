@@ -4,12 +4,15 @@ import { DIMENSIONS } from '../data'
 
 export default function ProjectCard({ project, sortDim }) {
   const [expanded, setExpanded] = useState(false)
+  const [imgError, setImgError] = useState(false)
 
   const sortedDims = sortDim
     ? [...DIMENSIONS].sort((a, b) =>
         a.key === sortDim ? -1 : b.key === sortDim ? 1 : 0
       )
     : DIMENSIONS
+
+  const showPreview = expanded && project.preview && !imgError
 
   return (
     <div
@@ -36,9 +39,7 @@ export default function ProjectCard({ project, sortDim }) {
         {/* Name + archetype */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-            <span style={{
-              fontSize: 15, fontWeight: 700, color: '#e5e7eb',
-            }}>
+            <span style={{ fontSize: 15, fontWeight: 700, color: '#e5e7eb' }}>
               {project.name}
             </span>
             <span style={{
@@ -50,6 +51,23 @@ export default function ProjectCard({ project, sortDim }) {
             }}>
               {project.archetype}
             </span>
+            {project.url && (
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={e => e.stopPropagation()}
+                style={{
+                  fontSize: 10, color: '#4b5563', fontFamily: 'var(--mono, monospace)',
+                  textDecoration: 'none',
+                  display: 'flex', alignItems: 'center', gap: 3,
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = '#9ca3af'}
+                onMouseLeave={e => e.currentTarget.style.color = '#4b5563'}
+              >
+                \u2197
+              </a>
+            )}
           </div>
           <div style={{ fontSize: 12, color: '#6b7280', marginTop: 3 }}>
             {project.tagline}
@@ -90,18 +108,32 @@ export default function ProjectCard({ project, sortDim }) {
           transition: 'transform 0.2s ease',
           flexShrink: 0,
         }}>
-          ▾
+          \u25be
         </div>
       </div>
 
       {/* Expanded panel */}
       {expanded && (
-        <div style={{
-          borderTop: `1px solid ${project.accentColor}20`,
-          padding: '20px 20px 20px',
-        }}
+        <div
+          style={{ borderTop: `1px solid ${project.accentColor}20`, padding: '20px' }}
           onClick={e => e.stopPropagation()}
         >
+          {/* Preview image */}
+          {showPreview && (
+            <div style={{ marginBottom: 20 }}>
+              <img
+                src={project.preview}
+                alt={`${project.name} preview`}
+                onError={() => setImgError(true)}
+                style={{
+                  width: '100%', borderRadius: 8, display: 'block',
+                  border: `1px solid ${project.accentColor}20`,
+                  aspectRatio: '1200/630', objectFit: 'cover',
+                }}
+              />
+            </div>
+          )}
+
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
             {/* Large radar */}
             <div style={{ flexShrink: 0 }}>
@@ -147,9 +179,7 @@ export default function ProjectCard({ project, sortDim }) {
           </div>
 
           {/* Analysis text */}
-          <p style={{
-            fontSize: 13, color: '#9ca3af', lineHeight: 1.7, margin: '16px 0',
-          }}>
+          <p style={{ fontSize: 13, color: '#9ca3af', lineHeight: 1.7, margin: '16px 0' }}>
             {project.analysis}
           </p>
 
@@ -167,6 +197,23 @@ export default function ProjectCard({ project, sortDim }) {
               </blockquote>
             ))}
           </div>
+
+          {/* External link footer */}
+          {project.url && (
+            <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px solid #1f2937` }}>
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: 11, color: project.accentColor, fontFamily: 'var(--mono, monospace)',
+                  textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4,
+                }}
+              >
+                {project.url} \u2197
+              </a>
+            </div>
+          )}
         </div>
       )}
     </div>
