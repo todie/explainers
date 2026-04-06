@@ -39,4 +39,4 @@ jobs:
           git add public/previews/
           git diff --staged --quiet \
             && echo 'No preview changes.' \
-            || (git commit -m 'chore(previews): regenerate project screenshots [skip ci]' && git push)
+            || (git commit -m 'chore(previews): regenerate project screenshots' && git push)
