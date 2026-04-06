@@ -1,0 +1,44 @@
+[
+  {
+    "id": "nahbro",
+    "url": "https://nahbro.dev",
+    "status": "ok",
+    "outPath": "/home/runner/work/explainers/explainers/public/previews/nahbro.jpeg",
+    "durationMs": 212
+  },
+  {
+    "id": "mcp-honeypot",
+    "url": "https://honeypot.vip",
+    "status": "ok",
+    "outPath": "/home/runner/work/explainers/explainers/public/previews/mcp-honeypot.jpeg",
+    "durationMs": 352
+  },
+  {
+    "id": "reach",
+    "url": "https://github.com/todie/reach",
+    "status": "ok",
+    "outPath": "/home/runner/work/explainers/explainers/public/previews/reach.jpeg",
+    "durationMs": 1662
+  },
+  {
+    "id": "revenant",
+    "url": "https://github.com/todie/revenant",
+    "status": "ok",
+    "outPath": "/home/runner/work/explainers/explainers/public/previews/revenant.jpeg",
+    "durationMs": 783
+  },
+  {
+    "id": "sessionswipe",
+    "url": "https://github.com/todie/sessionswipe",
+    "status": "ok",
+    "outPath": "/home/runner/work/explainers/explainers/public/previews/sessionswipe.jpeg",
+    "durationMs": 779
+  },
+  {
+    "id": "tradecraft",
+    "url": "https://github.com/todie/engram-rs",
+    "status": "ok",
+    "outPath": "/home/runner/work/explainers/explainers/public/previews/tradecraft.jpeg",
+    "durationMs": 1653
+  }
+]
