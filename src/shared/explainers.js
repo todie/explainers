@@ -48,4 +48,12 @@ export const EXPLAINERS = [
     path: '/reverie',
     tags: ['reverie', 'memory', 'neuroscience', 'consolidation', 'sleep', 'engram', 'locomo', 'daemon', 'hierarchy'],
   },
+  {
+    id: 'emotional-topology',
+    title: 'Emotional Topology',
+    short: 'The affect inside the prompts',
+    icon: '🧬',
+    path: '/emotional-topology',
+    tags: ['emotion', 'prompts', 'affect', 'vulnerability', 'control', 'defiance', 'curiosity', 'mastery', 'todie'],
+  },
 ]

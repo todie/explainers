@@ -9,6 +9,7 @@ import PromptCacheApp from './prompt-cache/App'
 import LSPApp from './lsp/App'
 import TokenOptimizationApp from './token-optimization/App'
 import ReverieApp from './reverie/App'
+import EmotionalTopologyApp from './emotional-topology/App'
 import './memory-model/global.css'
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/lsp" element={<LSPApp />} />
         <Route path="/token-optimization" element={<TokenOptimizationApp />} />
         <Route path="/reverie" element={<ReverieApp />} />
+        <Route path="/emotional-topology" element={<EmotionalTopologyApp />} />
         <Route path="*" element={<Home />} />
       </Routes>
     </BrowserRouter>
