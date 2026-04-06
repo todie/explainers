@@ -15,6 +15,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: ./.github/actions/decrypt-private
+        with:
+          git-crypt-key: ${{ secrets.GIT_CRYPT_KEY }}
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -29,8 +33,24 @@ jobs:
       - name: Install Playwright browsers
         run: node_modules/.bin/playwright install chromium --with-deps
 
-      - name: Generate previews
-        run: node_modules/.bin/uri-snapshot --config snapshot.config.mjs --results public/previews/results.json
+      - name: Build, serve, and capture previews
+        run: |
+          npm run build
+          # Serve in background, track PID, ensure cleanup
+          npx vite preview --port 4173 > /tmp/vite.log 2>&1 &
+          SERVER_PID=$!
+          trap "kill $SERVER_PID 2>/dev/null || true" EXIT
+
+          # Wait for server (up to 15s)
+          for i in $(seq 1 15); do
+            curl -sf http://localhost:4173/explainers/ > /dev/null && break
+            sleep 1
+          done
+          curl -sf http://localhost:4173/explainers/ > /dev/null || (cat /tmp/vite.log && exit 1)
+
+          # Capture previews — uses EXPLAINER_BASE_URL to enable explainer page targets
+          EXPLAINER_BASE_URL=http://localhost:4173/explainers \
+            node_modules/.bin/uri-snapshot --config snapshot.config.mjs --results public/previews/results.json
 
       - name: Commit previews
         run: |
@@ -39,4 +59,4 @@ jobs:
           git add public/previews/
           git diff --staged --quiet \
             && echo 'No preview changes.' \
-            || (git commit -m 'chore(previews): regenerate project screenshots' && git push)
+            || (git commit -m 'chore(previews): regenerate project + explainer screenshots' && git push)

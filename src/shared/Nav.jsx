@@ -109,7 +109,25 @@ export default function Nav() {
           )}
         </div>
 
-        {/* Right: search trigger */}
+        {/* Right: search + private */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <a
+          href="/private"
+          onClick={(e) => { e.preventDefault(); navigate('/private') }}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 5,
+            background: location.pathname.startsWith('/private')
+              ? 'rgba(239, 68, 68, 0.08)' : 'transparent',
+            border: '1px solid rgba(55, 65, 81, 0.3)',
+            borderRadius: 6, padding: '4px 8px', cursor: 'pointer',
+            fontSize: 11, color: '#6b7280', fontFamily: 'var(--mono, monospace)',
+            textDecoration: 'none',
+          }}
+        >
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+          </svg>
+        </a>
         <button
           onClick={() => setOpen(true)}
           style={{
@@ -127,6 +145,7 @@ export default function Nav() {
             {navigator.platform?.includes('Mac') ? '⌘' : 'Ctrl+'}K
           </kbd>
         </button>
+        </div>
       </nav>
 
       {/* Spacer so content doesn't hide behind fixed nav */}
