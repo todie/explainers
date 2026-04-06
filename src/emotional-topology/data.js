@@ -32,7 +32,7 @@ export const PROJECTS = [
     tagline: 'controlled absurdism',
     accentColor: '#60a5fa',
     url: 'https://github.com/todie/revenant',
-    preview: '/explainers/previews/revenant.jpeg',
+    preview: null,
     scores: { vulnerability: 15, control: 85, defiance: 60, curiosity: 45, mastery: 50 },
     quotes: [
       '"you are a daemon, not a person \u2014 act like it"',
@@ -80,7 +80,7 @@ export const PROJECTS = [
     tagline: 'nostalgia / preservation',
     accentColor: '#a78bfa',
     url: 'https://github.com/todie/sessionswipe',
-    preview: '/explainers/previews/sessionswipe.jpeg',
+    preview: null,
     scores: { vulnerability: 40, control: 55, defiance: 10, curiosity: 70, mastery: 40 },
     quotes: [
       '"every session is a conversation that deserves to exist"',

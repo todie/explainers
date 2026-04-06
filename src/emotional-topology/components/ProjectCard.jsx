@@ -65,7 +65,7 @@ export default function ProjectCard({ project, sortDim }) {
                 onMouseEnter={e => e.currentTarget.style.color = '#9ca3af'}
                 onMouseLeave={e => e.currentTarget.style.color = '#4b5563'}
               >
-                \u2197
+                {'↗'}
               </a>
             )}
           </div>
@@ -108,7 +108,7 @@ export default function ProjectCard({ project, sortDim }) {
           transition: 'transform 0.2s ease',
           flexShrink: 0,
         }}>
-          \u25be
+          {'▾'}
         </div>
       </div>
 
@@ -210,7 +210,7 @@ export default function ProjectCard({ project, sortDim }) {
                   textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4,
                 }}
               >
-                {project.url} \u2197
+                {project.url} {'↗'}
               </a>
             </div>
           )}
