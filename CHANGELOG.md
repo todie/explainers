@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **OG preview images clipped long titles off the right edge of the canvas.**
+  `scripts/generate-fallback-previews.mjs` rendered the title at a fixed 88pt
+  via `-annotate` with no width fit, so any title longer than ~12 characters
+  silently overflowed the 1200×630 OG card. Visible on `harness.jpeg`
+  ("The Harness: Beyond V…"), `embodied-mind.jpeg` ("The Body Is Not A Vess…"),
+  `lsp.jpeg`, and `prompt-cache.jpeg`. Fixed by introducing `fitTitlePt()`
+  which scales the pointsize to fit the 1056px-wide content box (1200 − 72
+  left margin − 72 right margin), capped at 88 for short titles and floored
+  at 40 so text never goes tiny. Regenerated all four affected previews.
+
 - **Harness explainer — P1/P2 audit follow-ups.** After the full `/impeccable`
   stack rewrite landed the piece at 15/20 on `/impeccable:audit`, addressed
   the remaining P1 and P2 findings to close the gap:
