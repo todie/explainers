@@ -8,7 +8,7 @@
 // card chrome. Metaphors are shown inline as a two-column reading-first
 // layout.
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { VISUALIZATION_METAPHORS } from '../data/gestaltCognition'
 
 const smallCaps = {
@@ -18,52 +18,142 @@ const smallCaps = {
 }
 const body = { fontSize: 15, color: '#d1d5db', lineHeight: 1.75, margin: 0 }
 
-function VerbalAnimation() {
-  const [step, setStep] = useState(0)
-  const words = ['The', 'answer', 'builds', 'one', 'word', 'at', 'a', 'time']
+// --- Figure 2: timing diagram ---------------------------------------
+//
+// Two tracks on a shared time axis. The verbal track builds 8 tokens
+// one after another, each a small filled square arriving at a fixed
+// cadence. The gestalt track stays empty until a single instant near
+// the start, at which point the entire answer shape appears all at
+// once. This is the section's central claim rendered as a chart.
+//
+// Animation is pure SVG + CSS: we start the two tracks on mount, they
+// play once, and then rest. No replay button, no hover state — it's a
+// static figure that happens to auto-reveal.
+function TimingFigure() {
+  const [frame, setFrame] = useState(0) // 0..8 — 8 is "both done"
+  const FRAME_MS = 380
+  const VERBAL_STEPS = 8
+  const GESTALT_REVEAL_AT = 2   // gestalt reveals at frame 2
 
   useEffect(() => {
-    if (step >= words.length) return
-    const t = setTimeout(() => setStep(s => s + 1), 400)
+    if (frame >= VERBAL_STEPS) return
+    const t = setTimeout(() => setFrame(f => f + 1), FRAME_MS)
     return () => clearTimeout(t)
-  }, [step, words.length])
+  }, [frame])
+
+  // Layout constants for the 560 × 220 viewBox
+  const trackX = 110
+  const trackW = 420
+  const verbalY = 70
+  const gestaltY = 150
+  const stepSize = trackW / VERBAL_STEPS
+
+  const gestaltVisible = frame >= GESTALT_REVEAL_AT
 
   return (
-    <div style={{ minHeight: 72, display: 'flex', alignItems: 'center' }}>
-      <div style={{ fontFamily: 'var(--mono, monospace)', fontSize: 15, color: '#e5e7eb' }}>
-        {words.slice(0, step).map((w, i) => (
-          <span key={i} style={{ opacity: 1, animation: 'fadeUp 0.3s ease both', marginRight: 6 }}>
-            {w}
-          </span>
-        ))}
-        {step < words.length && <span style={{ color: '#374151', animation: 'pulse 1s infinite' }}>|</span>}
-      </div>
-    </div>
-  )
-}
+    <svg viewBox="0 0 560 220" width="100%" style={{ maxWidth: 620, display: 'block', margin: '0 auto' }} role="img" aria-label="Figure 2: timing of verbal versus gestalt processing across one insight">
+      {/* Time axis at the bottom */}
+      <line x1={trackX} y1={190} x2={trackX + trackW} y2={190} stroke="#4b5563" strokeWidth="1.25" />
+      {Array.from({ length: VERBAL_STEPS + 1 }, (_, i) => (
+        <line
+          key={`tick-${i}`}
+          x1={trackX + i * stepSize} y1={190}
+          x2={trackX + i * stepSize} y2={195}
+          stroke="#4b5563" strokeWidth="1"
+        />
+      ))}
+      <text x={trackX} y={212} fill="#6b7280" fontSize="10" fontFamily="var(--mono, monospace)">t = 0</text>
+      <text x={trackX + trackW} y={212} fill="#6b7280" fontSize="10" fontFamily="var(--mono, monospace)" textAnchor="end">t = finished</text>
+      <text
+        x={trackX + trackW / 2} y={212}
+        fill="#9ca3af" fontSize="11" textAnchor="middle"
+        textTransform="uppercase" letterSpacing="0.08em"
+      >
+        time →
+      </text>
 
-function GestaltAnimation() {
-  const [revealed, setRevealed] = useState(false)
+      {/* Verbal track label + guide */}
+      <text x={trackX - 12} y={verbalY + 4} fill="#9ca3af" fontSize="11" textAnchor="end" fontWeight={600}>Verbal</text>
+      <line x1={trackX} y1={verbalY} x2={trackX + trackW} y2={verbalY} stroke="#1f2937" strokeWidth="0.8" strokeDasharray="2 4" />
 
-  useEffect(() => {
-    const t = setTimeout(() => setRevealed(true), 800)
-    return () => clearTimeout(t)
-  }, [])
+      {/* Verbal tokens — one square per step, appearing in sequence */}
+      {Array.from({ length: VERBAL_STEPS }, (_, i) => {
+        const visible = frame > i
+        return (
+          <rect
+            key={`tok-${i}`}
+            x={trackX + i * stepSize + 6}
+            y={verbalY - 10}
+            width={stepSize - 12}
+            height={20}
+            fill="#e5e7eb"
+            rx="2"
+            style={{
+              opacity: visible ? 1 : 0,
+              transform: visible ? 'none' : 'translateY(2px)',
+              transition: 'opacity 0.25s ease, transform 0.25s ease',
+            }}
+          />
+        )
+      })}
 
-  return (
-    <div style={{ minHeight: 72, display: 'flex', alignItems: 'center' }}>
-      <div style={{
-        fontSize: 15, fontFamily: 'var(--mono, monospace)', color: '#e5e7eb',
-        opacity: revealed ? 1 : 0,
-        transform: revealed ? 'none' : 'translateY(4px)',
-        transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-        lineHeight: 1.6,
-      }}>
-        The whole answer arrives at once.
-        <br />
-        <span style={{ fontSize: 12, color: '#6b7280' }}>Then you spend 20 minutes explaining it.</span>
-      </div>
-    </div>
+      {/* Gestalt track label + guide */}
+      <text x={trackX - 12} y={gestaltY + 4} fill="#a855f7" fontSize="11" textAnchor="end" fontWeight={700}>Gestalt</text>
+      <line x1={trackX} y1={gestaltY} x2={trackX + trackW} y2={gestaltY} stroke="#1f2937" strokeWidth="0.8" strokeDasharray="2 4" />
+
+      {/* Gestalt "the whole answer" — a single wide shape that fades in
+          all at once early in the timeline. */}
+      <rect
+        x={trackX + GESTALT_REVEAL_AT * stepSize + 6}
+        y={gestaltY - 14}
+        width={(VERBAL_STEPS - GESTALT_REVEAL_AT) * stepSize - 12}
+        height={28}
+        fill="rgba(168, 85, 247, 0.22)"
+        stroke="#a855f7"
+        strokeWidth="1.5"
+        rx="2"
+        style={{
+          opacity: gestaltVisible ? 1 : 0,
+          transform: gestaltVisible ? 'scale(1)' : 'scale(0.97)',
+          transformOrigin: `${trackX + GESTALT_REVEAL_AT * stepSize + 6}px ${gestaltY}px`,
+          transition: 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+      />
+      <text
+        x={trackX + GESTALT_REVEAL_AT * stepSize + (VERBAL_STEPS - GESTALT_REVEAL_AT) * stepSize / 2}
+        y={gestaltY + 4}
+        fill="#f9fafb" fontSize="11" fontWeight={600}
+        textAnchor="middle"
+        style={{
+          opacity: gestaltVisible ? 1 : 0,
+          transition: 'opacity 0.5s ease 0.15s',
+        }}
+      >
+        the whole answer
+      </text>
+
+      {/* Annotation arrow — "arrives at once" */}
+      {gestaltVisible && (
+        <g style={{ opacity: gestaltVisible ? 1 : 0, transition: 'opacity 0.6s ease 0.3s' }}>
+          <path
+            d={`M ${trackX + GESTALT_REVEAL_AT * stepSize + 6} ${gestaltY - 26}
+                L ${trackX + GESTALT_REVEAL_AT * stepSize + 6} ${gestaltY - 18}`}
+            stroke="#a855f7" strokeWidth="1.25" fill="none"
+            markerEnd="url(#arrow-head)"
+          />
+        </g>
+      )}
+
+      <defs>
+        <marker id="arrow-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#a855f7" />
+        </marker>
+      </defs>
+
+      {/* Title above the tracks */}
+      <text x={trackX - 12} y={36} fill="#6b7280" fontSize="10" fontFamily="var(--mono, monospace)" textAnchor="end">mode</text>
+      <text x={(trackX + trackW) / 2 + 60} y={36} fill="#9ca3af" fontSize="11" textAnchor="middle" textTransform="uppercase" letterSpacing="0.08em">One insight, two timelines</text>
+    </svg>
   )
 }
 
@@ -83,36 +173,23 @@ export default function Visualization() {
         </p>
       </header>
 
-      {/* Side-by-side demonstration. No card chrome, no replay button — it
-          plays once when it scrolls into view and then rests. */}
+      {/* Figure 2: timing diagram. Plays once on mount and then rests. */}
       <figure style={{
-        margin: '0 0 48px 0', padding: '28px 0',
+        margin: '0 0 56px 0', padding: '32px 16px 24px',
         borderTop: '1px solid #1f2937', borderBottom: '1px solid #1f2937',
       }}>
-        <div style={{
-          display: 'grid', gridTemplateColumns: '1fr 1fr',
-          gap: 32, alignItems: 'flex-start',
-        }}>
-          <div>
-            <div style={{ ...smallCaps, marginBottom: 12 }}>Verbal / sequential</div>
-            <VerbalAnimation />
-            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 14 }}>
-              One token at a time.
-            </div>
-          </div>
-          <div style={{ paddingLeft: 32, borderLeft: '1px solid #1f2937' }}>
-            <div style={{ ...smallCaps, marginBottom: 12 }}>Gestalt / instantaneous</div>
-            <GestaltAnimation />
-            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 14 }}>
-              The whole at once.
-            </div>
-          </div>
-        </div>
+        <div style={{ ...smallCaps, marginBottom: 16, textAlign: 'center' }}>Figure 2</div>
+        <TimingFigure />
         <figcaption style={{
           fontSize: 12, color: '#6b7280', marginTop: 24, textAlign: 'center',
-          fontStyle: 'italic',
+          fontStyle: 'italic', maxWidth: 520, marginLeft: 'auto', marginRight: 'auto',
+          lineHeight: 1.6,
         }}>
-          Figure 1. The irreducible temporal difference.
+          Figure 2. The same insight, plotted against time. The verbal track
+          accumulates tokens step by step until the answer is complete. The
+          gestalt track stays empty until a single moment, then the whole
+          answer arrives at once. The difference is not in the content —
+          it is in the temporal shape.
         </figcaption>
       </figure>
 

@@ -63,6 +63,132 @@ const COMPARISON = [
   { dimension: 'Cross-domain transfer', verbal: 'By analogy (naming similarities)', visual: 'By spatial mapping (same shape)', auditory: 'By resonance (same pattern)', gestalt: 'Automatic — stored by structure, not content' },
 ]
 
+// --- Figure 1: the trade-off matrix -----------------------------------
+//
+// Each mode plotted against two axes that the rest of the section then
+// explores: how fast the insight arrives (y) vs how expensive it is to
+// communicate afterward (x). Gestalt sits in the top-right (fastest
+// insight, highest communication cost), verbal sits in the bottom-left
+// (slowest insight, trivially communicated). This visualizes the
+// section's core thesis before the prose unpacks it.
+//
+// Coordinates are % of plot area. Plot area is 360x280 inside a 440x340
+// viewBox (40 for left axis, 40 for bottom axis, 40 for top padding).
+const TRADEOFF_POINTS = [
+  // [x_cost_pct, y_speed_pct, label, anchor]
+  { id: 'verbal',   x: 12, y: 18, label: 'Verbal',   anchor: 'start' },
+  { id: 'visual',   x: 38, y: 48, label: 'Visual',   anchor: 'start' },
+  { id: 'auditory', x: 62, y: 62, label: 'Auditory', anchor: 'start' },
+  { id: 'gestalt',  x: 88, y: 92, label: 'Gestalt',  anchor: 'end'   },
+]
+
+function TradeoffFigure() {
+  // Plot coordinates:  viewBox 440 x 340
+  // Plot area:         x ∈ [60, 420], y ∈ [40, 260]   (360 wide × 220 tall)
+  const plotLeft = 60
+  const plotRight = 420
+  const plotTop = 40
+  const plotBottom = 260
+  const plotWidth = plotRight - plotLeft
+  const plotHeight = plotBottom - plotTop
+
+  const toX = (pct) => plotLeft + (pct / 100) * plotWidth
+  const toY = (pct) => plotBottom - (pct / 100) * plotHeight  // invert y
+
+  return (
+    <svg viewBox="0 0 440 340" width="100%" style={{ maxWidth: 560, display: 'block', margin: '0 auto' }} role="img" aria-label="Figure 1: speed of insight versus communication cost, plotted for each thinking mode">
+      {/* Plot background — very faint for readability without chrome */}
+      <rect
+        x={plotLeft} y={plotTop}
+        width={plotWidth} height={plotHeight}
+        fill="none"
+        stroke="#1f2937" strokeWidth="1"
+      />
+      {/* Grid lines */}
+      {[25, 50, 75].map(pct => (
+        <line
+          key={`gx-${pct}`}
+          x1={toX(pct)} y1={plotTop} x2={toX(pct)} y2={plotBottom}
+          stroke="#1f2937" strokeWidth="0.6" strokeDasharray="2 4"
+        />
+      ))}
+      {[25, 50, 75].map(pct => (
+        <line
+          key={`gy-${pct}`}
+          x1={plotLeft} y1={toY(pct)} x2={plotRight} y2={toY(pct)}
+          stroke="#1f2937" strokeWidth="0.6" strokeDasharray="2 4"
+        />
+      ))}
+
+      {/* Diagonal: the trade-off frontier. Each mode has to land
+          somewhere on this trade-off; there's no point with high speed
+          AND low cost. */}
+      <line
+        x1={toX(5)} y1={toY(5)}
+        x2={toX(95)} y2={toY(95)}
+        stroke="#374151" strokeWidth="1" strokeDasharray="1 5"
+      />
+      <text
+        x={toX(52)} y={toY(58)}
+        fill="#6b7280" fontSize="10" fontFamily="var(--mono, monospace)"
+        transform={`rotate(-32 ${toX(52)} ${toY(58)})`}
+      >
+        trade-off frontier
+      </text>
+
+      {/* Data points */}
+      {TRADEOFF_POINTS.map(p => {
+        const isGestalt = p.id === 'gestalt'
+        return (
+          <g key={p.id}>
+            <circle
+              cx={toX(p.x)} cy={toY(p.y)} r={isGestalt ? 6 : 5}
+              fill={isGestalt ? '#a855f7' : '#e5e7eb'}
+              stroke={isGestalt ? '#a855f7' : '#9ca3af'}
+              strokeWidth="1"
+            />
+            <text
+              x={toX(p.x) + (p.anchor === 'end' ? -10 : 10)}
+              y={toY(p.y) + 4}
+              fill="#f9fafb"
+              fontSize="13"
+              fontWeight={isGestalt ? 700 : 500}
+              textAnchor={p.anchor}
+            >
+              {p.label}
+            </text>
+          </g>
+        )
+      })}
+
+      {/* X axis */}
+      <line x1={plotLeft} y1={plotBottom} x2={plotRight} y2={plotBottom} stroke="#4b5563" strokeWidth="1.25" />
+      <text x={plotLeft} y={plotBottom + 18} fill="#6b7280" fontSize="10" fontFamily="var(--mono, monospace)">low</text>
+      <text x={plotRight} y={plotBottom + 18} fill="#6b7280" fontSize="10" fontFamily="var(--mono, monospace)" textAnchor="end">high</text>
+      <text
+        x={(plotLeft + plotRight) / 2} y={plotBottom + 32}
+        fill="#9ca3af" fontSize="11" textAnchor="middle"
+        textTransform="uppercase" letterSpacing="0.08em"
+      >
+        Communication cost →
+      </text>
+
+      {/* Y axis */}
+      <line x1={plotLeft} y1={plotTop} x2={plotLeft} y2={plotBottom} stroke="#4b5563" strokeWidth="1.25" />
+      <text x={plotLeft - 8} y={plotBottom} fill="#6b7280" fontSize="10" fontFamily="var(--mono, monospace)" textAnchor="end">slow</text>
+      <text x={plotLeft - 8} y={plotTop + 8} fill="#6b7280" fontSize="10" fontFamily="var(--mono, monospace)" textAnchor="end">fast</text>
+      <text
+        x={16} y={(plotTop + plotBottom) / 2}
+        fill="#9ca3af" fontSize="11" textAnchor="middle"
+        textTransform="uppercase" letterSpacing="0.08em"
+        transform={`rotate(-90 16 ${(plotTop + plotBottom) / 2})`}
+      >
+        ← Speed of insight
+      </text>
+    </svg>
+  )
+}
+
 // Shared typography tokens for this component.
 const smallCaps = {
   fontSize: 10, fontWeight: 700, color: '#6b7280',
@@ -136,6 +262,26 @@ export default function ProcessingModes() {
           translation.
         </p>
       </header>
+
+      {/* Figure 1: trade-off matrix. Visualizes the section's thesis
+          before the prose unpacks it. */}
+      <figure style={{
+        margin: '0 0 56px 0', padding: '32px 16px 24px',
+        borderTop: '1px solid #1f2937', borderBottom: '1px solid #1f2937',
+      }}>
+        <div style={{ ...smallCaps, marginBottom: 16, textAlign: 'center' }}>Figure 1</div>
+        <TradeoffFigure />
+        <figcaption style={{
+          fontSize: 12, color: '#6b7280', marginTop: 20, textAlign: 'center',
+          fontStyle: 'italic', maxWidth: 520, marginLeft: 'auto', marginRight: 'auto',
+          lineHeight: 1.6,
+        }}>
+          Figure 1. Each thinking mode trades speed of insight against
+          communication cost. Verbal thought is slow to arrive but trivially
+          communicated; gestalt thought arrives instantly but has no native
+          output format.
+        </figcaption>
+      </figure>
 
       {MODES.map((m, i) => (
         <ModeSection key={m.id} m={m} isLast={i === MODES.length - 1} />

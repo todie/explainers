@@ -94,6 +94,11 @@ Higher in the list wins when principles conflict.
 - **Rebase-merge, not squash** — preserve commit history. See prior PRs for
   the expected commit-message style (conventional commits: `feat(scope):`,
   `fix(scope):`, `docs:`, etc.).
+- **Update [`CHANGELOG.md`](CHANGELOG.md) on every user-visible change** —
+  append entries to `[Unreleased]` (`### Added` / `### Changed` / `### Fixed`)
+  in the same commit as the change itself. Do not split code and changelog
+  into separate commits. Internal refactors, test-only tweaks, and CI
+  changes can be skipped unless the user would notice.
 - **Self-review the diff before committing**, not after the PR is open. Run
   `git diff --stat`, read each hunk, look for category-specific bugs
   (CI workflows, secrets, private-content leaks into the public bundle).

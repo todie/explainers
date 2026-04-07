@@ -189,6 +189,177 @@ const smallCaps = {
 }
 const body = { fontSize: 14, color: '#d1d5db', lineHeight: 1.75, margin: 0 }
 
+// --- Figure 9: research timeline ------------------------------------
+//
+// Shows the century of convergent evidence at a glance. Each dot is a
+// paper from the bibliography below, plotted on a horizontal time axis
+// with a short label. The gestalt hypothesis is not one finding; it's
+// the same finding, replicated from 1923 to 2008.
+const TIMELINE = [
+  { year: 1923, author: 'Wertheimer',   label: 'Laws of organization' },
+  { year: 1925, author: 'Köhler',       label: 'Insight in apes' },
+  { year: 1935, author: 'Koffka',       label: 'Principles' },
+  { year: 1945, author: 'Duncker',      label: 'Functional fixedness' },
+  { year: 1965, author: 'de Groot',     label: 'Chess perception' },
+  { year: 1973, author: 'Chase & Simon', label: 'Chunking' },
+  { year: 1977, author: 'Navon',        label: 'Global precedence' },
+  { year: 1990, author: 'Schooler',     label: 'Verbal overshadowing' },
+  { year: 1990, author: 'Bowers',       label: 'Intuitive coherence' },
+  { year: 2005, author: 'Bolte',        label: 'Intuition speed' },
+  { year: 2006, author: 'Volz',         label: 'Orbitofrontal activation' },
+  { year: 2008, author: 'Hurlburt',     label: 'Unsymbolized thinking' },
+]
+
+function TimelineFigure() {
+  // viewBox 620 × 260
+  const axisLeft = 50
+  const axisRight = 580
+  const axisY = 170
+  const minYear = 1920
+  const maxYear = 2010
+  const toX = (year) => axisLeft + ((year - minYear) / (maxYear - minYear)) * (axisRight - axisLeft)
+
+  // Stagger labels vertically so they don't collide when years are close
+  const labelRows = []
+  TIMELINE.forEach((item, i) => {
+    // try to place at row 0, then 1, 2 — skip a row if there's a collision
+    // in x within 48px in that row
+    const itemX = toX(item.year)
+    let row = 0
+    while (labelRows.some(l => l.row === row && Math.abs(l.x - itemX) < 56)) {
+      row += 1
+    }
+    labelRows.push({ ...item, row, x: itemX, i })
+  })
+
+  return (
+    <svg viewBox="0 0 620 260" width="100%" style={{ maxWidth: 680, display: 'block', margin: '0 auto' }} role="img" aria-label="Figure 9: research timeline, 1923 to 2008">
+      {/* Main axis */}
+      <line x1={axisLeft} y1={axisY} x2={axisRight} y2={axisY} stroke="#4b5563" strokeWidth="1.25" />
+
+      {/* Decade ticks */}
+      {[1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010].map(year => (
+        <g key={year}>
+          <line
+            x1={toX(year)} y1={axisY}
+            x2={toX(year)} y2={axisY + 5}
+            stroke="#4b5563" strokeWidth="1"
+          />
+          <text
+            x={toX(year)} y={axisY + 20}
+            fill="#6b7280" fontSize="10" fontFamily="var(--mono, monospace)"
+            textAnchor="middle"
+          >{year}</text>
+        </g>
+      ))}
+
+      {/* Data points + stem lines + labels (labels go above the axis) */}
+      {labelRows.map(item => {
+        const stemTop = axisY - 18 - item.row * 36
+        return (
+          <g key={`${item.year}-${item.author}`}>
+            {/* Stem line from dot up to label */}
+            <line
+              x1={item.x} y1={axisY}
+              x2={item.x} y2={stemTop + 4}
+              stroke="#374151" strokeWidth="0.9"
+            />
+            {/* Dot on the axis */}
+            <circle cx={item.x} cy={axisY} r="4" fill="#e5e7eb" stroke="#9ca3af" strokeWidth="1" />
+            {/* Author + label */}
+            <text x={item.x} y={stemTop - 2} fill="#f9fafb" fontSize="11" fontWeight={600} textAnchor="middle">
+              {item.author}
+            </text>
+            <text x={item.x} y={stemTop + 11} fill="#9ca3af" fontSize="10" textAnchor="middle">
+              {item.label}
+            </text>
+          </g>
+        )
+      })}
+
+      {/* Axis caption */}
+      <text
+        x={(axisLeft + axisRight) / 2} y={244}
+        fill="#9ca3af" fontSize="11" textAnchor="middle"
+        textTransform="uppercase" letterSpacing="0.08em"
+      >
+        A century of convergent evidence
+      </text>
+    </svg>
+  )
+}
+
+// --- Figure 10: Hurlburt DES frequencies ----------------------------
+//
+// From Heavey & Hurlburt (2008), using Descriptive Experience Sampling
+// to measure how often each of five features appears in random moments
+// of inner experience. Unsymbolized thinking is highlighted because
+// it's the empirical foundation for this entire explainer.
+const DES_ROWS = [
+  { label: 'Inner speech',          pct: 26 },
+  { label: 'Inner seeing',          pct: 34 },
+  { label: 'Unsymbolized thinking', pct: 22, highlight: true },
+  { label: 'Feelings',              pct: 26 },
+  { label: 'Sensory awareness',     pct: 22 },
+]
+
+function DESFigure() {
+  // viewBox 560 × 240
+  const rowHeight = 30
+  const rowGap = 8
+  const labelCol = 140
+  const barLeft = labelCol + 16
+  const barMax = 380  // max bar width
+  const top = 24
+
+  return (
+    <svg viewBox="0 0 560 220" width="100%" style={{ maxWidth: 560, display: 'block', margin: '0 auto' }} role="img" aria-label="Figure 10: frequency of five inner-experience types">
+      {DES_ROWS.map((row, i) => {
+        const y = top + i * (rowHeight + rowGap)
+        const w = (row.pct / 40) * barMax  // scale so 40% = full width
+        const isHighlight = row.highlight
+        return (
+          <g key={row.label}>
+            {/* Label */}
+            <text
+              x={labelCol} y={y + rowHeight / 2 + 4}
+              fill={isHighlight ? '#f9fafb' : '#9ca3af'}
+              fontSize="12" fontWeight={isHighlight ? 700 : 500}
+              textAnchor="end"
+            >{row.label}</text>
+            {/* Track */}
+            <rect
+              x={barLeft} y={y}
+              width={barMax} height={rowHeight}
+              fill="none" stroke="#1f2937" strokeWidth="0.8"
+            />
+            {/* Bar */}
+            <rect
+              x={barLeft} y={y}
+              width={w} height={rowHeight}
+              fill={isHighlight ? '#a855f7' : '#4b5563'}
+            />
+            {/* Value */}
+            <text
+              x={barLeft + w + 8} y={y + rowHeight / 2 + 4}
+              fill={isHighlight ? '#f9fafb' : '#9ca3af'}
+              fontSize="12" fontWeight={isHighlight ? 700 : 500}
+              fontFamily="var(--mono, monospace)"
+            >{row.pct}%</text>
+          </g>
+        )
+      })}
+      {/* Axis caption */}
+      <text
+        x={barLeft + barMax / 2} y={top + DES_ROWS.length * (rowHeight + rowGap) + 20}
+        fill="#6b7280" fontSize="10" fontFamily="var(--mono, monospace)" textAnchor="middle"
+      >
+        0%                                       40%
+      </text>
+    </svg>
+  )
+}
+
 function Paper({ paper, index }) {
   return (
     <div style={{
@@ -234,7 +405,7 @@ export default function Research() {
 
   return (
     <section>
-      <header style={{ marginBottom: 48 }}>
+      <header style={{ marginBottom: 40 }}>
         <h2 style={{
           fontSize: 'clamp(22px, 3.5vw, 30px)', fontWeight: 800, color: '#f9fafb',
           letterSpacing: '-0.02em', margin: '0 0 12px 0',
@@ -253,6 +424,47 @@ export default function Research() {
           matters for understanding gestalt thinking as a cognitive mode.
         </p>
       </header>
+
+      {/* Figure 9: research timeline. Shows all the papers below
+          plotted on one axis so the convergence is visible at a glance. */}
+      <figure style={{
+        margin: '0 0 56px 0', padding: '32px 16px 24px',
+        borderTop: '1px solid #1f2937', borderBottom: '1px solid #1f2937',
+      }}>
+        <div style={{ ...smallCaps, marginBottom: 16, textAlign: 'center' }}>Figure 9</div>
+        <TimelineFigure />
+        <figcaption style={{
+          fontSize: 12, color: '#6b7280', marginTop: 20, textAlign: 'center',
+          fontStyle: 'italic', maxWidth: 540, marginLeft: 'auto', marginRight: 'auto',
+          lineHeight: 1.6,
+        }}>
+          Figure 9. Twelve papers on gestalt cognition, 1923–2008. The
+          convergence across five decades and multiple disciplines
+          (perception, problem-solving, expertise, phenomenology, fMRI) is
+          the main evidence that gestalt thinking is a measurable
+          processing architecture, not a metaphor.
+        </figcaption>
+      </figure>
+
+      {/* Figure 10: Hurlburt DES frequencies. Backs up the "22% of
+          sampled moments" claim in the Hurlburt entry below. */}
+      <figure style={{
+        margin: '0 0 56px 0', padding: '28px 16px 20px',
+        borderTop: '1px solid #1f2937', borderBottom: '1px solid #1f2937',
+      }}>
+        <div style={{ ...smallCaps, marginBottom: 14, textAlign: 'center' }}>Figure 10</div>
+        <DESFigure />
+        <figcaption style={{
+          fontSize: 12, color: '#6b7280', marginTop: 16, textAlign: 'center',
+          fontStyle: 'italic', maxWidth: 520, marginLeft: 'auto', marginRight: 'auto',
+          lineHeight: 1.6,
+        }}>
+          Figure 10. Frequencies of the five features of inner experience
+          in Descriptive Experience Sampling, per Heavey &amp; Hurlburt
+          (2008). "Unsymbolized thinking" is the empirical foundation for
+          treating gestalt cognition as a literal processing mode.
+        </figcaption>
+      </figure>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 48 }}>
         {CATEGORIES.map((cat) => (
