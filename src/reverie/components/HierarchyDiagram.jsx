@@ -98,7 +98,7 @@ export default function HierarchyDiagram() {
             background: '#0f172a', border: '1px solid #1e293b',
             fontSize: 12, color: '#f87171', fontFamily: 'var(--mono)',
           }}>
-            ⚠ {sel.constraint}
+            {'\u26A0\uFE0F'} {sel.constraint}
           </div>
         </div>
       )}

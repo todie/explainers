@@ -6,7 +6,7 @@ const LAYERS = [
     label: 'Claude Code',
     sub: 'Context Window',
     color: '#60a5fa',
-    icon: '⚡',
+    icon: '⚡\uFE0F',
     y: 0,
     desc: 'The active conversation. Everything visible here — tool calls, file reads, errors, user messages — forms the working context. Ephemeral by default.',
   },
@@ -88,7 +88,7 @@ export default function ArchitectureDiagram() {
               width: 44, height: 44, borderRadius: 10,
               background: LAYERS[0].color + '12', border: `1px solid ${LAYERS[0].color}25`,
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
-            }}>⚡</div>
+            }}>{LAYERS[0].icon}</div>
             <div>
               <div style={{ fontWeight: 700, fontSize: 16, color: LAYERS[0].color }}>{LAYERS[0].label}</div>
               <div style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'var(--mono)' }}>{LAYERS[0].sub}</div>

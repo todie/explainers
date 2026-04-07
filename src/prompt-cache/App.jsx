@@ -4,8 +4,8 @@ import ProxyTechniques from './components/ProxyTechniques'
 
 const SECTIONS = [
   { id: 'stats', title: 'Key Numbers', icon: '#' },
-  { id: 'architecture', title: 'Architecture', icon: '⚙' },
-  { id: 'techniques', title: 'Techniques', icon: '⚡' },
+  { id: 'architecture', title: 'Architecture', icon: '⚙\uFE0F' },
+  { id: 'techniques', title: 'Techniques', icon: '⚡\uFE0F' },
 ]
 
 const STATS = [

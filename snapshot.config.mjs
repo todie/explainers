@@ -34,6 +34,7 @@ const explainerTargets = BASE ? [
   { id: 'token-optimization',  url: `${BASE}/token-optimization` },
   { id: 'reverie',             url: `${BASE}/reverie` },
   { id: 'emotional-topology',  url: `${BASE}/emotional-topology` },
+  { id: 'pidgin-tokens',       url: `${BASE}/pidgin-tokens` },
 ] : []
 
 /** @type {import('@todie/uri-snapshot').SnapshotOptions} */

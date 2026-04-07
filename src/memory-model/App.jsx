@@ -5,7 +5,7 @@ import FlowTimeline from './components/FlowTimeline'
 import Roadmap from './components/Roadmap'
 
 const SECTIONS = [
-  { id: 'architecture', title: 'Architecture', icon: '⚙' },
+  { id: 'architecture', title: 'Architecture', icon: '⚙\uFE0F' },
   { id: 'context-window', title: 'Context Window', icon: '◧' },
   { id: 'retrieval-flow', title: 'Retrieval Flow', icon: '↓' },
   { id: 'roadmap', title: 'Roadmap', icon: '◈' },

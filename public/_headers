@@ -1,0 +1,23 @@
+# Cloudflare Pages custom response headers.
+# Docs: https://developers.cloudflare.com/pages/configuration/headers/
+
+# OG preview images: explicit content-type so Slack/Twitter/LinkedIn/Discord
+# unfurlers identify them as JPEG regardless of SPA-fallback behaviour.
+/previews/*.jpeg
+  Content-Type: image/jpeg
+  Cache-Control: public, max-age=86400, must-revalidate
+  Access-Control-Allow-Origin: *
+
+# Favicons
+/favicon.svg
+  Content-Type: image/svg+xml
+  Cache-Control: public, max-age=86400
+/favicon.png
+  Content-Type: image/png
+  Cache-Control: public, max-age=86400
+/favicon-16.png
+  Content-Type: image/png
+  Cache-Control: public, max-age=86400
+/favicon-32.png
+  Content-Type: image/png
+  Cache-Control: public, max-age=86400

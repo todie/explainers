@@ -3,7 +3,7 @@ import Protocol from './components/Protocol'
 import Servers from './components/Servers'
 
 const SECTIONS = [
-  { id: 'how-it-works', title: 'How It Works', icon: '⚙' },
+  { id: 'how-it-works', title: 'How It Works', icon: '⚙\uFE0F' },
   { id: 'servers', title: 'Language Servers', icon: '🧠' },
 ]
 

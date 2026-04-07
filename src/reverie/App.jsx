@@ -21,7 +21,7 @@ const SECTIONS = [
   { id: 'dream-pipeline', title: 'Dream Pipeline', icon: '💤' },
   { id: 'leaderboard', title: 'LoCoMo Benchmark', icon: '📊' },
   { id: 'findings', title: 'Findings', icon: '🔍' },
-  { id: 'anti-patterns', title: 'Anti-Patterns', icon: '⚠' },
+  { id: 'anti-patterns', title: 'Anti-Patterns', icon: '⚠\uFE0F' },
   { id: 'references', title: 'References', icon: '📚' },
 ]
 
