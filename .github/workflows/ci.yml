@@ -1,10 +1,25 @@
 name: CI
 
-# Build verification on every push to main and every pull request. Catches
-# Vite build failures, missing per-route OG HTML files, missing preview
-# images, and broken generate-og-pages.mjs refactors before they land in
-# main. This is the minimum viable gate — no linting, typechecking, or
-# bundle-size budget yet. Add as needed.
+# Build verification on every push to main and every pull request, followed
+# by a wrangler-based deploy to Cloudflare Pages on push-to-main only.
+#
+# Two jobs:
+#   build  — runs on every push/PR. Vite build + 5 artifact sanity checks.
+#   deploy — runs only on push to main after a green build. Uploads dist/
+#            to the explainers CF Pages project via wrangler-action@v3.
+#
+# Required repository secrets (set via `gh secret set` or the repo Settings
+# UI):
+#   CLOUDFLARE_API_TOKEN   — token scoped to `Pages:Edit` (plus R2 Write/Read
+#                             so the runtime R2 binding path is provisionable
+#                             by the same token). Matches the token at
+#                             ~/.secrets line 16.
+#   CLOUDFLARE_ACCOUNT_ID  — 07ae57cca8fc1a438f9c9b875d1e2283
+#
+# The deploy job uses `cloudflare/wrangler-action@v3`, which handles wrangler
+# install + auth from the two secrets above. Build artifacts are passed from
+# the `build` job via `actions/upload-artifact` + `actions/download-artifact`
+# so we don't have to run `npm ci && npm run build` twice.
 
 on:
   push:
@@ -14,6 +29,7 @@ on:
 
 permissions:
   contents: read
+  deployments: write
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -117,3 +133,70 @@ jobs:
           echo
           echo "=== Pages Functions ==="
           ls -la dist/functions/ 2>/dev/null || echo "(functions compiled at deploy time, not in dist/)"
+
+      - name: Upload dist artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: |
+            dist
+            functions
+            wrangler.toml
+            public/_headers
+          retention-days: 1
+          include-hidden-files: false
+
+  deploy:
+    name: Deploy to Cloudflare Pages
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://explain.todie.io
+    steps:
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+
+      - name: Sanity check artifact
+        run: |
+          set -euo pipefail
+          test -f dist/index.html || (echo "::error::dist/index.html missing from artifact" && exit 1)
+          test -d functions/api/private || (echo "::error::functions/api/private/ missing from artifact" && exit 1)
+          test -f wrangler.toml || (echo "::error::wrangler.toml missing from artifact" && exit 1)
+          echo "✓ artifact looks sane"
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=explainers --branch=main --commit-dirty=true
+          wranglerVersion: "4.80.0"
+
+      - name: Verify live site after deploy
+        run: |
+          set -euo pipefail
+          # Give the deploy a moment to propagate to the edge
+          sleep 5
+          for url in \
+            https://explain.todie.io/ \
+            https://explain.todie.io/embodied-mind/ \
+            https://explain.todie.io/pidgin-tokens/ \
+            https://explain.todie.io/private; do
+            code=$(curl -sSLo /dev/null -w "%{http_code}" "$url")
+            if [ "$code" != "200" ]; then
+              echo "::warning::$url returned HTTP $code (deploy may still be propagating)"
+            else
+              echo "✓ $url → 200"
+            fi
+          done
+          # Hard fail only if the root doesn't resolve at all
+          root=$(curl -sSLo /dev/null -w "%{http_code}" https://explain.todie.io/)
+          if [ "$root" != "200" ]; then
+            echo "::error::https://explain.todie.io/ is not 200 after deploy — check Cloudflare Pages dashboard"
+            exit 1
+          fi
