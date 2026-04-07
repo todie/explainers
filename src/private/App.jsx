@@ -1,81 +1,219 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { marked } from 'marked'
-import { CATEGORIES, DOCS } from './docs'
+import { fetchCatalog, fetchDoc, redirectToLogin } from './docs'
 
 marked.setOptions({ breaks: true, gfm: true })
 
+/**
+ * PrivateApp — runtime-fetched, CF Access-gated private doc viewer.
+ *
+ * States:
+ *   'loading-catalog'    — initial catalog fetch in flight
+ *   'unauthorized'       — /api/private/ returned 401, user needs to sign in
+ *   'catalog-ready'      — catalog loaded, showing doc list
+ *   'loading-doc'        — individual doc fetch in flight
+ *   'doc-ready'          — doc markdown loaded and rendered
+ *   'error'              — unrecoverable error (bad response, network)
+ */
+
 export default function PrivateApp() {
+  const [state, setState] = useState('loading-catalog')
+  const [catalog, setCatalog] = useState(null)
+  const [error, setError] = useState(null)
   const [activeDoc, setActiveDoc] = useState(null)
   const [content, setContent] = useState('')
-  const [loading, setLoading] = useState(false)
 
-  const grouped = useMemo(() => {
-    const map = {}
-    for (const cat of CATEGORIES) map[cat.id] = { ...cat, docs: [] }
-    for (const doc of DOCS) map[doc.category]?.docs.push(doc)
-    return Object.values(map).filter(g => g.docs.length > 0)
+  const loadCatalog = useCallback(async () => {
+    setState('loading-catalog')
+    setError(null)
+    try {
+      const data = await fetchCatalog()
+      setCatalog(data)
+      setState('catalog-ready')
+    } catch (err) {
+      if (err.status === 401) {
+        setState('unauthorized')
+      } else {
+        setError(err.message)
+        setState('error')
+      }
+    }
   }, [])
+
+  useEffect(() => {
+    loadCatalog()
+  }, [loadCatalog])
 
   useEffect(() => {
     if (!activeDoc) return
     let cancelled = false
-    setLoading(true)
+    setState('loading-doc')
     setContent('')
-    activeDoc.file()
-      .then(mod => {
+    fetchDoc(activeDoc.id)
+      .then(body => {
         if (cancelled) return
-        setContent(mod.default)
-        setLoading(false)
+        setContent(body)
+        setState('doc-ready')
       })
       .catch(err => {
         if (cancelled) return
-        setContent(`# Failed to load\n\n${err.message}`)
-        setLoading(false)
+        if (err.status === 401) {
+          setState('unauthorized')
+          return
+        }
+        setError(err.message)
+        setState('error')
       })
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [activeDoc])
+
+  const grouped = useMemo(() => {
+    if (!catalog) return []
+    const map = {}
+    for (const cat of catalog.categories) map[cat.id] = { ...cat, docs: [] }
+    for (const doc of catalog.docs) map[doc.category]?.docs.push(doc)
+    return Object.values(map).filter(g => g.docs.length > 0)
+  }, [catalog])
 
   return (
     <div style={{ minHeight: '100vh' }}>
-      {/* Header */}
-      <header style={{
-        padding: '60px 24px 36px', textAlign: 'center',
-        background: 'linear-gradient(180deg, #111827 0%, #030712 100%)',
-      }}>
-        <div style={{
-          display: 'inline-block', padding: '4px 12px', borderRadius: 999,
-          background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.2)',
-          fontSize: 11, color: '#f87171', fontFamily: 'var(--mono, monospace)', marginBottom: 16,
-        }}>
+      <header
+        style={{
+          padding: '60px 24px 36px',
+          textAlign: 'center',
+          background: 'linear-gradient(180deg, #111827 0%, #030712 100%)',
+        }}
+      >
+        <div
+          style={{
+            display: 'inline-block',
+            padding: '4px 12px',
+            borderRadius: 999,
+            background: 'rgba(239, 68, 68, 0.08)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            fontSize: 11,
+            color: '#f87171',
+            fontFamily: 'var(--mono, monospace)',
+            marginBottom: 16,
+          }}
+        >
           private
         </div>
-        <h1 style={{
-          fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 800, color: '#e5e7eb',
-          letterSpacing: '-0.02em', marginBottom: 8,
-        }}>
+        <h1
+          style={{
+            fontSize: 'clamp(24px, 4vw, 36px)',
+            fontWeight: 800,
+            color: '#e5e7eb',
+            letterSpacing: '-0.02em',
+            marginBottom: 8,
+          }}
+        >
           {activeDoc ? activeDoc.title : 'Documents'}
         </h1>
         {activeDoc && (
-          <button onClick={() => { setActiveDoc(null); setContent('') }} style={{
-            background: 'none', border: '1px solid #374151', borderRadius: 6,
-            color: '#9ca3af', fontSize: 12, padding: '4px 12px', cursor: 'pointer',
-            fontFamily: 'var(--mono, monospace)',
-          }}>
+          <button
+            onClick={() => {
+              setActiveDoc(null)
+              setContent('')
+              setState('catalog-ready')
+            }}
+            style={{
+              background: 'none',
+              border: '1px solid #374151',
+              borderRadius: 6,
+              color: '#9ca3af',
+              fontSize: 12,
+              padding: '4px 12px',
+              cursor: 'pointer',
+              fontFamily: 'var(--mono, monospace)',
+            }}
+          >
             ← back
           </button>
         )}
       </header>
 
-      {/* Content */}
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '32px 24px 80px' }}>
-        {!activeDoc ? (
-          /* Document list */
+        {state === 'loading-catalog' && (
+          <p style={{ color: '#6b7280', textAlign: 'center' }}>Loading…</p>
+        )}
+
+        {state === 'unauthorized' && (
+          <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+            <p style={{ color: '#9ca3af', fontSize: 15, marginBottom: 24, lineHeight: 1.6 }}>
+              These documents are gated. Sign in with Cloudflare Access to continue.
+            </p>
+            <button
+              onClick={() => redirectToLogin('/private')}
+              style={{
+                background: '#f87171',
+                border: 'none',
+                borderRadius: 8,
+                color: '#030712',
+                fontSize: 14,
+                fontWeight: 700,
+                padding: '10px 24px',
+                cursor: 'pointer',
+                fontFamily: 'var(--mono, monospace)',
+              }}
+            >
+              Sign in
+            </button>
+            <p style={{ color: '#4b5563', fontSize: 11, marginTop: 20, fontFamily: 'var(--mono, monospace)' }}>
+              If you think you should have access, email chris@todie.io
+            </p>
+          </div>
+        )}
+
+        {state === 'error' && (
+          <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+            <p style={{ color: '#f87171', fontSize: 13, marginBottom: 16 }}>
+              Something went wrong loading private documents.
+            </p>
+            <p
+              style={{
+                color: '#6b7280',
+                fontSize: 12,
+                fontFamily: 'var(--mono, monospace)',
+                marginBottom: 24,
+              }}
+            >
+              {error}
+            </p>
+            <button
+              onClick={() => loadCatalog()}
+              style={{
+                background: 'none',
+                border: '1px solid #374151',
+                borderRadius: 6,
+                color: '#9ca3af',
+                fontSize: 12,
+                padding: '6px 16px',
+                cursor: 'pointer',
+                fontFamily: 'var(--mono, monospace)',
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {(state === 'catalog-ready' || state === 'loading-doc') && !activeDoc && (
           grouped.map(group => (
             <div key={group.id} style={{ marginBottom: 32 }}>
-              <h2 style={{
-                fontSize: 12, fontWeight: 600, color: '#6b7280', textTransform: 'uppercase',
-                letterSpacing: '0.08em', fontFamily: 'var(--mono, monospace)', marginBottom: 10,
-              }}>
+              <h2
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  fontFamily: 'var(--mono, monospace)',
+                  marginBottom: 10,
+                }}
+              >
                 {group.icon} {group.label}
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -84,16 +222,33 @@ export default function PrivateApp() {
                     key={doc.id}
                     onClick={() => setActiveDoc(doc)}
                     style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      width: '100%', padding: '14px 18px', textAlign: 'left',
-                      background: '#111827', border: '1px solid #1f2937', borderRadius: 10,
-                      cursor: 'pointer', transition: 'border-color 0.15s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                      padding: '14px 18px',
+                      textAlign: 'left',
+                      background: '#111827',
+                      border: '1px solid #1f2937',
+                      borderRadius: 10,
+                      cursor: 'pointer',
+                      transition: 'border-color 0.15s',
                     }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = '#374151'}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = '#1f2937'}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = '#374151')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = '#1f2937')}
                   >
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#e5e7eb' }}>{doc.title}</span>
-                    <span style={{ fontSize: 11, color: '#4b5563', fontFamily: 'var(--mono, monospace)', flexShrink: 0, marginLeft: 12 }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: '#e5e7eb' }}>
+                      {doc.title}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 11,
+                        color: '#4b5563',
+                        fontFamily: 'var(--mono, monospace)',
+                        flexShrink: 0,
+                        marginLeft: 12,
+                      }}
+                    >
                       {doc.date}
                     </span>
                   </button>
@@ -101,16 +256,17 @@ export default function PrivateApp() {
               </div>
             </div>
           ))
-        ) : loading ? (
-          <p style={{ color: '#6b7280', textAlign: 'center' }}>Loading...</p>
-        ) : (
-          /* Rendered markdown */
+        )}
+
+        {state === 'loading-doc' && activeDoc && (
+          <p style={{ color: '#6b7280', textAlign: 'center' }}>Loading…</p>
+        )}
+
+        {state === 'doc-ready' && activeDoc && (
           <article
             className="private-doc"
             dangerouslySetInnerHTML={{ __html: marked(content) }}
-            style={{
-              color: '#d1d5db', lineHeight: 1.7, fontSize: 15,
-            }}
+            style={{ color: '#d1d5db', lineHeight: 1.7, fontSize: 15 }}
           />
         )}
       </div>

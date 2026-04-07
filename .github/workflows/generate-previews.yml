@@ -15,9 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: ./.github/actions/decrypt-private
-        with:
-          git-crypt-key: ${{ secrets.GIT_CRYPT_KEY }}
+      # No private-content decryption step: as of the CF Access migration,
+      # private docs live in R2 + are fetched at runtime by a gated Pages
+      # Function, not imported at build time. The snapshot config
+      # (snapshot.config.mjs) only targets public explainer routes, so the
+      # build + preview run does not need any R2 credentials.
 
       - uses: actions/setup-node@v4
         with:

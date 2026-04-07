@@ -5,12 +5,11 @@ Loose ordering of what's coming. Update as priorities shift.
 ## Now
 
 - [x] Per-route OG meta tags for fancy link embeds
-- [x] Private documents section gated by Cloudflare Access
-- [x] git-crypt encryption for sensitive markdown sources
+- [x] Private documents section gated by Cloudflare Access (R2 + Pages Functions + CF Access on `/api/private/*`)
 - [x] Canonical URL → `explain.todie.io` (with `rant.todie.io` as alias)
-- [ ] Migrate hosting from GitHub Pages to Cloudflare Pages (allows dual custom domains, private repo, native CF Access integration)
-- [ ] Configure Cloudflare Access policy for `/private*` route
-- [ ] Add `rant.todie.io` as second custom domain on the CF Pages project
+- [x] Migrate hosting to Cloudflare Pages
+- [x] Add `rant.todie.io` as second custom domain on the CF Pages project
+- [ ] Switch CF Pages project from direct-upload to Git integration (TOD-306)
 
 ## Next
 
@@ -35,7 +34,7 @@ Loose ordering of what's coming. Update as priorities shift.
   - Default to `explain` mode for SSR / build-time / unknown hosts
   - This is the foundation for "same content, two voices" — explain is the rigorous deep-dive, rant is the irreverent take, and most of each page is shared
 
-- [ ] Promote private docs to full React explainers as time allows. Each `src/private/content/*.md` is a queue item, not a final form.
+- [ ] Promote private docs to full React explainers as time allows. Each doc in the `explainers-private-docs` R2 bucket is a queue item, not a final form.
 
 - [ ] Reduce main bundle (currently ~590KB gzipped 178KB). Code-split the explainer apps via `React.lazy`.
 

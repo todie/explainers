@@ -4,12 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node scripts/fetch-private-content.mjs && vite",
-    "prebuild": "node scripts/fetch-private-content.mjs",
+    "dev": "vite",
     "build": "vite build && node scripts/generate-og-pages.mjs",
-    "preview": "vite preview",
-    "fetch-private": "node scripts/fetch-private-content.mjs",
-    "upload-private": "node scripts/upload-private-to-r2.mjs"
+    "preview": "vite preview"
   },
   "keywords": [],
   "author": "",
