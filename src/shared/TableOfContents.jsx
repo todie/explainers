@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import Emoji from './Emoji'
 
 /**
  * Floating table of contents with scroll spy.
@@ -83,7 +84,7 @@ export default function TableOfContents({ sections, accent = '#60a5fa' }) {
               transition: 'all 0.15s ease',
             }}
           >
-            {s.icon && <span style={{ fontSize: 12, opacity: 0.7 }}>{s.icon}</span>}
+            {s.icon && <Emoji size={12} style={{ opacity: 0.7, fontSize: 12 }}>{s.icon}</Emoji>}
             <span style={{
               fontSize: 11, color: activeId === s.id ? '#e5e7eb' : '#6b7280',
               fontWeight: activeId === s.id ? 600 : 400,
