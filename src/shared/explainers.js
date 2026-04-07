@@ -64,4 +64,12 @@ export const EXPLAINERS = [
     path: '/pidgin-tokens',
     tags: ['tokens', 'tokenizer', 'bpe', 'pidgin', 'creole', 'naija', 'singlish', 'krio', 'pirate', 'caveman', 'cost', 'optimization'],
   },
+  {
+    id: 'embodied-mind',
+    title: 'The Body Is Not A Vessel',
+    short: 'Mind/body dualism is empirically dead',
+    icon: '🫀',
+    path: '/embodied-mind',
+    tags: ['embodied', 'cognition', 'mind', 'body', 'dualism', 'descartes', 'interoception', 'vagus', 'gut-brain', 'damasio', 'neuroscience', 'phenomenology', 'embodiment'],
+  },
 ]
