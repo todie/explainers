@@ -82,7 +82,7 @@ export default function TokenOptimizationApp() {
     { id: 'overview', title: 'Overview', icon: '#' },
     ...CATEGORIES.map(c => ({ id: c.id, title: c.title, icon: c.icon })),
     { id: 'pricing', title: 'Pricing', icon: '$' },
-    { id: 'tools', title: 'Tools', icon: '⚙' },
+    { id: 'tools', title: 'Tools', icon: '⚙\uFE0F' },
   ]
 
   return (

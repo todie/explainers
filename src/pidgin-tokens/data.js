@@ -132,7 +132,7 @@ export const VARIANTS = [
   {
     id: 'krio',
     label: 'Krio',
-    flag: '⚠ Outlier',
+    flag: '⚠\uFE0F Outlier',
     color: '#f87171',
     blurb:
       'Sierra Leone creole. Standard orthography uses IPA-augmented characters (ɛ, ɔ) that almost never appear in BPE training data.',

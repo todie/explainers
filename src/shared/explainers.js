@@ -12,7 +12,7 @@ export const EXPLAINERS = [
     id: 'gestalt',
     title: 'Gestalt Thinking',
     short: 'Seeing wholes, not parts',
-    icon: '👁',
+    icon: '👁\uFE0F',
     path: '/gestalt',
     tags: ['gestalt', 'perception', 'thinking', 'cognition', 'patterns', 'holistic'],
   },

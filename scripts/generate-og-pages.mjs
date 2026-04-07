@@ -32,52 +32,84 @@ const EXPLAINERS = new Function(`return ${arrayMatch[0]}`)()
 
 const template = readFileSync(join(DIST, 'index.html'), 'utf-8')
 
-for (const ex of EXPLAINERS) {
-  const title = `${ex.title} — todie.io`
-  const description = ex.short
-  const url = `${SITE}${BASE}${ex.path}`
-  const image = `${SITE}${BASE}/previews/${ex.id}.jpeg`
+// Default fallback image for any route whose dedicated preview hasn't
+// been generated yet. Committed in public/previews/home.jpeg, so it is
+// always available on the deployed site.
+const FALLBACK_IMAGE = `${SITE}${BASE}/previews/home.jpeg`
 
-  // Replace the generic OG tags with per-route values
-  let html = template
+// Check whether a route-specific preview exists in the built dist/previews
+// directory. If not, fall back to the home preview so unfurlers never 404.
+import { existsSync } from 'fs'
+function previewFor(id) {
+  const jpeg = join(DIST, 'previews', `${id}.jpeg`)
+  return existsSync(jpeg) ? `${SITE}${BASE}/previews/${id}.jpeg` : FALLBACK_IMAGE
+}
+
+function writePage({ outDir, title, description, url, image, imageAlt }) {
+  // Replace the generic OG tags with per-route values. The template
+  // already has og:image:type/alt/width/height + twitter:image:alt so we
+  // only need to rewrite the mutable fields here.
+  const html = template
     .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
     .replace(/<link rel="canonical" href="[^"]*"/, `<link rel="canonical" href="${url}"`)
     .replace(/og:title" content="[^"]*"/, `og:title" content="${title}"`)
     .replace(/og:description" content="[^"]*"/, `og:description" content="${description}"`)
     .replace(/og:url" content="[^"]*"/, `og:url" content="${url}"`)
     .replace(/og:image" content="[^"]*"/, `og:image" content="${image}"`)
+    .replace(/og:image:alt" content="[^"]*"/, `og:image:alt" content="${imageAlt}"`)
     .replace(/twitter:title" content="[^"]*"/, `twitter:title" content="${title}"`)
     .replace(/twitter:description" content="[^"]*"/, `twitter:description" content="${description}"`)
     .replace(/twitter:image" content="[^"]*"/, `twitter:image" content="${image}"`)
+    .replace(/twitter:image:alt" content="[^"]*"/, `twitter:image:alt" content="${imageAlt}"`)
     .replace(/<meta name="description" content="[^"]*"/, `<meta name="description" content="${description}"`)
 
-  const outDir = join(DIST, ex.id)
   mkdirSync(outDir, { recursive: true })
   writeFileSync(join(outDir, 'index.html'), html)
-
-  console.log(`  ${ex.icon} ${ex.id}/index.html`)
 }
 
-// Generate auth-gated pages (no unique OG image, just title/desc)
+let fellBack = 0
+for (const ex of EXPLAINERS) {
+  const title = `${ex.title} — todie.io`
+  const description = ex.short
+  const url = `${SITE}${BASE}${ex.path}`
+  const image = previewFor(ex.id)
+  if (image === FALLBACK_IMAGE) fellBack++
+
+  writePage({
+    outDir: join(DIST, ex.id),
+    title,
+    description,
+    url,
+    image,
+    imageAlt: `${ex.title} — ${ex.short}`,
+  })
+
+  const marker = image === FALLBACK_IMAGE ? ' (fallback image)' : ''
+  console.log(`  ${ex.icon} ${ex.id}/index.html${marker}`)
+}
+
+// Generate auth-gated pages. These share the home preview and do not
+// need per-route screenshots.
 const extraPages = [
   { id: 'private', title: 'Private Documents', short: 'Authorized access only' },
 ]
 
 for (const page of extraPages) {
   const title = `${page.title} — todie.io`
-  let html = template
-    .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
-    .replace(/og:title" content="[^"]*"/, `og:title" content="${title}"`)
-    .replace(/og:description" content="[^"]*"/, `og:description" content="${page.short}"`)
-    .replace(/og:url" content="[^"]*"/, `og:url" content="${SITE}${BASE}/${page.id}"`)
-    .replace(/twitter:title" content="[^"]*"/, `twitter:title" content="${title}"`)
-    .replace(/twitter:description" content="[^"]*"/, `twitter:description" content="${page.short}"`)
-    .replace(/<meta name="description" content="[^"]*"/, `<meta name="description" content="${page.short}"`)
-
-  const outDir = join(DIST, page.id)
-  mkdirSync(outDir, { recursive: true })
-  writeFileSync(join(outDir, 'index.html'), html)
+  const url = `${SITE}${BASE}/${page.id}`
+  writePage({
+    outDir: join(DIST, page.id),
+    title,
+    description: page.short,
+    url,
+    image: FALLBACK_IMAGE,
+    imageAlt: `${page.title} — ${page.short}`,
+  })
   console.log(`  🔒 ${page.id}/index.html`)
 }
 
-console.log(`\nGenerated OG pages for ${EXPLAINERS.length} explainers + ${extraPages.length} extra pages.`)
+const total = EXPLAINERS.length + extraPages.length
+console.log(
+  `\nGenerated OG pages for ${EXPLAINERS.length} explainers + ${extraPages.length} extra pages.` +
+  (fellBack > 0 ? ` (${fellBack} using fallback image — run Playwright preview workflow to refresh.)` : '')
+)

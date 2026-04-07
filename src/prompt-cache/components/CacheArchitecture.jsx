@@ -5,7 +5,7 @@ const LAYERS = [
     id: 'client',
     label: 'Claude Code / Client',
     color: '#60a5fa',
-    icon: '⚡',
+    icon: '⚡\uFE0F',
     tag: 'requests',
     desc: 'The client sends prompts to the API. Every request includes the full conversation history, system prompt, tools, and the new user message. Most of this content is identical between requests — only the last turn changes.',
     items: ['system prompt', 'tool definitions', 'conversation history', 'new message'],

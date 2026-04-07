@@ -10,10 +10,10 @@ import Research from './components/Research'
 const SECTIONS = [
   { id: 'thesis', title: 'Thesis', icon: '◉' },
   { id: 'thoughtforms', title: 'Thoughtforms', icon: '💬' },
-  { id: 'visualization', title: 'What It Looks Like', icon: '👁' },
-  { id: 'examples', title: 'In the Wild', icon: '⚡' },
+  { id: 'visualization', title: 'What It Looks Like', icon: '👁\uFE0F' },
+  { id: 'examples', title: 'In the Wild', icon: '⚡\uFE0F' },
   { id: 'principles', title: 'Principles', icon: '◫' },
-  { id: 'pros-cons', title: 'Pros & Cons', icon: '⚖' },
+  { id: 'pros-cons', title: 'Pros & Cons', icon: '⚖\uFE0F' },
   { id: 'ramifications', title: 'Ramifications', icon: '↯' },
   { id: 'research', title: 'Further Reading', icon: '📄' },
 ]

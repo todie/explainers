@@ -15,7 +15,7 @@ const SECTIONS = [
   { id: 'thesis', title: 'The Question', icon: '?' },
   { id: 'results', title: 'Results', icon: '#' },
   { id: 'findings', title: 'Findings', icon: '!' },
-  { id: 'theory', title: 'The Two Forces', icon: '⚖' },
+  { id: 'theory', title: 'The Two Forces', icon: '⚖\uFE0F' },
   { id: 'samples', title: 'Sample Prompts', icon: '"' },
   { id: 'practical', title: 'Practical', icon: '✓' },
   { id: 'method', title: 'Method', icon: 'M' },
