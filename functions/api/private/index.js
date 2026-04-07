@@ -103,6 +103,21 @@ export async function onRequestGet({ request }) {
     })
   }
 
+  // Browser navigation handoff: if the caller is a browser (text/html in
+  // Accept) rather than the React app's fetch(), it means the user just
+  // completed the CF Access login flow and landed back on /api/private/.
+  // Bounce them over to /private so they see the real app, not raw JSON.
+  const accept = request.headers.get('Accept') || ''
+  if (accept.includes('text/html')) {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: '/private',
+        'Cache-Control': 'private, no-store, max-age=0',
+      },
+    })
+  }
+
   return new Response(JSON.stringify(CATALOG), {
     headers: {
       'Content-Type': 'application/json',

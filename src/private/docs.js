@@ -40,12 +40,48 @@ class UnauthorizedError extends Error {
   }
 }
 
+/**
+ * Cloudflare Access sends unauthenticated requests to a 302 redirect on
+ * `<team>.cloudflareaccess.com`, which is cross-origin to `explain.todie.io`.
+ * The browser's fetch() with default `redirect: 'follow'` will try to follow
+ * that redirect cross-origin, fail CORS preflight on the Access hostname,
+ * and reject with a TypeError (`Failed to fetch`). That's the signal that
+ * auth is required — we detect it in two ways:
+ *
+ *   1. `redirect: 'manual'` → an intercepted cross-origin redirect returns
+ *      `Response { type: 'opaqueredirect', status: 0 }` instead of throwing.
+ *   2. If the browser still throws a TypeError (older engines / strict CORS
+ *      policies), we catch it and also treat as unauthorized.
+ *
+ * A same-origin 401 from the Pages Function (e.g. the defense-in-depth
+ * header check failing) is also handled. All three paths converge to
+ * UnauthorizedError so the UI can show the "Sign in" CTA.
+ */
+async function apiFetch(path, accept) {
+  let res
+  try {
+    res = await fetch(path, {
+      credentials: 'include',
+      headers: { Accept: accept },
+      redirect: 'manual',
+    })
+  } catch (err) {
+    // CORS preflight failure on cross-origin Access redirect → treat as auth needed
+    const e = new UnauthorizedError()
+    e.cause = err
+    throw e
+  }
+  if (res.type === 'opaqueredirect' || res.status === 0) {
+    throw new UnauthorizedError()
+  }
+  if (res.status === 401) {
+    throw new UnauthorizedError()
+  }
+  return res
+}
+
 export async function fetchCatalog() {
-  const res = await fetch(`${API_BASE}/`, {
-    credentials: 'include',
-    headers: { Accept: 'application/json' },
-  })
-  if (res.status === 401) throw new UnauthorizedError()
+  const res = await apiFetch(`${API_BASE}/`, 'application/json')
   if (!res.ok) {
     throw new Error(`catalog fetch failed: ${res.status} ${res.statusText}`)
   }
@@ -53,11 +89,7 @@ export async function fetchCatalog() {
 }
 
 export async function fetchDoc(id) {
-  const res = await fetch(`${API_BASE}/${encodeURIComponent(id)}`, {
-    credentials: 'include',
-    headers: { Accept: 'text/markdown' },
-  })
-  if (res.status === 401) throw new UnauthorizedError()
+  const res = await apiFetch(`${API_BASE}/${encodeURIComponent(id)}`, 'text/markdown')
   if (res.status === 404) {
     const err = new Error('not found')
     err.status = 404
@@ -71,16 +103,14 @@ export async function fetchDoc(id) {
 
 /**
  * Trigger CF Access login by navigating to the API endpoint as a top-level
- * GET. Access will intercept, handle SSO, then redirect back to the original
- * URL. We land the user back on /private so the catalog can re-fetch
- * with fresh credentials.
+ * GET. Access sees no auth cookie → 302s to the Access login flow → user
+ * authenticates → Access 302s back to /api/private/ with a session cookie.
+ *
+ * The Pages Function at /api/private/ detects browser navigation (Accept
+ * header contains text/html) vs XHR requests and, for browser navigation,
+ * responds with a 302 to /private so the user lands back on the real app
+ * instead of seeing raw JSON.
  */
-export function redirectToLogin(returnTo = '/private') {
-  const next = encodeURIComponent(returnTo)
-  // CF Access uses /cdn-cgi/access/login/<aud> under the hood, but the
-  // simplest trigger is just hitting the protected endpoint as a top-level
-  // navigation — Access sees no auth cookie, 302s to its login flow, then
-  // 302s back to this URL on success. We pick /api/private/ because it's
-  // guaranteed to be gated.
-  window.location.href = `/api/private/?return_to=${next}`
+export function redirectToLogin() {
+  window.location.href = '/api/private/'
 }
