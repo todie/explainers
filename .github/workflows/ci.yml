@@ -56,7 +56,7 @@ jobs:
       - name: Verify per-route OG HTML files exist
         run: |
           set -euo pipefail
-          expected=(memory-model gestalt prompt-cache lsp token-optimization reverie emotional-topology pidgin-tokens embodied-mind private)
+          expected=(memory-model gestalt prompt-cache lsp token-optimization reverie emotional-topology pidgin-tokens embodied-mind harness private)
           missing=0
           for route in "${expected[@]}"; do
             if [ ! -f "dist/$route/index.html" ]; then
@@ -73,7 +73,7 @@ jobs:
       - name: Verify committed preview images exist
         run: |
           set -euo pipefail
-          expected=(home memory-model gestalt prompt-cache lsp token-optimization reverie emotional-topology pidgin-tokens embodied-mind)
+          expected=(home memory-model gestalt prompt-cache lsp token-optimization reverie emotional-topology pidgin-tokens embodied-mind harness)
           missing=0
           for route in "${expected[@]}"; do
             f="public/previews/$route.jpeg"
@@ -135,7 +135,7 @@ jobs:
           ls -la dist/functions/ 2>/dev/null || echo "(functions compiled at deploy time, not in dist/)"
 
       - name: Upload dist artifact
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: dist
@@ -200,3 +200,81 @@ jobs:
             echo "::error::https://explain.todie.io/ is not 200 after deploy — check Cloudflare Pages dashboard"
             exit 1
           fi
+
+  preview:
+    name: Deploy PR preview to Cloudflare Pages
+    needs: build
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      deployments: write
+    steps:
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+
+      - name: Compute branch slug
+        id: slug
+        run: |
+          # Cloudflare Pages slugifies branch names by replacing
+          # non-alphanumeric characters with hyphens. The resulting branch
+          # alias URL is https://<slug>.<project>.pages.dev
+          raw="${{ github.head_ref }}"
+          slug=$(echo "$raw" | tr '/_' '--' | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9-]/-/g; s/-+/-/g; s/^-+|-+$//g')
+          # CF Pages caps branch alias slugs at 28 characters
+          slug=$(echo "$slug" | cut -c1-28 | sed -E 's/-+$//')
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+          echo "Branch slug: $slug"
+
+      - name: Deploy preview to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=explainers --branch=${{ steps.slug.outputs.slug }} --commit-dirty=true
+          wranglerVersion: "4.80.0"
+
+      - name: Compose preview URL
+        id: url
+        run: |
+          # wrangler-action's deployment-url output is unreliable for the
+          # pages-deploy command (returns empty for branch aliases). The
+          # branch-alias URL is stable across redeploys and is what we
+          # actually want to link to, so we compute it ourselves.
+          alias="https://${{ steps.slug.outputs.slug }}.explainers.pages.dev"
+          echo "alias=$alias" >> "$GITHUB_OUTPUT"
+
+      - name: Post sticky preview comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: impeccable-preview
+          message: |
+            <!-- impeccable-preview -->
+            ### Preview deployed
+
+            | Route | Link |
+            | --- | --- |
+            | Home | ${{ steps.url.outputs.alias }}/ |
+            | Harness explainer | ${{ steps.url.outputs.alias }}/harness |
+
+            Branch alias is stable across pushes — this URL updates in
+            place on every commit to `${{ github.head_ref }}`. Built from
+            `${{ github.event.pull_request.head.sha }}`.
+
+      - name: Smoke-test the preview
+        run: |
+          set -euo pipefail
+          sleep 8
+          for path in / /harness; do
+            url="${{ steps.url.outputs.alias }}$path"
+            code=$(curl -sSLo /dev/null -w "%{http_code}" "$url")
+            if [ "$code" = "200" ]; then
+              echo "✓ $url → 200"
+            else
+              echo "::warning::$url → $code (preview may still be propagating)"
+            fi
+          done
