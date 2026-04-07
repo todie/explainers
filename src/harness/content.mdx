@@ -1,8 +1,6 @@
 import MdxExplainer from '../shared/MdxExplainer'
 import { SECTIONS, ADVERSARIAL_TARGETS } from './data'
 import {
-  HeroStats,
-  FramingsTriad,
   HierarchyPyramid,
   RTKFlow,
   EngramSplit,
@@ -14,15 +12,15 @@ import {
   DreamPipeline,
   ForgetCurve,
   LoCoMoChart,
-  ReverieReplacesGrid,
-  ReverieAmbitionGrid,
+  ReverieReplacesBlocks,
+  ReverieAmbitionList,
   InstallGuide,
   MemoryExamples,
   ImplementationDetails,
   NeuroAsides,
+  NewbiePrimer,
   HarnessSourceList,
   Foldable,
-  AudienceBadge,
   Pull,
   Adversarial,
 } from './components'
@@ -34,95 +32,66 @@ export const tgt = (id) => ADVERSARIAL_TARGETS.find((t) => t.id === id)
 # The Harness: Beyond Vibes
 
 A field manual for running Claude Code like infrastructure — hooks, persistent
-memory, rigorous specifications, and a programmer who refuses to leave the
-loop. Adversarial-but-cited. Manifesto in tone, distill.pub in citations.
+memory, rigorous specifications, and a programmer who refuses to leave the loop.
+Adversarial-but-cited. Manifesto in tone, distill.pub in citations.
 
-<HeroStats />
+The short version: RTK compresses 60–90% of shell output before the model sees
+it. Engram stores atomic facts at ~3 ms reads and ~200 ms writes, with a 62%
+tombstone rate that the audit told us to fix. A five-layer memory hierarchy
+decides what lives where. Reverie is the next-gen consolidation daemon, built
+to replace both Engram and the Obsidian sync layer, targeting the 92-point
+band on LoCoMo. The whole stack is adversarial to the prevailing agentic
+frameworks because they are optimizing the wrong variable.
 
-There are three ways to walk into this piece. They are all true and they all
-point at the same thing. Pick whichever annoys you least.
+There are three ways to walk into this piece. Pick whichever annoys you least.
 
-## Three Framings
+## Three framings
 
-<FramingsTriad />
+*For the infra crowd.* Claude Code is a great product, but the defaults are
+tuned for casual use. This is what it looks like when one engineer ships across
+a dozen Rust, Python, and TypeScript projects daily and treats the model less
+like an oracle and more like the limb of a much larger organism.
 
-If you are an infra engineer, framing one will land. If you are an AI
-researcher, framing two will land. If you are a Claude Code power user or a
-skeptic who thinks AI coding is a toy, framing three will land. All three are
-written into this piece because all three audiences need the same answer to
-the same question, and the answer rhymes regardless of which door you came
-through.
+*For the AI researcher.* LLM memory has been hitting 88–93% on LoCoMo for over
+a year. Production tooling still ships with "context window + RAG + hope." This
+piece is the gap, sized honestly, and the bridge we are building across it.
 
-This piece is long on purpose. Skip what you already know. The table of
-contents on the right is dense, the anchors are heavy, and the audience-tagged
-sections fold up so you can collapse the parts that aren't yours. The diagrams
-are load-bearing — if a diagram and the prose disagree, trust the diagram.
+*For the skeptic.* Most AI tooling treats the model as the system. We treat the
+model as one component in a system. The component is fast, fluent, and
+confidently wrong about ~5% of things in ways the next token never reveals.
+Production work needs guarantees, not probabilities.
 
-<Foldable title="If you're new to Claude Code, hooks, or LLM tooling — start here" audience={['newbie']}>
+All three are written into this piece because all three audiences need the
+same answer to the same question, and the answer rhymes regardless of which
+door you came through. Skip what you already know — the TOC on the right is
+dense, the anchors are heavy, and a handful of sections fold up so you can
+collapse the parts that aren't yours. Diagrams are load-bearing: if a diagram
+and the prose disagree, trust the diagram.
 
-**What is Claude Code?** Anthropic's official CLI and IDE extension for using
-Claude as a coding assistant. You give it a task, it reads files, writes
-files, runs commands, and produces a diff you review. The product is a
-chat-driven IDE-adjacent agent, but the *interesting* surface is the
-configuration layer underneath: settings, hooks, MCP servers, slash commands,
-auto-memory. That configuration layer is where this entire piece lives.
-
-**What is a hook?** A small program — usually a bash script — that the
-Claude Code runtime executes around tool calls. There are hooks that run
-*before* a tool call (`PreToolUse`) where you can rewrite or block the call,
-hooks that run *after* (`PostToolUse`) where you can transform the result,
-hooks that run on session start and stop, and so on. Hooks are how you make
-guarantees instead of requests. The model can be persuaded; a hook cannot.
-
-**What is MCP?** The Model Context Protocol is a wire format Anthropic
-standardized for plugging external tools and data sources into a model. It's
-JSON-RPC over stdio (or HTTP). When this piece says "Engram exposes itself
-via MCP for writes," that's the protocol: the daemon advertises a set of
-named tools, the model invokes them by name, the daemon executes them and
-returns results. MCP is transport, not semantics — and that distinction
-matters when we get to the misconception about MCP "fixing memory" later.
-
-**What is a memory system, and why do you need one?** A model's context
-window resets every conversation. Anything you want it to remember next
-session — decisions, bug root causes, your name — has to live somewhere
-durable that gets loaded into context when needed. The default approach is
-"shove it all in the system prompt and hope." The serious approach is a
-memory system: a database with a query interface, a write discipline, and a
-consolidation policy. We'll spend half the piece on this.
-
-**What is Engram, what is Reverie?** Engram is the persistent memory daemon
-we run today — SQLite + FTS5 keyword search, ~3 ms reads, MCP writes with
-upsert. Reverie is its successor, currently in design — a neuroscience-grounded
-consolidation daemon that adds dreaming, decay, replay, and reconsolidation
-to the same socket Engram exposes. Reverie replaces both Engram and the
-Obsidian sync layer. We'll get there.
-
-**Who is this piece for?** All four of: infra engineers who already use
-Claude Code, AI researchers tracking long-term memory benchmarks, the Anthropic
-team as an artifact of what power users actually build *around* the product,
-and a general technical audience that needs a little more scaffolding. The
-foldable sections marked with audience badges are the parts you can skip or
-expand depending on which group you're in.
-
+<Foldable
+  title="New to Claude Code, hooks, or LLM tooling?"
+  note="a 2-minute primer you can skip if you already live in this stack"
+>
+  <NewbiePrimer />
 </Foldable>
 
-## The Misconception
+## The misconception
 
 Before any of the tooling makes sense, there is an idea we have to throw out,
 because it is the load-bearing assumption behind almost everything wrong with
-current AI tooling. The idea is: **the model is the system, and the goal of
-the harness is to get out of its way.**
+current AI tooling. The idea is: *the model is the system, and the goal of the
+harness is to get out of its way.*
 
 This is wrong. It is so confidently and so expensively wrong that it has its
 own product category — the "autonomous agent" — and its own genre of demos in
-which a single English sentence allegedly produces a working SaaS company.
-The demos are real. The companies are not. The reason the companies are not
-is that the model, alone, cannot do the part of software engineering that
+which a single English sentence allegedly produces a working SaaS company. The
+demos are real. The companies are not. The reason the companies are not is
+that the model, alone, cannot do the part of software engineering that
 matters: deciding what should be true. It can produce code that satisfies a
-specification. It cannot reliably produce the specification. The
-specification is a human artifact. It always has been. It always will be, for
-any system whose correctness is defined by what a human wants rather than by
-what a benchmark scores.
+specification. It cannot reliably produce the specification. The specification
+is a human artifact. It always has been. It always will be, for any system
+whose correctness is defined by what a human wants rather than by what a
+benchmark scores.
 
 The right framing is the inverse:
 
@@ -134,14 +103,14 @@ nervous system that makes the hands and eyes useful.
 This is not a metaphor for rhetorical effect. It is the actual division of
 labor we run on, and every layer in the stack below is justified by it. The
 *eyes* read files, parse output, scan code, summarize diffs — the model is
-genuinely good at perception over text. The *hands* type fast, edit files,
-run commands, draft commits — the model is fluent within a narrow
-well-specified task. The *brain* decides what to build, why to build it, when
-it is done, what trade-offs are acceptable, what taste applies, what the spec
-is, what the spec *should* be, and when the spec is wrong. The model can
-help articulate. It cannot decide. The *nervous system* — the harness — is
-the connective tissue that makes the eyes and hands answer to the brain
-instead of wandering off.
+genuinely good at perception over text. The *hands* type fast, edit files, run
+commands, draft commits — the model is fluent within a narrow well-specified
+task. The *brain* decides what to build, why to build it, when it is done,
+what trade-offs are acceptable, what taste applies, what the spec is, what the
+spec *should* be, and when the spec is wrong. The model can help articulate.
+It cannot decide. The *nervous system* — the harness — is the connective
+tissue that makes the eyes and hands answer to the brain instead of wandering
+off.
 
 This taxonomy matters because the dominant AI-tooling discourse keeps getting
 it backwards. It treats the model as the brain and the human as a fallback.
@@ -165,7 +134,7 @@ that compounds.
 
 Everything below is a worked example of that thesis.
 
-## The Hierarchy
+## The hierarchy
 
 Memory is the right place to start, because it is where the model's limits
 are most obvious and where the harness pays the most rent. The stack we run
@@ -181,11 +150,11 @@ and "occasionally needed."
 Three properties of this hierarchy are load-bearing and almost universally
 botched in other setups.
 
-**Capacity is zero-sum at the top.** CLAUDE.md lives in Layer 0, which means
-*every line in it competes with every other line for the model's attention*.
-We have an empirical ceiling around 200 lines past which adherence drops
+*Capacity is zero-sum at the top.* CLAUDE.md lives in layer 0, which means
+every line in it competes with every other line for the model's attention. We
+have an empirical ceiling around 200 lines past which adherence drops
 measurably — adding rule N+1 demotes some other rule below the threshold
-where the model reliably honors it. This means Layer 0 is reserved for
+where the model reliably honors it. This means layer 0 is reserved for
 behavioral directives whose blast radius justifies the cost of always being
 present: "never echo a secret env var," "Rust-first for new repos," "all
 commits GPG-signed." Anything that does not have to be true on every turn
@@ -193,23 +162,23 @@ does not belong here. The most common mistake new users make is treating
 CLAUDE.md as a junk drawer; the second most common is putting historical
 facts in a layer reserved for live directives.
 
-**Each layer has an affordance, and putting knowledge in the wrong layer is
-worse than not storing it.** Engram is FTS5 keyword search — it is excellent
+*Each layer has an affordance, and putting knowledge in the wrong layer is
+worse than not storing it.* Engram is FTS5 keyword search — it is excellent
 for "find the bug we hit last quarter where the migration silently broke" and
 terrible for "load all the engineering heuristics at once." The latter is a
 graph-shaped access pattern shoved through a flat row store, and we measured
 the consequence: 23 heuristics stored as flat FTS5 rows interfered with each
-other and with project decisions in the same index, until they were extracted
-to an Obsidian Map of Content where the access pattern matched the storage.
-The placement rule that fell out of that audit is short and it is the most
-important rule in this entire piece:
+other and with project decisions in the same index, until they were
+extracted to an Obsidian Map of Content where the access pattern matched the
+storage. The placement rule that fell out of that audit is short and it is
+the most important rule in this entire piece:
 
 <PlacementTree />
 
-**The bottom layer is the only one that can never be wrong.** Layer 4 — the
+*The bottom layer is the only one that can never be wrong.* Layer 4 — the
 codebase, git history, dependency versions — is authoritative for current
-state by definition. The corollary is that *you should not store anything in
-higher layers that could be derived from the code*, because the higher layers
+state by definition. The corollary is that you should not store anything in
+higher layers that could be derived from the code, because the higher layers
 are racing against changes the code already won. The number of "AI memory
 systems" that violate this rule by caching function signatures or project
 structure is genuinely embarrassing. Caching what `git log` already tells you
@@ -220,19 +189,20 @@ future self.
 
 <Adversarial target={tgt('mcp-fixes-all')} />
 
-<Foldable title="For engineers — schema, topic-key, FTS5, the implementation underneath" audience={['engineer']}>
-
-<ImplementationDetails />
-
+<Foldable
+  title="Engram internals — schema, topic-key, FTS5"
+  note="for engineers who want the implementation detail"
+>
+  <ImplementationDetails />
 </Foldable>
 
-## RTK: The Shell That Lies, Beautifully
+## RTK: the shell that lies, beautifully
 
 Every `git`, `docker`, `curl`, `gh`, `cf api` call the model makes is
-transparently rewritten by a `PreToolUse` hook into `rtk <cmd>`. RTK is a
-Rust CLI proxy that runs the real command, then post-processes stdout: JSON
-gets schema-extracted, verbose output gets compressed, repetitive structure
-gets collapsed into shape-with-cardinality.
+transparently rewritten by a `PreToolUse` hook into `rtk <cmd>`. RTK is a Rust
+CLI proxy that runs the real command, then post-processes stdout: JSON gets
+schema-extracted, verbose output gets compressed, repetitive structure gets
+collapsed into shape-with-cardinality.
 
 <RTKFlow />
 
@@ -240,14 +210,14 @@ On the operations the model actually runs all day, savings land between 60%
 and 90%. The model never knows it happened. The contract — "I asked for
 `curl`, I got the `curl` response" — is preserved. The bytes are gone.
 
-Why this matters beyond the bill: **token cost is a *governor* on session
-length**. Long, multi-hour engineering sessions are only viable if the
-per-turn cost is low enough that nobody flinches at "let me think about that
-for another fifty turns." Without RTK, a single shell-heavy session burns
-through context budget on noise — progress bars, repeated headers, JSON the
-model needed three fields from. With RTK, the same session has tokens left
-over for the actual problem. Everything else in this stack rides on this
-layer being cheap.
+Why this matters beyond the bill: *token cost is a governor on session
+length*. Long, multi-hour engineering sessions are only viable if the per-turn
+cost is low enough that nobody flinches at "let me think about that for
+another fifty turns." Without RTK, a single shell-heavy session burns through
+context budget on noise — progress bars, repeated headers, JSON the model
+needed three fields from. With RTK, the same session has tokens left over for
+the actual problem. Everything else in this stack rides on this layer being
+cheap.
 
 The full taxonomy of compression techniques — prefix caching, response
 shaping, schema-driven output, prompt distillation, batch APIs — is the
@@ -256,19 +226,19 @@ categories) and the deeper piece on [Caching Prompt Proxies](/prompt-cache).
 RTK is the layer that puts those techniques on every shell call without
 anyone — model or human — having to remember to.
 
-The point isn't the dollar figure. The point is that **the decision to
-compress was taken away from the model**. There is no system-prompt
+The point isn't the dollar figure. The point is that *the decision to
+compress was taken away from the model*. There is no system-prompt
 instruction that says "please be terse with command output." There is a
 binary in the path that makes terseness physically true. One fewer thing to
 get wrong, one fewer turn-by-turn judgment call, one fewer place for behavior
 to drift. This is the recurring move in the entire stack: every time we can
 replace a model decision with a deterministic one, we do.
 
-## Engram: The Database
+## Engram: the database
 
 The model's context window resets every conversation. Engram doesn't. It's a
 small Go daemon (12 MB binary) backing onto SQLite + FTS5, exposed two ways:
-**reads** through `mem raw` (bash + curl, ~3 ms) and **writes** through MCP
+reads through `mem raw` (bash + curl, ~3 ms) and writes through MCP
 (`mem_save`, `mem_update`, ~200 ms with dedup, upsert-by-topic-key, and scope
 logic).
 
@@ -276,12 +246,13 @@ logic).
 
 The split is load-bearing. MCP round-trips are 60× slower than the bash
 client. For the dozens of reads a serious session does, that 60× factor is
-the difference between memory feeling **instant** (and therefore *used*) and
-memory feeling **expensive** (and therefore *atrophied*). Atrophied memory is
+the difference between memory feeling *instant* (and therefore used) and
+memory feeling *expensive* (and therefore atrophied). Atrophied memory is
 the failure mode of every memory system that exists. The first design
-constraint of a useful one is that calling it has to be cheaper than guessing.
+constraint of a useful one is that calling it has to be cheaper than
+guessing.
 
-Engram is indexed by **topic key** — `pattern/secret-leak-guard-hook`,
+Engram is indexed by *topic key* — `pattern/secret-leak-guard-hook`,
 `bug/anthropic-key-leak`, `decision/reverie-replaces-engram` — using a strict
 `family/slug` convention. Same topic key + same project + same scope =
 upsert, not append. Revising a fact updates the existing observation instead
@@ -291,109 +262,86 @@ discipline is what makes memory trustworthy.
 The full mental model — what gets stored, why FTS5 over a vector store, why
 `topic_key` is the most important field in the schema, why retrieval quality
 is not the bottleneck — is in the [Memory Model](/memory-model) explainer.
-The short version: most LLM memory systems are sophisticated retrieval stacks
-bolted onto naïve writes. Engram is the inverse. Writes are disciplined;
-reads are dumb-fast keyword search. **Discipline at the write site is worth
-more than cleverness at the read site.**
+The short version: most LLM memory systems are sophisticated retrieval
+stacks bolted onto naïve writes. Engram is the inverse. Writes are
+disciplined; reads are dumb-fast keyword search. Discipline at the write
+site is worth more than cleverness at the read site.
 
-## Auto-memory: The Cache
+## Auto-memory, Obsidian, Linear
 
-On top of Engram there is a flat-file directory at `~/.claude/memory/` with a
-one-line index, `MEMORY.md`, loaded into every conversation. Engram is the
-database; auto-memory is the cache of facts that should *always* be present:
-who the user is, hard preferences, the placement framework, the ~20 most
-load-bearing rules.
+Three layers above Engram, each with a job.
 
-The split is deliberate. **Searching for "should I always sign commits?" is
-a failure mode.** The answer has to be in context before the question is
-asked. Engram is "things you can ask for." Auto-memory is "things you cannot
-afford to forget to ask for."
+*Auto-memory.* On top of Engram there is a flat-file directory at
+`~/.claude/memory/` with a one-line index, `MEMORY.md`, loaded into every
+conversation. Engram is the database; auto-memory is the cache of facts that
+should always be present: who the user is, hard preferences, the placement
+framework, the ~20 most load-bearing rules. The split is deliberate —
+searching for "should I always sign commits?" is a failure mode; the answer
+has to be in context before the question is asked. Each entry is typed
+(`user`, `feedback`, `project`, `reference`), stored as its own file with
+frontmatter, and pointed to from the index by a single line. Append-only
+memory is a tar pit; updateable memory is a tool.
 
-Each entry is typed (`user`, `feedback`, `project`, `reference`), stored as
-its own file with frontmatter, and pointed to from the index by a single
-line. When something gets contradicted, the *file* is updated, not piled on
-top of. Append-only memory is a tar pit; updateable memory is a tool.
+*Obsidian, the prose layer.* Engram stores atomic facts. Obsidian stores the
+long form: design docs, post-mortems, research notes, the slow thinking. A
+`Stop` hook syncs new Engram observations into the vault on session end so
+the human-readable trail stays current without manual curation. The model
+reads and writes the vault via the Obsidian MCP server. Obsidian is
+excellent for human reading and structurally awkward as a
+programmatically-managed store — it is a viewer with sync as an afterthought,
+not a memory system with a query layer. Sync without content-addressed dedup
+creates duplicate notes (our audit found five+ pairs where different naming
+conventions across sync passes spawned parallel notes). This is one of the
+two layers Reverie is designed to replace, later in the piece.
 
-## Obsidian: The Prose Layer
+*Linear, the spec layer.* Linear is wired in via MCP. The model creates
+issues, updates statuses, files comments, links PRs, and reads roadmap
+context without anyone opening a browser. Tickets get created *during* the
+conversation that produced them, with the actual reasoning attached as the
+description — not summarized after the fact, when the reasoning is already
+half-forgotten. But Linear is not just a ticket sink. *Linear is where
+specifications live.* A ticket is a contract: acceptance criteria explicit,
+constraints listed, out-of-scope named, and the model is expected to refuse
+drift away from the spec rather than quietly expand the work. Compare:
 
-Engram stores atomic facts. Obsidian stores the long form: design docs,
-post-mortems, research notes, the slow thinking. A `Stop` hook syncs new
-Engram observations into the vault on session end so the human-readable
-trail stays current without manual curation. The model reads and writes the
-vault via the Obsidian MCP server.
-
-Obsidian is excellent for human reading and structurally awkward as a
-programmatically-managed store. It is designed as a viewer with sync as an
-afterthought, not as a memory system with a query layer. Sync without
-content-addressed dedup creates duplicate notes (our audit found five+ pairs
-where different naming conventions across sync passes spawned parallel
-notes). The MCP server is read-mostly; writes are awkward and lossy. The
-fundamental issue is that we kept asking Obsidian to be the cortex of the
-memory system when it was designed to be the reading room.
-
-This is one of the two layers Reverie is designed to replace, as we'll see
-later. The vault stays for human-authored prose. The *automated sync* goes
-away.
-
-## Linear: The Spec Layer
-
-Linear is wired in via MCP. The model creates issues, updates statuses, files
-comments, links PRs, and reads roadmap context without anyone opening a
-browser. Tickets get created *during* the conversation that produced them,
-with the actual reasoning attached as the description — not summarized after
-the fact, when the reasoning is already half-forgotten.
-
-But Linear is not just a ticket sink. **Linear is where specifications live.**
-A ticket is a *contract*: acceptance criteria explicit, constraints listed,
-out-of-scope named, and the model is expected to refuse drift away from the
-spec rather than quietly expand the work. Compare:
-
-> **Bad ticket:** "Fix the auth bug."
+> *Bad ticket.* "Fix the auth bug."
 >
-> **Good ticket:** "Reduce session-token TTL from 3600s to 900s by 2026-04-15.
-> The change MUST NOT invalidate existing sessions. OUT OF SCOPE: refresh path,
-> cookie domain change, OAuth provider migration."
+> *Good ticket.* "Reduce session-token TTL from 3600s to 900s by 2026-04-15.
+> The change MUST NOT invalidate existing sessions. OUT OF SCOPE: refresh
+> path, cookie domain change, OAuth provider migration."
 
 The first ticket gets you a model wandering around the auth code making
-improvements. The second gets you a 30-minute session and a clean PR.
-**Rigorous specification compounds.** Every well-written ticket is a session
-that doesn't need re-litigation halfway through, a diff that doesn't sprawl,
-a review that doesn't reopen settled questions.
+improvements. The second gets you a 30-minute session and a clean PR. Every
+well-written ticket is a session that doesn't need re-litigation halfway
+through, a diff that doesn't sprawl, a review that doesn't reopen settled
+questions. Specification is the *programmer's* job, not the model's. The
+model can help draft, suggest acceptance criteria, point out missing
+constraints — the way a good intern helps with a memo — but the contract is
+authored by the human who owns the outcome.
 
-Specification is the *programmer's* job, not the model's. The model can help
-draft, suggest acceptance criteria, point out missing constraints — the way a
-good intern helps with a memo — but the contract is authored by the human who
-owns the outcome. This is the part of the loop that does not move and should
-not move.
-
-## Hooks Not Hopes
+## Hooks, not hopes
 
 This is the layer most setups skip and the one that does the most work.
-Behaviors that *should* be automatic are configured as **hooks** in
-`settings.json`, executed by the harness — not the model. The distinction is
-everything. A model can be persuaded; a hook cannot. A prompt instruction is
-a request; a hook is a fact about the environment.
+Behaviors that should be automatic are configured as hooks in `settings.json`,
+executed by the harness — not the model. The distinction is everything. A
+model can be persuaded; a hook cannot. A prompt instruction is a request; a
+hook is a fact about the environment.
 
 <HookGrid />
 
-A real story to make this concrete. On 2026-04-06 the model (this same
-model) ran:
-
-```bash
-echo "ANTHROPIC_API_KEY set: ${ANTHROPIC_API_KEY:+yes}${ANTHROPIC_API_KEY:-no}"
-```
-
+A real story to make this concrete. On 2026-04-06 the model (this same model)
+ran `echo "ANTHROPIC_API_KEY set: ${ANTHROPIC_API_KEY:+yes}${ANTHROPIC_API_KEY:-no}"`
 to check whether a key was present before a benchmark. The intent was
 harmless. The mechanism was not. The `${VAR:-fallback}` form returns the
-**value** when set, not the fallback. The key landed in the transcript. This
+*value* when set, not the fallback. The key landed in the transcript. This
 is the kind of mistake that does not happen because someone is careless — it
 happens because shell parameter expansion is genuinely subtle and the model
 was not thinking about parameter expansion, it was thinking about the
 benchmark.
 
 The fix was not "remind the model to be more careful." The fix was a hook
-(`guard-dangerous-commands.sh`) with end-anchored regex that **blocks any
-command containing `${VAR_NAME_THAT_MATCHES_SECRET_PATTERN`** in echo-adjacent
+(`guard-dangerous-commands.sh`) with end-anchored regex that blocks any
+command containing `${VAR_NAME_THAT_MATCHES_SECRET_PATTERN` in echo-adjacent
 contexts, with R1–R4 detection rules. We added a `claude-secret-test`
 adversarial agent. 35 of 35 test cases now pass. The class of mistake is
 gone, not unlikely. Gone.
@@ -412,7 +360,7 @@ ways it can be right.
 
 <Adversarial target={tgt('prompt-engineering')} />
 
-## Programmer As Brain
+## Programmer as brain
 
 This is the part that gets people sideways, so it's worth saying it slowly
 and not retreating from any of it.
@@ -421,25 +369,21 @@ The dominant marketing story in 2025–2026 is *agentic autonomy*. Open the
 email, send it to the agent, the agent does the work, you go for a walk. The
 implicit promise is that the human is a slow, expensive, error-prone
 bottleneck and the right move is to route around them. Every part of this
-story is wrong, and the wrongness is not stylistic — it is *load-bearing
-wrong*, the way "the earth is the center of the universe" is wrong.
+story is wrong, and the wrongness is not stylistic — it is load-bearing
+wrong, the way "the earth is the center of the universe" is wrong.
 
-It is wrong about **cost**: an unsupervised model produces mistakes that take
-longer to find than they would have taken to prevent.
-
-It is wrong about **quality**: taste, judgment, and architectural coherence
-are not emergent properties of large models acting alone. They are
-contributions of a human who has seen the problem before and has *opinions*
-about it. A model has no skin in the game. A model that ships a brittle
-abstraction will not be the one debugging it at 11 p.m.
-
-It is wrong about **learning**: a programmer who delegates everything stops
-getting better, and the entire harness ends up coupled to a single model
-snapshot whose competence ceiling becomes the project's competence ceiling.
-
-It is wrong about **responsibility**: when the model ships a subtle bug, the
-line on the blame chart still points at a human, and that human should have
-been close enough to the work to catch it.
+It is wrong about *cost*: an unsupervised model produces mistakes that take
+longer to find than they would have taken to prevent. It is wrong about
+*quality*: taste, judgment, and architectural coherence are not emergent
+properties of large models acting alone. They are contributions of a human
+who has seen the problem before and has opinions about it. A model has no
+skin in the game. A model that ships a brittle abstraction will not be the
+one debugging it at 11 p.m. It is wrong about *learning*: a programmer who
+delegates everything stops getting better, and the entire harness ends up
+coupled to a single model snapshot whose competence ceiling becomes the
+project's competence ceiling. And it is wrong about *responsibility*: when
+the model ships a subtle bug, the line on the blame chart still points at a
+human, and that human should have been close enough to the work to catch it.
 
 The right framing is the inverse, and it is the framing that makes all of
 the rest of this stack make sense:
@@ -447,20 +391,20 @@ the rest of this stack make sense:
 <DivisionOfLaborGrid />
 
 Notice what this means for "agent autonomy." We have not removed the human;
-we have **moved the human upstream**, from "supervise the model turn by turn"
-to "write a spec rigorous enough that supervision is mostly unnecessary." The
-first posture is exhausting and scales badly. The second posture is *active*,
-*cheap*, and gets better over time, because every refinement to the spec is
-durable. **The spec is the asset. The model is the labor that runs against
-it.**
+we have *moved the human upstream*, from "supervise the model turn by turn"
+to "write a spec rigorous enough that supervision is mostly unnecessary."
+The first posture is exhausting and scales badly. The second posture is
+active, cheap, and gets better over time, because every refinement to the
+spec is durable. The spec is the asset. The model is the labor that runs
+against it.
 
 This is also why "remove the human" optimizes the wrong variable. The right
-variable is not *how little human time per task*. The right variable is
-**how much of the programmer's judgment is captured in durable form, so the
-model never has to guess at it again**. The first variable shrinks to zero
-in a world where nothing matters. The second variable *compounds*, and the
-compound interest is what makes the practice scale to a dozen projects
-without burning anyone out.
+variable is not *how little human time per task*. The right variable is *how
+much of the programmer's judgment is captured in durable form, so the model
+never has to guess at it again*. The first variable shrinks to zero in a
+world where nothing matters. The second variable compounds, and the compound
+interest is what makes the practice scale to a dozen projects without
+burning anyone out.
 
 <Adversarial target={tgt('autogpt')} />
 
@@ -470,11 +414,12 @@ without burning anyone out.
 
 <Adversarial target={tgt('replit')} />
 
-## Where Engram Falls Short
+## Where Engram falls short
 
-Engram is good. Engram is also *broken in specific, documented, embarrassing
-ways*, and we know because we audited it. The audit found **thirteen distinct
-findings** before we stopped counting:
+Engram is good. Engram is also broken in specific, documented, embarrassing
+ways, and we know because we audited it. The audit found thirteen distinct
+findings before we stopped counting. Here are the six that drive the
+redesign:
 
 <EngramAuditTable />
 
@@ -484,12 +429,12 @@ speculative junk that nearly two-thirds of writes had to be deleted.
 Goodhart's Law in two words: *proactive save* became the target, the metric
 stopped measuring the goal, and the system filled with noise.
 
-This is *every* memory system, not just ours. Mem0's churn is hidden behind
+This is every memory system, not just ours. Mem0's churn is hidden behind
 their API. LangMem doesn't surface it. Letta's virtual context shuffles the
 same problem from one tier to another. The honest measurement is the same
-everywhere: **if writes are unconstrained, writes go feral.** Engram surfaced
-the problem. Reverie is being built to fix it at the substrate level, with
-help from a hundred years of neuroscience that already worked it out.
+everywhere: if writes are unconstrained, writes go feral. Engram surfaced the
+problem. Reverie is being built to fix it at the substrate level, with help
+from a hundred years of neuroscience that already worked it out.
 
 The deepest insight from the audit, the one that changes how you think about
 memory systems forever:
@@ -498,14 +443,14 @@ memory systems forever:
 Deleting 59% of observations improved every search result.
 </Pull>
 
-Forgetting is not damage. **Forgetting is the active ingredient of
-remembering.** Without forgetting, every signal is buried under noise; with
+Forgetting is not damage. *Forgetting is the active ingredient of
+remembering.* Without forgetting, every signal is buried under noise; with
 forgetting, the signal is what's left. Every memory system that doesn't
 forget is failing, and the ones that brag about "infinite memory" are
 bragging about the disease.
 
-Together the audit findings paint a clear picture: **Engram is a hippocampus
-without a cortex.** It can encode fast. It cannot consolidate, cannot decay,
+Together the audit findings paint a clear picture: Engram is a hippocampus
+without a cortex. It can encode fast. It cannot consolidate, cannot decay,
 cannot reweight on retrospect, cannot tell the difference between a
 load-bearing fact and a stale one, cannot promote a frequently-referenced
 atom to a more durable layer, and cannot prune itself. Every observation is
@@ -514,22 +459,22 @@ Every search is keyword-only. There is no replay, no spacing effect, no
 schema integration, no reconsolidation. It is, in neuroscience terms, a
 system stuck in the *encoding* phase that never gets to *consolidation*.
 
-## Reverie: The Cortex
+## Reverie: the cortex
 
 Reverie is the next layer, currently in design, written in Rust as a workspace
 at `~/projects/reverie`. It is a neuroscience-grounded memory consolidation
-daemon, and it **fully replaces both Engram and the Obsidian sync layer**
-rather than wrapping either.
+daemon, and it fully replaces both Engram and the Obsidian sync layer rather
+than wrapping either.
 
-<ReverieReplacesGrid />
+<ReverieReplacesBlocks />
 
 The thesis is sharp and short:
 
 <Pull>
 The reason LLM memory systems plateau on long-context benchmarks like LoCoMo
-is not retrieval quality. It is that they never *consolidate*. Human memory
-works because the brain *replays*, *reweights*, and *restructures* during
-downtime. Storage without consolidation is just a bigger haystack.
+is not retrieval quality. It is that they never consolidate. Human memory
+works because the brain replays, reweights, and restructures during downtime.
+Storage without consolidation is just a bigger haystack.
 </Pull>
 
 The neuroscience is not a metaphor. Each of the ten mechanisms below is a
@@ -539,38 +484,39 @@ a research program with citations and a test harness.
 
 <NeuroGrid />
 
-Every row of that grid is a citation away from a paper you can read tonight.
-The references at the bottom of this piece are real. Click through. The
-neuroscience community has been telling us how memory is supposed to work for
-fifty years. The LLM community has been ignoring them while reinventing each
-mechanism badly.
+Every row is a citation away from a paper you can read tonight. The
+references at the bottom of this piece are real. Click through. The
+neuroscience community has been telling us how memory is supposed to work
+for fifty years. The LLM community has been ignoring them while reinventing
+each mechanism badly.
 
-<Foldable title="Neuroinformatics deep dive — for engineers and scientists" audience={['scientist', 'engineer']}>
-
-<NeuroAsides />
-
+<Foldable
+  title="Neuroinformatics deep dive"
+  note="for engineers and scientists who want the papers and the reasoning"
+>
+  <NeuroAsides />
 </Foldable>
 
 ## Dreaming
 
-"Dream cycle" is not a cute name. It is the **mechanism by which the system
-improves while the user sleeps**, by replaying the day's observations,
-finding which ones turned out to matter (via session-end importance signals),
+"Dream cycle" is not a cute name. It is the mechanism by which the system
+improves while the user sleeps, by replaying the day's observations, finding
+which ones turned out to matter (via session-end importance signals),
 boosting them retroactively, merging new facts with old ones, and decaying
 the things that did not earn their keep.
 
-This is what biological sleep is *for* — not rest, exactly, but consolidation.
-Tononi and Cirelli's synaptic homeostasis hypothesis argues sleep exists
-primarily to *down-scale* synaptic strength across the brain, because awake
-learning leaves synapses too saturated to be useful. Forgetting at night is
-the precondition for learning the next day.
+This is what biological sleep is *for* — not rest, exactly, but
+consolidation. Tononi and Cirelli's synaptic homeostasis hypothesis argues
+sleep exists primarily to *down-scale* synaptic strength across the brain,
+because awake learning leaves synapses too saturated to be useful. Forgetting
+at night is the precondition for learning the next day.
 
 Reverie does the same thing, on the same schedule, for the same reason:
 
 <DreamPipeline />
 
 The model does not run these. The *daemon* runs these. The model is asleep —
-i.e., not in session — and wakes up in the morning to a sharper version of
+not in session — and wakes up in the morning to a sharper version of
 yesterday's memory.
 
 <Pull>
@@ -578,61 +524,48 @@ The system is the active learner, not the model.
 </Pull>
 
 This is a categorical distinction from every "agent that learns from its own
-conversations" pitch you have seen, all of which conflate "log" with "learn."
+conversations" pitch you have seen, all of which conflate *log* with *learn*.
 Logging is the precursor to consolidation. Consolidation is the work. Doing
 the first without the second is the failure mode that produces the 62%
 tombstone rate.
 
-## Selective Forgetting
+## Selective forgetting
 
-The other half of the table the marketing pages refuse to print. **Reverie
-is designed to forget on purpose.**
+The other half of the table the marketing pages refuse to print. *Reverie is
+designed to forget on purpose.*
 
 Every dream cycle runs a global proportional decay — every observation loses
 some fraction of its strength. Strong observations (high access count × high
 importance × high depth) survive. Weak observations fall below a retention
 threshold and are archived. Archived observations that don't get retrieved
 across multiple cycles are deleted. The decay is proportional, not absolute,
-so the *ranking* of memories is preserved while the absolute weight of all of
-them shrinks. This is exactly how SHY models the function of slow-wave sleep,
-and it is exactly the property that the audit told us was missing.
+so the ranking of memories is preserved while the absolute weight of all of
+them shrinks. This is exactly how SHY models the function of slow-wave
+sleep, and it is exactly the property that the audit told us was missing.
 
 <ForgetCurve />
 
-There are five things to notice about forgetting:
-
-**It improves recall.** This is not a paradox. Pattern separation requires
-distinct representations; flat unbounded stores collapse distinctions.
-Pruning *raises* the precision of every remaining query.
-
-**It is required for trust.** A memory store that never deletes is a memory
-store full of contradictions, because every belief gets revised and the old
-version is still there. Forgetting is how you make the *current* belief
-authoritative.
-
-**It is required for cost.** Even with cheap storage, the cost of retrieval
-scales with corpus size. Forgetting is a cost-control mechanism that also
-happens to be a quality-control mechanism. These are usually at odds; here
-they align.
-
-**It is the part marketing hates most.** "Infinite memory" is a sellable lie.
-"Selective forgetting" sounds like a bug to anyone who has not thought about
-it for ten minutes. We are willing to lose that pitch in order to ship
-something that works.
-
-**Humans do this and it is one of the reasons we are smart.** Patient H.M.
-could not forget — he also could not form new memories, because the
-mechanism that *makes* memory is the same mechanism that *prunes* it.
-Forgetting and remembering are dual operations on the same substrate. A
-system that does only one of them does neither.
+Five things to notice about forgetting. It *improves recall* — pattern
+separation requires distinct representations; flat unbounded stores collapse
+distinctions; pruning raises the precision of every remaining query. It is
+*required for trust* — a memory store that never deletes is a memory store
+full of contradictions, because every belief gets revised and the old
+version is still there. It is *required for cost* — even with cheap storage,
+the cost of retrieval scales with corpus size. It is *the part marketing
+hates most* — "infinite memory" is a sellable lie, "selective forgetting"
+sounds like a bug to anyone who has not thought about it for ten minutes,
+and we are willing to lose that pitch in order to ship something that works.
+Finally, *humans do this and it is one of the reasons we are smart* — Patient
+H.M. could not forget, and he also could not form new memories, because the
+mechanism that makes memory is the same mechanism that prunes it. Forgetting
+and remembering are dual operations on the same substrate.
 
 The full ambition surface — twelve features, each with a motivation, a
-biological basis, and a concrete implementation hook — is below. Click any
-card to expand the details.
+biological basis, and a concrete implementation hook — is below.
 
-<ReverieAmbitionGrid />
+<ReverieAmbitionList />
 
-## The Leaderboard
+## The leaderboard
 
 We are not closing the gap between Engram and the frontier by switching to
 vectors. We are closing it by building Reverie. Here is the gap, drawn
@@ -642,19 +575,17 @@ memory: 50 conversations, 305 turns each, 7,512 questions. Human ceiling is
 
 <LoCoMoChart />
 
-Three things jump out.
+Three things jump out. First, *EverMemOS at 92.3 beats the human ceiling*,
+and it does so via brain-inspired three-phase consolidation. Not vector
+search. Not knowledge graphs. Not bigger context windows. *Consolidation.*
+The frontier of the field is exactly where the biology said it would be.
 
-First, **EverMemOS at 92.3 beats the human ceiling**, and it does so via
-brain-inspired three-phase consolidation. Not vector search. Not knowledge
-graphs. Not bigger context windows. *Consolidation*. The frontier of the
-field is exactly where the biology said it would be.
-
-Second, **the median vector-based system is in the 60s, the median
-consolidation-based system is in the 80s**, and the gap is 15+ F1 points —
+Second, the *median vector-based system is in the 60s*, the median
+consolidation-based system is in the 80s, and the gap is 15+ F1 points —
 larger than the gap between any two adjacent vector-based systems. The
 architecture matters more than the implementation polish.
 
-Third, **the "more context" school is at the bottom**. Long-context 16K
+Third, the *"more context" school is at the bottom*. Long-context 16K
 underperforms observation RAG top-5 by 4 points, and dialog RAG top-50
 underperforms by 7. Volume does not buy you anything; selectivity does.
 Anyone telling you to wait for the next million-token model to fix your
@@ -673,18 +604,18 @@ mechanism shipped will be measured against a real number on the same
 benchmark — not against vibes, not against demos, not against testimonials
 from users who didn't notice the regression.
 
-## Why It Compounds
+## Why it compounds
 
-Three properties compound, and they compound *multiplicatively*.
+Three properties compound, and they compound multiplicatively.
 
-**Constraints make the model cheaper.** Every hook that catches a class of
+*Constraints make the model cheaper.* Every hook that catches a class of
 mistake at the harness level is a class of mistake the model never has to
 think about. RTK alone makes long sessions financially viable. Engram makes
 compaction non-destructive. Pre-commit hooks make "did I break the build" a
 non-question. The model's tokens get spent on the actual problem instead of
 on rediscovering invariants.
 
-**Memory turns sessions into a continuous engineering practice.** Without
+*Memory turns sessions into a continuous engineering practice.* Without
 persistent memory, every conversation starts at zero and the programmer pays
 the cost of re-explaining context. With Engram (and soon Reverie), a session
 opens already knowing what was decided last week, why the auth middleware is
@@ -693,11 +624,11 @@ quarter, and which approaches were tried and rejected. The model spends its
 tokens on the *new* problem. A week of work looks like a week of work, not
 seven independent days.
 
-**The harness encodes taste.** "Always sign commits," "never echo a secret
-env var," "format with ruff," "Rust-first for new repos," "no parallel
-framework spikes," "PRs by default" — these aren't reminders the model has to
-honor turn by turn. They're physical properties of the environment. **Drift
-becomes impossible instead of merely unlikely.**
+*The harness encodes taste.* "Always sign commits," "never echo a secret env
+var," "format with ruff," "Rust-first for new repos," "no parallel framework
+spikes," "PRs by default" — these aren't reminders the model has to honor
+turn by turn. They're physical properties of the environment. *Drift becomes
+impossible instead of merely unlikely.*
 
 The combined effect is that the model gets to be good at the part it is
 actually good at — fluent, fast, broadly knowledgeable orchestration and
@@ -706,7 +637,7 @@ handled by something that *is* reliable. The harness is the load-bearing
 structure. The model is the worker inside it. The programmer is the
 architect, the inspector, and the one whose name is on the building.
 
-## The Shape Of It
+## The shape of it
 
 Strip everything away and the philosophy is one sentence:
 
@@ -717,19 +648,19 @@ those three is interchangeable, and the trouble starts the moment you
 pretend they are.
 </Pull>
 
-Every layer in this stack exists because something the model *could* do
+Every layer in this stack exists because something the model could do
 unreliably is something the surrounding system can do reliably and cheaply.
 RTK kills tokens. Engram (soon Reverie) kills forgetting in the short run
 and *enables it* in the long run. Hooks kill foot-guns. Linear kills the
 distinction between conversation and specification. Obsidian kills "where
-did we write that down." Impeccable kills design-by-vibes. Auto-memory kills
-"let me re-explain who I am every session." The placement framework kills
-the friction at the moment of save.
+did we write that down." Impeccable kills design-by-vibes. Auto-memory
+kills "let me re-explain who I am every session." The placement framework
+kills the friction at the moment of save.
 
 What's left for the model is the part that actually needs a model: fluent
 code generation against a rigorous specification, broad recall, syntactic
 dexterity, fast first drafts, the willingness to try eight things in the
-time a human would try one. **That's the work it is good at.** Everything
+time a human would try one. *That's the work it is good at.* Everything
 else is the harness, and the harness is the whole reason any of this scales
 past a single clever conversation.
 
@@ -743,26 +674,18 @@ and the things it is genuinely bad at stop being your problem.
 
 That is the entire trick. There is no other one.
 
-<Foldable title="Install everything end-to-end" audience={['newbie', 'engineer']}>
-
-This is the full setup for the harness as it stands today. Run it top to
-bottom on a fresh machine. Each step explains *why* before *how*, because
-copy-pasting commands without a model of what they do is exactly the
-anti-pattern this piece exists to refute.
-
-<InstallGuide />
-
+<Foldable
+  title="Install everything end-to-end"
+  note="Engram, RTK, hooks, CLAUDE.md, MCP servers — top-to-bottom on a fresh machine"
+>
+  <InstallGuide />
 </Foldable>
 
-<Foldable title="How to populate memory — examples per layer" audience={['newbie', 'engineer']}>
-
-The placement framework above tells you *which* layer a fact belongs in. The
-examples below show *what* a good entry looks like in each layer, and what a
-bad one looks like, with a one-line explanation of why. Steal the patterns.
-Adapt them to your projects. Rewrite when contradicted.
-
-<MemoryExamples />
-
+<Foldable
+  title="How to populate memory — examples per layer"
+  note="good/bad pairs for CLAUDE.md, auto-memory, Engram, Obsidian, Linear"
+>
+  <MemoryExamples />
 </Foldable>
 
 ## References

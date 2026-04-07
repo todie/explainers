@@ -241,13 +241,12 @@ jobs:
       - name: Compose preview URL
         id: url
         run: |
-          # wrangler-action exposes deployment-url as an output, but the
-          # branch-alias URL is more stable across redeploys, so we use that.
+          # wrangler-action's deployment-url output is unreliable for the
+          # pages-deploy command (returns empty for branch aliases). The
+          # branch-alias URL is stable across redeploys and is what we
+          # actually want to link to, so we compute it ourselves.
           alias="https://${{ steps.slug.outputs.slug }}.explainers.pages.dev"
           echo "alias=$alias" >> "$GITHUB_OUTPUT"
-          # Also capture the action's deployment-url if available
-          deployment="${{ steps.deploy.outputs.deployment-url }}"
-          echo "deployment=$deployment" >> "$GITHUB_OUTPUT"
 
       - name: Post sticky preview comment
         uses: marocchino/sticky-pull-request-comment@v2
@@ -255,17 +254,16 @@ jobs:
           header: impeccable-preview
           message: |
             <!-- impeccable-preview -->
-            ## 🔭 Preview deployed
+            ### Preview deployed
 
-            **Branch alias** (stable): ${{ steps.url.outputs.alias }}
-            **This deploy**: ${{ steps.url.outputs.deployment }}
+            | Route | Link |
+            | --- | --- |
+            | Home | ${{ steps.url.outputs.alias }}/ |
+            | Harness explainer | ${{ steps.url.outputs.alias }}/harness |
 
-            New / changed routes worth eyeballing:
-            - ${{ steps.url.outputs.alias }}/
-            - ${{ steps.url.outputs.alias }}/harness
-
-            Built from commit `${{ github.event.pull_request.head.sha }}`
-            (branch `${{ github.head_ref }}`).
+            Branch alias is stable across pushes — this URL updates in
+            place on every commit to `${{ github.head_ref }}`. Built from
+            `${{ github.event.pull_request.head.sha }}`.
 
       - name: Smoke-test the preview
         run: |
