@@ -7,14 +7,20 @@ import ProsCons from './components/ProsCons'
 import Ramifications from './components/Ramifications'
 import Research from './components/Research'
 
+// Section icons: all real emoji, no text-glyph mix-ins.
+// The registry used to mix '◉', '◫', '↯', '⚖︎' (text glyphs that fall
+// through the <Emoji> component as plain <span>s) with '💬', '👁️', '⚡︎',
+// '📄' (Twemoji SVGs). Two icon styles in one list violates .impeccable.md
+// Principle 3 (restraint). Every item now renders via Twemoji for a
+// single, consistent look.
 const SECTIONS = [
-  { id: 'thesis', title: 'Thesis', icon: '◉' },
+  { id: 'thesis', title: 'Thesis', icon: '💡' },
   { id: 'thoughtforms', title: 'Thoughtforms', icon: '💬' },
   { id: 'visualization', title: 'What It Looks Like', icon: '👁\uFE0F' },
   { id: 'examples', title: 'In the Wild', icon: '⚡\uFE0F' },
-  { id: 'principles', title: 'Principles', icon: '◫' },
+  { id: 'principles', title: 'Principles', icon: '🔷' },
   { id: 'pros-cons', title: 'Pros & Cons', icon: '⚖\uFE0F' },
-  { id: 'ramifications', title: 'Ramifications', icon: '↯' },
+  { id: 'ramifications', title: 'Ramifications', icon: '🌊' },
   { id: 'research', title: 'Further Reading', icon: '📄' },
 ]
 
@@ -30,30 +36,29 @@ export default function GestaltApp() {
         position: 'relative', padding: '80px 24px 56px', textAlign: 'center',
         overflow: 'hidden',
       }}>
-        {/* Organic flowing glow — gestalt = perception, warmth, non-linear */}
+        {/* Single ambient glow in the explainer's chosen accent (purple).
+            The previous version had two glows in two colors (red + purple),
+            which split the visual identity of the page between the declared
+            TOC accent and the hero chrome. One accent, one glow. */}
         <div style={{
-          position: 'absolute', top: -120, left: '30%', width: 400, height: 400,
-          background: 'radial-gradient(ellipse, rgba(248, 113, 113, 0.07) 0%, transparent 70%)',
-          pointerEvents: 'none', animation: 'pulse 8s ease-in-out infinite',
-        }} />
-        <div style={{
-          position: 'absolute', top: -60, right: '20%', width: 300, height: 300,
-          background: 'radial-gradient(ellipse, rgba(168, 85, 247, 0.06) 0%, transparent 70%)',
-          pointerEvents: 'none', animation: 'pulse 6s ease-in-out 2s infinite',
+          position: 'absolute', top: -120, left: '50%', transform: 'translateX(-50%)',
+          width: 560, height: 360,
+          background: 'radial-gradient(ellipse, rgba(168, 85, 247, 0.08) 0%, rgba(168, 85, 247, 0.03) 45%, transparent 70%)',
+          pointerEvents: 'none', animation: 'pulse 7s ease-in-out infinite',
         }} />
 
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{
             display: 'inline-block', padding: '5px 14px', borderRadius: 999,
-            background: 'rgba(248, 113, 113, 0.08)', border: '1px solid rgba(248, 113, 113, 0.15)',
-            fontSize: 12, color: '#f87171', fontFamily: 'var(--mono, monospace)', letterSpacing: '0.04em', marginBottom: 20,
+            background: 'rgba(168, 85, 247, 0.08)', border: '1px solid rgba(168, 85, 247, 0.15)',
+            fontSize: 12, color: '#a855f7', fontFamily: 'var(--mono, monospace)', letterSpacing: '0.04em', marginBottom: 20,
           }}>
-            Cognitive Processing
+            todie.io / explainers
           </div>
 
           <h1 style={{
             fontSize: 'clamp(28px, 6vw, 48px)', fontWeight: 800, lineHeight: 1.1, marginBottom: 16,
-            background: 'linear-gradient(135deg, #f87171 0%, #a855f7 40%, #60a5fa 100%)',
+            background: 'linear-gradient(135deg, #c084fc 0%, #a855f7 60%, #7c3aed 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             letterSpacing: '-0.02em',
           }}>
