@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Link unfurls for `/{slug}` (no trailing slash) returned the homepage OG
+  card.** Cloudflare Pages serves `dist/{slug}/index.html` for `/{slug}/`, but
+  the SPA fallback (`/* /index.html 200`) caught `/{slug}` first — so Slack,
+  Twitter, and Discord crawlers requesting `https://explain.todie.io/harness`
+  received the root `index.html` with the generic homepage OG tags instead of
+  the prerendered per-route HTML. Fixed by emitting `dist/_redirects` from
+  `scripts/generate-og-pages.mjs` with an explicit
+  `/{slug}  /{slug}/index.html  200` rewrite for every explainer (and
+  `/private`), placed above the SPA wildcard. Added a 5th CI sanity assertion
+  that verifies the file exists, has a rewrite for every expected route, and
+  that the SPA fallback is positioned after all explicit rewrites — so a
+  future regression fails the build instead of silently breaking unfurls.
+
 - **Harness explainer — P1/P2 audit follow-ups.** After the full `/impeccable`
   stack rewrite landed the piece at 15/20 on `/impeccable:audit`, addressed
   the remaining P1 and P2 findings to close the gap:

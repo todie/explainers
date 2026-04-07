@@ -123,6 +123,40 @@ jobs:
           fi
           echo "✓ no private content in public JS bundle"
 
+      - name: Verify _redirects emitted with per-route rewrites
+        run: |
+          set -euo pipefail
+          # Cloudflare Pages serves /{slug}/index.html for /{slug}/ but the
+          # SPA fallback (/* /index.html 200) catches /{slug} (no trailing
+          # slash) before the directory index, so link unfurlers see the
+          # homepage OG tags. dist/_redirects must contain an explicit
+          # /{slug} -> /{slug}/index.html 200 line for every explainer,
+          # ABOVE the SPA wildcard.
+          if [ ! -f dist/_redirects ]; then
+            echo "::error::dist/_redirects missing — check scripts/generate-og-pages.mjs"
+            exit 1
+          fi
+          expected=(memory-model gestalt prompt-cache lsp token-optimization reverie emotional-topology pidgin-tokens embodied-mind harness private)
+          missing=0
+          for route in "${expected[@]}"; do
+            if ! grep -qE "^/${route}[[:space:]]+/${route}/index\.html[[:space:]]+200$" dist/_redirects; then
+              echo "::error::dist/_redirects missing rewrite for /${route}"
+              missing=$((missing + 1))
+            fi
+          done
+          # And the SPA fallback must come AFTER all explicit rewrites.
+          spa_line=$(grep -n '^/\*[[:space:]]' dist/_redirects | head -1 | cut -d: -f1)
+          last_explicit=$(grep -n '^/[a-z][a-z0-9-]*[[:space:]]' dist/_redirects | tail -1 | cut -d: -f1)
+          if [ -z "$spa_line" ] || [ -z "$last_explicit" ] || [ "$spa_line" -lt "$last_explicit" ]; then
+            echo "::error::SPA fallback (/*) must come after all per-route rewrites in dist/_redirects"
+            exit 1
+          fi
+          if [ $missing -gt 0 ]; then
+            echo "$missing per-route rewrites missing from dist/_redirects"
+            exit 1
+          fi
+          echo "✓ dist/_redirects contains all ${#expected[@]} per-route rewrites in correct order"
+
       - name: Summarize
         run: |
           echo "=== build artifacts ==="
