@@ -1,10 +1,17 @@
-import { useState } from 'react'
+// Rewritten 2026-04-06 against .impeccable.md "clean/academic, not gamified".
+//
+// Previous version had six collapsible colored "category" cards, each
+// containing a rounded inner card per paper with a colored title, a
+// coloured "View paper ↗" link, and a coloured caveat box. This is now
+// a proper bibliography: plain numbered entries, citations in standard
+// academic form, a small 'View paper ↗' link per item, caveats inline.
+// All content visible on load. Semantic color is gone entirely — the
+// paper's own prestige does the work.
 
 const CATEGORIES = [
   {
     id: 'inner-experience',
     title: 'Inner Experience & Unsymbolized Thinking',
-    color: '#f87171',
     description: 'Empirical evidence that not all thinking occurs in words, images, or symbols.',
     papers: [
       {
@@ -28,7 +35,6 @@ const CATEGORIES = [
   {
     id: 'original-gestalt',
     title: 'Original Gestalt Psychology',
-    color: '#a855f7',
     description: 'The Berlin school foundations: perception, insight (Einsicht), and productive thinking.',
     papers: [
       {
@@ -76,7 +82,6 @@ const CATEGORIES = [
   {
     id: 'chess-expertise',
     title: 'Chess, Chunking & Expert Perception',
-    color: '#60a5fa',
     description: 'How experts perceive whole configurations where novices see individual pieces.',
     papers: [
       {
@@ -100,7 +105,6 @@ const CATEGORIES = [
   {
     id: 'verbal-overshadowing',
     title: 'Verbal Overshadowing',
-    color: '#22d3ee',
     description: 'Evidence that putting things into words can actively degrade non-verbal perception.',
     papers: [
       {
@@ -124,7 +128,6 @@ const CATEGORIES = [
   {
     id: 'intuition-knowing',
     title: 'Intuition & the Feeling of Knowing',
-    color: '#4ade80',
     description: 'The capacity to detect coherence before being able to articulate what was detected.',
     papers: [
       {
@@ -148,7 +151,6 @@ const CATEGORIES = [
   {
     id: 'neuroscience',
     title: 'Neuroscience of Holistic vs. Analytic Processing',
-    color: '#facc15',
     description: 'Brain-level evidence for distinct global and local processing systems.',
     papers: [
       {
@@ -174,173 +176,123 @@ const CATEGORIES = [
         journal: 'Perspectives on Psychological Science, 1(2), 95\u2013109',
         summary: 'Proposed that unconscious thought outperforms conscious deliberation for complex decisions involving many variables. Conscious thought is constrained by working memory limits and uses schema-driven shortcuts; unconscious processing integrates information bottom-up without those bottlenecks. While the theory\'s replication record is mixed, it articulates the mechanism by which gestalt-mode processing could handle more relational complexity than verbal-analytical processing.',
         link: 'https://journals.sagepub.com/doi/10.1111/j.1745-6916.2006.00007.x',
-        caveat: 'Note: replication attempts have produced mixed results. The theoretical framework remains influential even as specific experimental claims are debated.',
+        caveat: 'Replication attempts have produced mixed results. The theoretical framework remains influential even as specific experimental claims are debated.',
       },
     ],
   },
 ]
 
+const smallCaps = {
+  fontSize: 10, fontWeight: 700, color: '#6b7280',
+  textTransform: 'uppercase', letterSpacing: '0.12em',
+  fontFamily: 'var(--mono, monospace)',
+}
+const body = { fontSize: 14, color: '#d1d5db', lineHeight: 1.75, margin: 0 }
+
+function Paper({ paper, index }) {
+  return (
+    <div style={{
+      paddingBottom: 20,
+      marginBottom: 20,
+      borderBottom: '1px solid #1f2937',
+    }}>
+      <div style={{ ...smallCaps, marginBottom: 6 }}>[{index}]</div>
+      <p style={{ fontSize: 14, color: '#e5e7eb', margin: '0 0 8px 0', lineHeight: 1.6 }}>
+        <span style={{ fontWeight: 600 }}>{paper.authors}</span>
+        <span style={{ color: '#9ca3af' }}> ({paper.year}). </span>
+        <em style={{ color: '#f9fafb' }}>{paper.title}</em>
+        <span style={{ color: '#9ca3af' }}>. {paper.journal}.</span>
+      </p>
+      <p style={{ ...body, color: '#9ca3af', marginBottom: 10 }}>{paper.summary}</p>
+      {paper.caveat && (
+        <p style={{
+          ...body, fontSize: 13, color: '#6b7280', fontStyle: 'italic',
+          padding: '0 0 0 14px', borderLeft: '2px solid #374151', marginBottom: 10,
+        }}>
+          {paper.caveat}
+        </p>
+      )}
+      {paper.link && (
+        <a
+          href={paper.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontSize: 12, color: '#a855f7', textDecoration: 'none',
+            borderBottom: '1px solid rgba(168, 85, 247, 0.3)', paddingBottom: 1,
+          }}
+        >
+          View paper ↗
+        </a>
+      )}
+    </div>
+  )
+}
+
 export default function Research() {
-  const [active, setActive] = useState(null)
+  let paperCounter = 0
 
   return (
-    <div>
-      <h2 style={{
-        fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 800, color: '#f9fafb',
-        letterSpacing: '-0.02em', marginBottom: 8, textAlign: 'center',
-      }}>
-        Further Reading
-      </h2>
-      <p style={{
-        fontSize: 14, color: '#6b7280', maxWidth: 600, margin: '0 auto 12px',
-        textAlign: 'center', lineHeight: 1.7,
-      }}>
-        The claims in this explainer are grounded in a century of research. These papers
-        demonstrate that gestalt-mode cognition is not a metaphor, a personality trait, or a
-        learning style myth &mdash; it is a measurable processing architecture with distinct
-        perceptual, cognitive, and neural signatures.
-      </p>
-      <p style={{
-        fontSize: 13, color: '#4b5563', maxWidth: 560, margin: '0 auto 36px',
-        textAlign: 'center', lineHeight: 1.6,
-      }}>
-        Organized by research thread. Each paper includes why it matters for understanding
-        gestalt thinking as a cognitive mode.
-      </p>
+    <section>
+      <header style={{ marginBottom: 48 }}>
+        <h2 style={{
+          fontSize: 'clamp(22px, 3.5vw, 30px)', fontWeight: 800, color: '#f9fafb',
+          letterSpacing: '-0.02em', margin: '0 0 12px 0',
+        }}>
+          Further Reading
+        </h2>
+        <p style={{ ...body, color: '#9ca3af', marginBottom: 10 }}>
+          The claims in this explainer are grounded in a century of research.
+          These papers demonstrate that gestalt-mode cognition is not a
+          metaphor, a personality trait, or a learning-style myth — it is a
+          measurable processing architecture with distinct perceptual,
+          cognitive, and neural signatures.
+        </p>
+        <p style={{ ...body, fontSize: 14, color: '#6b7280', fontStyle: 'italic' }}>
+          Organized by research thread. Each paper includes a note on why it
+          matters for understanding gestalt thinking as a cognitive mode.
+        </p>
+      </header>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 720, margin: '0 auto' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 48 }}>
         {CATEGORIES.map((cat) => (
-          <div
-            key={cat.id}
-            onClick={() => setActive(active === cat.id ? null : cat.id)}
-            style={{
-              background: active === cat.id
-                ? `linear-gradient(135deg, #111827 0%, ${cat.color}06 100%)`
-                : '#111827',
-              border: `1px solid ${active === cat.id ? cat.color + '30' : '#1f2937'}`,
-              borderRadius: 16, overflow: 'hidden', cursor: 'pointer',
-              transition: 'all 0.25s ease', position: 'relative',
-            }}
-          >
-            <div style={{
-              position: 'absolute', left: 0, top: 0, bottom: 0, width: 3,
-              background: `linear-gradient(180deg, ${cat.color}, ${cat.color}40)`,
-            }} />
-
-            <div style={{ padding: '20px 24px', display: 'flex', alignItems: 'flex-start', gap: 14 }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: 16, color: cat.color, marginBottom: 6 }}>
-                  {cat.title}
-                </div>
-                <div style={{ fontSize: 13, color: '#9ca3af', lineHeight: 1.7 }}>
-                  {cat.description}
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-                <span style={{
-                  fontSize: 11, color: '#4b5563',
-                  fontFamily: 'var(--mono, monospace)',
-                }}>
-                  {cat.papers.length} {cat.papers.length === 1 ? 'paper' : 'papers'}
-                </span>
-                <span style={{
-                  fontSize: 14, color: '#4b5563', transition: 'transform 0.2s',
-                  transform: active === cat.id ? 'rotate(180deg)' : 'none',
-                }}>
-                  &#9662;
-                </span>
-              </div>
+          <div key={cat.id}>
+            <h3 style={{
+              fontSize: 18, fontWeight: 700, color: '#f9fafb',
+              letterSpacing: '-0.01em', margin: '0 0 8px 0',
+              paddingBottom: 10, borderBottom: '1px solid #374151',
+            }}>
+              {cat.title}
+            </h3>
+            <p style={{ ...body, fontSize: 13, color: '#6b7280', fontStyle: 'italic', marginTop: 10, marginBottom: 20 }}>
+              {cat.description}
+            </p>
+            <div>
+              {cat.papers.map((paper) => {
+                paperCounter += 1
+                return <Paper key={paper.title} paper={paper} index={paperCounter} />
+              })}
             </div>
-
-            {active === cat.id && (
-              <div style={{ padding: '0 24px 24px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
-                {cat.papers.map((paper, pi) => (
-                  <div
-                    key={pi}
-                    style={{
-                      padding: '18px 20px',
-                      background: 'rgba(0, 0, 0, 0.2)',
-                      border: '1px solid #1f2937',
-                      borderRadius: 12,
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {/* Citation line */}
-                    <div style={{ marginBottom: 10 }}>
-                      <span style={{ fontSize: 13, color: '#d1d5db', fontWeight: 600 }}>
-                        {paper.authors}
-                      </span>
-                      <span style={{ fontSize: 13, color: '#6b7280' }}>
-                        {' '}({paper.year}).{' '}
-                      </span>
-                      <span style={{ fontSize: 13, color: cat.color, fontStyle: 'italic' }}>
-                        {paper.title}
-                      </span>
-                      <span style={{ fontSize: 12, color: '#4b5563' }}>
-                        . {paper.journal}.
-                      </span>
-                    </div>
-
-                    {/* Relevance summary */}
-                    <div style={{ fontSize: 13, color: '#9ca3af', lineHeight: 1.8 }}>
-                      {paper.summary}
-                    </div>
-
-                    {/* Caveat if present */}
-                    {paper.caveat && (
-                      <div style={{
-                        marginTop: 10, padding: '10px 14px',
-                        background: 'rgba(250, 204, 21, 0.04)',
-                        border: '1px solid rgba(250, 204, 21, 0.12)',
-                        borderRadius: 8, fontSize: 12, color: '#facc15',
-                        lineHeight: 1.7, fontStyle: 'italic',
-                      }}>
-                        {paper.caveat}
-                      </div>
-                    )}
-
-                    {/* Link */}
-                    {paper.link && (
-                      <a
-                        href={paper.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          display: 'inline-block', marginTop: 10,
-                          fontSize: 12, color: cat.color, textDecoration: 'none',
-                          opacity: 0.7, transition: 'opacity 0.15s',
-                        }}
-                        onMouseOver={(e) => e.currentTarget.style.opacity = 1}
-                        onMouseOut={(e) => e.currentTarget.style.opacity = 0.7}
-                      >
-                        View paper &#8599;
-                      </a>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         ))}
       </div>
 
-      {/* Summary note */}
       <div style={{
-        maxWidth: 640, margin: '36px auto 0', padding: '20px 24px',
-        background: 'rgba(168, 85, 247, 0.04)',
-        border: '1px solid rgba(168, 85, 247, 0.12)',
-        borderRadius: 12, textAlign: 'center',
+        marginTop: 48, paddingTop: 32, borderTop: '1px solid #374151',
       }}>
-        <div style={{ fontSize: 13, color: '#9ca3af', lineHeight: 1.8 }}>
-          The convergence is striking: Wertheimer and K&ouml;hler observed it in perception and
-          problem-solving. De Groot and Chase &amp; Simon measured it in expertise. Schooler proved
-          that words can damage it. Bowers and Bolte showed it operates before conscious access.
-          Navon demonstrated it is the brain's default processing order. Hurlburt confirmed that
-          some people experience it as their primary mode of thought. Gestalt thinking is not one
-          finding &mdash; it is the same finding, replicated across a century of research from
-          different angles.
-        </div>
+        <div style={{ ...smallCaps, marginBottom: 12 }}>Coda</div>
+        <p style={{ ...body, color: '#9ca3af' }}>
+          The convergence is striking: Wertheimer and Köhler observed it in
+          perception and problem-solving. De Groot and Chase &amp; Simon
+          measured it in expertise. Schooler proved that words can damage it.
+          Bowers and Bolte showed it operates before conscious access. Navon
+          demonstrated it is the brain's default processing order. Hurlburt
+          confirmed that some people experience it as their primary mode of
+          thought. Gestalt thinking is not one finding — it is the same
+          finding, replicated across a century of research from different
+          angles.
+        </p>
       </div>
-    </div>
+    </section>
   )
 }

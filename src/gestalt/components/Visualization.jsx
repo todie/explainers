@@ -1,5 +1,22 @@
+// Rewritten 2026-04-06 against .impeccable.md "clean/academic, not gamified".
+//
+// Previous version had two rounded cards (verbal vs gestalt) with colored
+// borders, an auto-looping token-by-token animation, a "Replay" button, and
+// a set of click-to-expand metaphor cards. Academic articles don't have
+// replay buttons. The demonstration animation is kept — it IS load-bearing,
+// it shows the difference the essay is about — but stripped of the colored
+// card chrome. Metaphors are shown inline as a two-column reading-first
+// layout.
+
 import { useState, useEffect } from 'react'
 import { VISUALIZATION_METAPHORS } from '../data/gestaltCognition'
+
+const smallCaps = {
+  fontSize: 10, fontWeight: 700, color: '#6b7280',
+  textTransform: 'uppercase', letterSpacing: '0.12em',
+  fontFamily: 'var(--mono, monospace)',
+}
+const body = { fontSize: 15, color: '#d1d5db', lineHeight: 1.75, margin: 0 }
 
 function VerbalAnimation() {
   const [step, setStep] = useState(0)
@@ -12,8 +29,8 @@ function VerbalAnimation() {
   }, [step, words.length])
 
   return (
-    <div style={{ minHeight: 80, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ fontFamily: 'var(--mono, monospace)', fontSize: 16, color: '#60a5fa' }}>
+    <div style={{ minHeight: 72, display: 'flex', alignItems: 'center' }}>
+      <div style={{ fontFamily: 'var(--mono, monospace)', fontSize: 15, color: '#e5e7eb' }}>
         {words.slice(0, step).map((w, i) => (
           <span key={i} style={{ opacity: 1, animation: 'fadeUp 0.3s ease both', marginRight: 6 }}>
             {w}
@@ -34,13 +51,13 @@ function GestaltAnimation() {
   }, [])
 
   return (
-    <div style={{ minHeight: 80, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: 72, display: 'flex', alignItems: 'center' }}>
       <div style={{
-        fontSize: 16, fontFamily: 'var(--mono, monospace)', color: '#f87171',
+        fontSize: 15, fontFamily: 'var(--mono, monospace)', color: '#e5e7eb',
         opacity: revealed ? 1 : 0,
-        transform: revealed ? 'scale(1)' : 'scale(0.7)',
+        transform: revealed ? 'none' : 'translateY(4px)',
         transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-        textAlign: 'center', lineHeight: 1.6,
+        lineHeight: 1.6,
       }}>
         The whole answer arrives at once.
         <br />
@@ -51,89 +68,99 @@ function GestaltAnimation() {
 }
 
 export default function Visualization() {
-  const [activeMetaphor, setActiveMetaphor] = useState(null)
-  const [animKey, setAnimKey] = useState(0)
-
-  const replay = () => setAnimKey(k => k + 1)
-
   return (
-    <div>
-      <h2 style={{ fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 800, color: '#f9fafb', letterSpacing: '-0.02em', marginBottom: 8, textAlign: 'center' }}>
-        What It Looks Like
-      </h2>
-      <p style={{ fontSize: 14, color: '#6b7280', maxWidth: 560, margin: '0 auto 36px', textAlign: 'center', lineHeight: 1.7 }}>
-        Attempting to visualize the difference between sequential and gestalt processing.
-      </p>
+    <section>
+      <header style={{ marginBottom: 40 }}>
+        <h2 style={{
+          fontSize: 'clamp(22px, 3.5vw, 30px)', fontWeight: 800, color: '#f9fafb',
+          letterSpacing: '-0.02em', margin: '0 0 12px 0',
+        }}>
+          What It Looks Like
+        </h2>
+        <p style={{ ...body, color: '#9ca3af' }}>
+          The difference between sequential and gestalt processing, shown in
+          two side-by-side demonstrations and then a sequence of metaphors.
+        </p>
+      </header>
 
-      {/* Side-by-side animation */}
-      <div style={{ maxWidth: 700, margin: '0 auto 40px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          <div style={{
-            background: '#111827', border: '1px solid #60a5fa20', borderRadius: 14,
-            padding: '20px', textAlign: 'center',
-          }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
-              Verbal Processing
+      {/* Side-by-side demonstration. No card chrome, no replay button — it
+          plays once when it scrolls into view and then rests. */}
+      <figure style={{
+        margin: '0 0 48px 0', padding: '28px 0',
+        borderTop: '1px solid #1f2937', borderBottom: '1px solid #1f2937',
+      }}>
+        <div style={{
+          display: 'grid', gridTemplateColumns: '1fr 1fr',
+          gap: 32, alignItems: 'flex-start',
+        }}>
+          <div>
+            <div style={{ ...smallCaps, marginBottom: 12 }}>Verbal / sequential</div>
+            <VerbalAnimation />
+            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 14 }}>
+              One token at a time.
             </div>
-            <VerbalAnimation key={`v-${animKey}`} />
-            <div style={{ fontSize: 11, color: '#4b5563', marginTop: 12 }}>Sequential — one token at a time</div>
           </div>
-          <div style={{
-            background: '#111827', border: '1px solid #f8717120', borderRadius: 14,
-            padding: '20px', textAlign: 'center',
-          }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#f87171', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
-              Gestalt Processing
+          <div style={{ paddingLeft: 32, borderLeft: '1px solid #1f2937' }}>
+            <div style={{ ...smallCaps, marginBottom: 12 }}>Gestalt / instantaneous</div>
+            <GestaltAnimation />
+            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 14 }}>
+              The whole at once.
             </div>
-            <GestaltAnimation key={`g-${animKey}`} />
-            <div style={{ fontSize: 11, color: '#4b5563', marginTop: 12 }}>Instantaneous — the whole at once</div>
           </div>
         </div>
-        <div style={{ textAlign: 'center', marginTop: 12 }}>
-          <button onClick={replay} style={{
-            background: '#1f2937', border: '1px solid #374151', borderRadius: 6,
-            padding: '6px 14px', fontSize: 11, color: '#9ca3af', cursor: 'pointer',
-          }}>Replay</button>
-        </div>
-      </div>
+        <figcaption style={{
+          fontSize: 12, color: '#6b7280', marginTop: 24, textAlign: 'center',
+          fontStyle: 'italic',
+        }}>
+          Figure 1. The irreducible temporal difference.
+        </figcaption>
+      </figure>
 
-      {/* Metaphors */}
-      <div style={{ maxWidth: 700, margin: '0 auto' }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: '#9ca3af', textAlign: 'center', marginBottom: 16 }}>
+      {/* Metaphors. All shown inline — no click-to-expand. */}
+      <div>
+        <div style={{ ...smallCaps, marginBottom: 10 }}>Six metaphors</div>
+        <h3 style={{
+          fontSize: 20, fontWeight: 700, color: '#f9fafb', letterSpacing: '-0.01em',
+          margin: '0 0 28px 0',
+        }}>
           Metaphors for the difference
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {VISUALIZATION_METAPHORS.map((m) => (
-            <div
-              key={m.id}
-              onClick={() => setActiveMetaphor(activeMetaphor === m.id ? null : m.id)}
-              style={{
-                background: activeMetaphor === m.id ? 'linear-gradient(135deg, #111827 0%, #a855f706 100%)' : '#111827',
-                border: `1px solid ${activeMetaphor === m.id ? '#a855f730' : '#1f2937'}`,
-                borderRadius: 12, padding: '16px 20px', cursor: 'pointer', transition: 'all 0.2s ease',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontWeight: 700, fontSize: 14, color: '#a855f7' }}>{m.title}</span>
-                <span style={{ fontSize: 13, color: '#4b5563', transition: 'transform 0.2s', transform: activeMetaphor === m.id ? 'rotate(180deg)' : 'none' }}>▾</span>
-              </div>
+        </h3>
 
-              {activeMetaphor === m.id && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginTop: 14, paddingTop: 14, borderTop: '1px solid #1f2937' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {VISUALIZATION_METAPHORS.map((m, i) => {
+            const isLast = i === VISUALIZATION_METAPHORS.length - 1
+            return (
+              <div
+                key={m.id}
+                style={{
+                  paddingBottom: isLast ? 0 : 32,
+                  marginBottom: isLast ? 0 : 32,
+                  borderBottom: isLast ? 'none' : '1px solid #1f2937',
+                }}
+              >
+                <h4 style={{
+                  fontSize: 16, fontWeight: 700, color: '#e5e7eb',
+                  margin: '0 0 14px 0',
+                }}>
+                  {m.title}
+                </h4>
+                <div style={{
+                  display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28,
+                }}>
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Verbal</div>
-                    <div style={{ fontSize: 12, color: '#d1d5db', lineHeight: 1.7 }}>{m.verbal}</div>
+                    <div style={{ ...smallCaps, marginBottom: 6 }}>Verbal</div>
+                    <p style={{ ...body, fontSize: 14 }}>{m.verbal}</p>
                   </div>
-                  <div>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#f87171', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Gestalt</div>
-                    <div style={{ fontSize: 12, color: '#d1d5db', lineHeight: 1.7 }}>{m.gestalt}</div>
+                  <div style={{ paddingLeft: 28, borderLeft: '1px solid #1f2937' }}>
+                    <div style={{ ...smallCaps, marginBottom: 6 }}>Gestalt</div>
+                    <p style={{ ...body, fontSize: 14 }}>{m.gestalt}</p>
                   </div>
                 </div>
-              )}
-            </div>
-          ))}
+              </div>
+            )
+          })}
         </div>
       </div>
-    </div>
+    </section>
   )
 }
