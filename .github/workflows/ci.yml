@@ -56,7 +56,7 @@ jobs:
       - name: Verify per-route OG HTML files exist
         run: |
           set -euo pipefail
-          expected=(memory-model gestalt prompt-cache lsp token-optimization reverie emotional-topology pidgin-tokens embodied-mind private)
+          expected=(memory-model gestalt prompt-cache lsp token-optimization reverie emotional-topology pidgin-tokens embodied-mind harness private)
           missing=0
           for route in "${expected[@]}"; do
             if [ ! -f "dist/$route/index.html" ]; then
@@ -73,7 +73,7 @@ jobs:
       - name: Verify committed preview images exist
         run: |
           set -euo pipefail
-          expected=(home memory-model gestalt prompt-cache lsp token-optimization reverie emotional-topology pidgin-tokens embodied-mind)
+          expected=(home memory-model gestalt prompt-cache lsp token-optimization reverie emotional-topology pidgin-tokens embodied-mind harness)
           missing=0
           for route in "${expected[@]}"; do
             f="public/previews/$route.jpeg"

@@ -12,6 +12,7 @@ import ReverieApp from './reverie/App'
 import EmotionalTopologyApp from './emotional-topology/App'
 import PidginTokensApp from './pidgin-tokens/App'
 import EmbodiedMindApp from './embodied-mind/App'
+import HarnessApp from './harness/App'
 import PrivateApp from './private/App'
 import './memory-model/global.css'
 
@@ -30,6 +31,7 @@ function App() {
         <Route path="/emotional-topology" element={<EmotionalTopologyApp />} />
         <Route path="/pidgin-tokens" element={<PidginTokensApp />} />
         <Route path="/embodied-mind" element={<EmbodiedMindApp />} />
+        <Route path="/harness" element={<HarnessApp />} />
         <Route path="/private" element={<PrivateApp />} />
         <Route path="*" element={<Home />} />
       </Routes>

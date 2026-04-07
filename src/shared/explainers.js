@@ -72,4 +72,12 @@ export const EXPLAINERS = [
     path: '/embodied-mind',
     tags: ['embodied', 'cognition', 'mind', 'body', 'dualism', 'descartes', 'interoception', 'vagus', 'gut-brain', 'damasio', 'neuroscience', 'phenomenology', 'embodiment'],
   },
+  {
+    id: 'harness',
+    title: 'The Harness: Beyond Vibes',
+    short: 'Running Claude Code like infrastructure',
+    icon: '⚙\uFE0F',
+    path: '/harness',
+    tags: ['harness', 'claude-code', 'hooks', 'rtk', 'engram', 'reverie', 'memory', 'specification', 'agentic', 'manifesto', 'tooling', 'infrastructure', 'consolidation'],
+  },
 ]
