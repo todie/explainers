@@ -2,6 +2,3 @@ node_modules/
 dist/
 .DS_Store
 *.local
-
-# Private content cache — populated at build time by scripts/fetch-private-content.mjs
-src/private/.cache/

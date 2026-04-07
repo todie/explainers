@@ -1,55 +1,80 @@
-# /private — encrypted source notes
+# /private — runtime-fetched source notes
 
-The markdown files under `content/` are encrypted at rest with [git-crypt](https://github.com/AGWA/git-crypt).
-At runtime they're code-split JS chunks behind the `/private` route, which is
-gated by Cloudflare Access at the edge.
+Private markdown documents stored in **Cloudflare R2** and served via
+**CF Pages Functions** gated by **Cloudflare Access**. The content is never
+bundled into the public JS chunks, so it cannot be extracted by scraping the
+CDN.
+
+## Architecture
+
+```
+Browser
+  ├─ GET /private                         (public React app, no content)
+  ├─ GET /api/private/                    → CF Access gate
+  │                                          ↓ on auth success
+  │                                       → Pages Function returns catalog JSON
+  └─ GET /api/private/<doc>               → CF Access gate
+                                             ↓ on auth success
+                                          → Pages Function reads R2 binding
+                                             PRIVATE_DOCS → explainers-private-docs
+                                          → returns markdown body
+```
+
+- **React app** (`App.jsx`) renders the catalog + markdown but holds **zero
+  content at build time**. Calls `fetchCatalog()` on mount.
+- **Pages Functions** (`functions/api/private/index.js`,
+  `functions/api/private/[doc].js`) validate the
+  `Cf-Access-Authenticated-User-Email` header (defense in depth — the
+  primary gate is the CF Access application config) and fetch from the R2
+  binding.
+- **R2 bucket** `explainers-private-docs` holds the markdown objects. Contents
+  are uploaded out of band (see "Adding a doc" below); the repo contains no
+  copy of them.
 
 ## Why this exists
 
-These are **working notes** — Linear exports, founder diligence drafts,
-deal templates, financial models, clinical/research material — that I want to
-keep version-controlled but not searchable. They're the source material for
-future full React explainer pages, not finished products.
+These are **working notes** — Linear exports, founder diligence drafts, deal
+templates, financial models, research material — version-controlled elsewhere
+but served from this site to a small audience behind SSO.
 
-Eventually each `.md` here becomes its own routed explainer with custom
-components and interactions, the same way `/memory-model` and `/reverie` work
-today. The viewer at `/private` is intentionally minimal — it's a queue, not
-a destination.
+## Adding a doc
 
-## If you got this far
+1. Drop the markdown file in your local source of truth (wherever that is).
+2. Upload it to the R2 bucket with a key like `NN-slug.md`:
+   ```bash
+   source ~/.secrets    # loads CLOUDFLARE_CLAUDE_EXPLAINERS_R2_PAGES_TOKEN
+   ACCOUNT=07ae57cca8fc1a438f9c9b875d1e2283
+   BUCKET=explainers-private-docs
+   KEY=NN-slug.md
+   curl -X PUT \
+     -H "Authorization: Bearer $CLOUDFLARE_CLAUDE_EXPLAINERS_R2_PAGES_TOKEN" \
+     -H "Content-Type: text/markdown" \
+     --data-binary @"/path/to/$KEY" \
+     "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/r2/buckets/$BUCKET/objects/$KEY"
+   ```
+3. Add the slug to `ALLOWED_DOCS` + `slugToKey` in
+   `functions/api/private/[doc].js`.
+4. Add the metadata (id, title, category, date) to `CATALOG.docs` in
+   `functions/api/private/index.js`.
+5. Commit + push + deploy.
 
-You found the encrypted blobs, you read the workflow that decrypts them,
-maybe you even tried to figure out how the key is wired into CI.
-
-That's the kind of curiosity I want to talk to.
-
-→ **chris@todie.io** — drop me a note. Tell me what you're building, what
-made you poke at this repo, or just say hi.
-
-## Adding a new doc (for future me)
-
-1. Drop the `.md` in `content/` — it auto-encrypts on `git add` because of
-   the rule in repo-root `.gitattributes`
-2. Add an entry to `docs.js` with `id`, `title`, `category`, `date`, and
-   `file: () => import('./content/NN-name.md?raw')`
-3. Verify with `git diff --cached <file>` — should show `GITCRYPT...` binary
-4. Commit, push, done
-
-## Unlocking locally
+## Removing a doc
 
 ```bash
-git-crypt unlock     # uses your GPG key (already in .git-crypt/keys/default/0/)
+curl -X DELETE \
+  -H "Authorization: Bearer $CLOUDFLARE_CLAUDE_EXPLAINERS_R2_PAGES_TOKEN" \
+  "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/r2/buckets/$BUCKET/objects/$KEY"
 ```
 
-## Decrypting in CI
+Then remove from `ALLOWED_DOCS`, `slugToKey`, and `CATALOG.docs`.
 
-The workflow does:
+## Access policy
 
-```bash
-echo "$GIT_CRYPT_KEY" | base64 -d > /tmp/key
-git-crypt unlock /tmp/key
-shred -u /tmp/key
-```
+The CF Access application on `explain.todie.io/api/private/*` is configured
+in the Cloudflare Zero Trust dashboard. Current policy: email matches specific
+allowed addresses. To add a new reader, add their email under
+Zero Trust → Access → Applications → `explainers-private`.
 
-Where `GIT_CRYPT_KEY` is the base64-encoded output of `git-crypt export-key`,
-stored as a GitHub Actions secret.
+No secrets live in the repo. The Pages Function uses an R2 binding
+(`PRIVATE_DOCS`, declared in `wrangler.toml` and attached in the CF Pages
+dashboard under Settings → Functions → R2 bindings), not a token.

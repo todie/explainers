@@ -1,0 +1,28 @@
+# Cloudflare Pages configuration for the `explainers` project.
+#
+# This file is picked up by CF Pages v2 builds and by `wrangler pages deploy`
+# direct-upload runs. It declares the R2 binding the private-docs Pages
+# Function needs at runtime:
+#
+#   functions/api/private/[doc].js — GET /api/private/<doc>
+#   functions/api/private/index.js — GET /api/private/
+#
+# Both read from `env.PRIVATE_DOCS`, which is the R2 binding configured below.
+#
+# To add more bindings (KV namespaces, D1 databases, additional R2 buckets,
+# secrets, environment variables) either add them here or configure them in
+# the CF Pages dashboard under Settings → Functions → Bindings. Dashboard
+# bindings override whatever is in this file on a per-environment basis.
+#
+# Docs: https://developers.cloudflare.com/pages/functions/wrangler-configuration/
+
+name = "explainers"
+compatibility_date = "2026-04-01"
+pages_build_output_dir = "./dist"
+
+# R2 bindings for Pages Functions.
+# The `binding` is the identifier available as `env.PRIVATE_DOCS` inside
+# functions; `bucket_name` is the actual bucket in the Cloudflare account.
+[[r2_buckets]]
+binding = "PRIVATE_DOCS"
+bucket_name = "explainers-private-docs"
