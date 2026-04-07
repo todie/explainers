@@ -7,7 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Harness explainer — P1/P2 audit follow-ups.** After the full `/impeccable`
+  stack rewrite landed the piece at 15/20 on `/impeccable:audit`, addressed
+  the remaining P1 and P2 findings to close the gap:
+  - **`NeuroGrid` mobile collapse.** Rebuilt the bio↔mapping grid with
+    `repeat(auto-fit, minmax(300px, 1fr))` so the two-column teaching layout
+    collapses cleanly to a single column below ~680px, where the
+    side-by-side paragraphs stopped being legible on phones.
+  - **`ForgetCurve` legend moved out of the SVG.** The legend was positioned
+    at pixel `(W - 260, PT + 6)` inside the SVG, which caused it to overlap
+    the decay curves on viewports below ~420px. Moved to an HTML flex row
+    underneath the SVG with `flex-wrap` so it stacks cleanly on mobile.
+  - **`Foldable` hardened.** Added `aria-controls` linking the trigger
+    button to a stable `panelId` derived from the title, `min-height: 44px`
+    to guarantee the WCAG touch-target minimum even on short titles, and
+    an explicit `:focus-visible` ring (2 px cyan, 6 px offset) via a scoped
+    `<style>` tag — the browser default was there but easy to miss against
+    the dark canvas.
+  - **`DreamPipeline` gutter** — changed from fixed `40px` to `auto` with a
+    `minWidth: 32` on the number badge, so short numbers don't waste space
+    on narrow viewports.
+  - **Sharpened the CrewAI rebuttal.** The previous "benchmark deltas
+    inside noise" claim was thin. Replaced with a concrete argument about
+    shared weight files and comparison discipline — multi-agent frameworks
+    don't publish clean comparisons against a single well-prompted agent
+    with the same model + tools + context, and when you check their case
+    studies the baseline almost never controls for those variables.
+  - **Softened the `35 of 35 test cases` claim** in the secret-leak anecdote.
+    Replaced with "every adversarial case we've been able to construct" —
+    the underlying hook is real, but the exact case count was from memory
+    and shouldn't be a load-bearing number.
+
 ### Changed
+
+- **Harness explainer — data/component separation restored.** The initial
+  rewrite inlined `INSTALL_STEPS`, `MEMORY_EXAMPLES`, `IMPLEMENTATION_NOTES`,
+  and `NEURO_NOTES` as constants inside `components.jsx`, which
+  (a) duplicated the existing exports in `data.js` that were no longer
+  imported anywhere, and (b) used shorter/shallower versions of each
+  dataset than the originals. Reverted to importing all four from
+  `data.js` and iterating them in the consumer components — readers now
+  get the richer 8 install steps / 5 memory layers / 6 implementation
+  notes / 6 neuroinformatics notes instead of the 7/5/3/4 inline
+  approximations. Bundle +11 KB for the richer content.
+- **`SECTIONS` icons** simplified to empty strings. The table of contents
+  was using esoteric Unicode glyphs (`§ ▤ ◇ ◈ ◊ ▦ ⬢ ▣ ◉ ▼ ☾ ✦ ∅ ∎ ∞ ◐ ⁂`)
+  as decoration. `TableOfContents.jsx` only renders the icon span when
+  truthy, so empty strings leave the TOC as a clean typographic list of
+  section titles.
+- **`data.js` dead exports removed:** `HERO_STATS` (hero-metric template
+  component deleted in the `/distill` pass), `FRAMINGS` (framings-triad
+  card grid deleted), and `PLACEMENT_TREE` (placement-tree component
+  rebuilt from inline JSX in `components.jsx`).
+
+### Changed from previous entry
 
 - **The Harness explainer — full `/impeccable` stack rewrite.** The initial
   implementation scored 9/20 on `/impeccable:audit` because it violated

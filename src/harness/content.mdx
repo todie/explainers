@@ -342,9 +342,10 @@ benchmark.
 The fix was not "remind the model to be more careful." The fix was a hook
 (`guard-dangerous-commands.sh`) with end-anchored regex that blocks any
 command containing `${VAR_NAME_THAT_MATCHES_SECRET_PATTERN` in echo-adjacent
-contexts, with R1–R4 detection rules. We added a `claude-secret-test`
-adversarial agent. 35 of 35 test cases now pass. The class of mistake is
-gone, not unlikely. Gone.
+contexts, with R1–R4 detection rules covering `echo`, `printf`, `printenv`,
+and every form of parameter expansion that evaluates the variable. Every
+adversarial case we've been able to construct is now blocked. The class of
+mistake is gone, not unlikely. Gone.
 
 This is the entire shape of the argument:
 

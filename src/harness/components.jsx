@@ -38,6 +38,10 @@ import {
   HARNESS_SOURCES,
   REVERIE_REPLACES,
   REVERIE_AMBITIONS,
+  INSTALL_STEPS,
+  MEMORY_EXAMPLES,
+  IMPLEMENTATION_DETAILS,
+  NEUROINFORMATICS_NOTES,
 } from './data'
 import { LAYERS, MECHANISMS, DREAM_PHASES, LOCOMO_LEADERBOARD, LOCOMO_STATS } from '../reverie/data'
 
@@ -94,16 +98,26 @@ function SmallCaps({ children, muted = true }) {
  */
 export function Foldable({ title, note, defaultOpen = false, children }) {
   const [open, setOpen] = useState(defaultOpen)
+  // Stable id so aria-controls + panel linkage is proper, not just cosmetic.
+  // Derived from the title so it's human-inspectable in devtools.
+  const panelId =
+    'foldable-' +
+    String(title || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
   return (
     <div style={{ margin: '48px 0 24px' }}>
       <div style={{ borderTop: `1px solid ${BORDER}`, marginBottom: 20 }} />
       <button
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
+        aria-controls={panelId}
+        className="harness-foldable-btn"
         style={{
           background: 'none',
           border: 'none',
-          padding: 0,
+          padding: '8px 0',
           margin: 0,
           cursor: 'pointer',
           color: TEXT,
@@ -111,10 +125,19 @@ export function Foldable({ title, note, defaultOpen = false, children }) {
           textAlign: 'left',
           font: 'inherit',
           width: '100%',
+          minHeight: 44,
         }}
       >
         <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 12, color: DIM, fontVariant: 'small-caps', letterSpacing: '0.04em', minWidth: 48 }}>
+          <span
+            style={{
+              fontSize: 12,
+              color: DIM,
+              fontVariant: 'small-caps',
+              letterSpacing: '0.04em',
+              minWidth: 48,
+            }}
+          >
             {open ? '— hide' : '+ show'}
           </span>
           <span style={{ fontSize: 18, fontWeight: 600, color: TEXT, letterSpacing: '-0.01em' }}>
@@ -127,6 +150,7 @@ export function Foldable({ title, note, defaultOpen = false, children }) {
       </button>
       {open && (
         <div
+          id={panelId}
           style={{
             marginTop: 20,
             paddingLeft: 20,
@@ -139,6 +163,17 @@ export function Foldable({ title, note, defaultOpen = false, children }) {
           {children}
         </div>
       )}
+      {/* Focus-visible ring injected once per Foldable via a scoped style
+          tag. Uses :focus-visible so the ring only shows on keyboard
+          focus, not on mouse click. Color is the cyan accent so it's
+          unmistakable against the dark canvas. */}
+      <style>{`
+        .harness-foldable-btn:focus-visible {
+          outline: 2px solid ${ACCENT};
+          outline-offset: 6px;
+          border-radius: 2px;
+        }
+      `}</style>
     </div>
   )
 }
@@ -603,7 +638,10 @@ export function DivisionOfLaborGrid() {
 }
 
 // ──────────────────────────────────────────────────────────────────────
-// Neuroscience grid — two-column bio↔impl, no pills, no nested callout
+// Neuroscience grid — two-column bio↔impl on desktop, stacked on mobile.
+// Uses auto-fit minmax(300px, 1fr) so each column gets enough room for
+// its ~50-word paragraph before they fight, and collapses to a single
+// column below ~680px where the two-column layout stopped being legible.
 // ──────────────────────────────────────────────────────────────────────
 
 export function NeuroGrid() {
@@ -616,12 +654,9 @@ export function NeuroGrid() {
             style={{
               padding: '20px 0',
               borderBottom: `1px solid ${BORDER}`,
-              display: 'grid',
-              gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
-              gap: 24,
             }}
           >
-            <div style={{ gridColumn: '1 / -1', marginBottom: 4 }}>
+            <div style={{ marginBottom: 10 }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: TEXT }}>
                 {m.name}{' '}
                 <span style={{ fontSize: 12, color: DIM, fontStyle: 'italic', fontWeight: 400 }}>
@@ -629,19 +664,34 @@ export function NeuroGrid() {
                 </span>
               </div>
             </div>
-            <div>
-              <SmallCaps>Biology</SmallCaps>
-              <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.7, marginTop: 4 }}>
-                {m.bioFunction}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                gap: 24,
+              }}
+            >
+              <div>
+                <SmallCaps>Biology</SmallCaps>
+                <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.7, marginTop: 4 }}>
+                  {m.bioFunction}
+                </div>
+              </div>
+              <div>
+                <SmallCaps>Reverie mapping</SmallCaps>
+                <div style={{ fontSize: 13, color: TEXT, lineHeight: 1.7, marginTop: 4 }}>
+                  {m.reverieMapping}
+                </div>
               </div>
             </div>
-            <div>
-              <SmallCaps>Reverie mapping</SmallCaps>
-              <div style={{ fontSize: 13, color: TEXT, lineHeight: 1.7, marginTop: 4 }}>
-                {m.reverieMapping}
-              </div>
-            </div>
-            <div style={{ gridColumn: '1 / -1', fontSize: 12, color: DIM, fontStyle: 'italic', marginTop: 6 }}>
+            <div
+              style={{
+                fontSize: 12,
+                color: DIM,
+                fontStyle: 'italic',
+                marginTop: 10,
+              }}
+            >
               Key insight: {m.keyInsight}
             </div>
           </div>
@@ -666,8 +716,8 @@ export function DreamPipeline() {
               padding: '20px 0',
               borderBottom: `1px solid ${BORDER}`,
               display: 'grid',
-              gridTemplateColumns: '40px minmax(0, 1fr)',
-              gap: 16,
+              gridTemplateColumns: 'auto minmax(0, 1fr)',
+              gap: 18,
             }}
           >
             <div
@@ -677,6 +727,7 @@ export function DreamPipeline() {
                 color: DIM,
                 fontFamily: MONO,
                 lineHeight: 1,
+                minWidth: 32,
               }}
             >
               {String(i + 1).padStart(2, '0')}
@@ -703,15 +754,21 @@ export function DreamPipeline() {
 }
 
 // ──────────────────────────────────────────────────────────────────────
-// Forget curve — responsive SVG, horizontal Y-axis label
+// Forget curve — responsive SVG, legend in HTML below so it never
+// overlaps the curve on narrow viewports. Horizontal Y-axis label,
+// role + aria-label for screen readers.
 // ──────────────────────────────────────────────────────────────────────
 
 export function ForgetCurve() {
-  const W = 720, H = 300, PL = 52, PR = 20, PT = 40, PB = 44
+  const W = 720, H = 280, PL = 52, PR = 20, PT = 24, PB = 44
   const xs = (cycle) => PL + (cycle / 10) * (W - PL - PR)
   const ys = (pct) => H - PB - (pct / 100) * (H - PT - PB)
-  const strongPath = FORGET_CURVE_POINTS.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xs(d.cycle)} ${ys(d.strong)}`).join(' ')
-  const weakPath = FORGET_CURVE_POINTS.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xs(d.cycle)} ${ys(d.weak)}`).join(' ')
+  const strongPath = FORGET_CURVE_POINTS.map(
+    (d, i) => `${i === 0 ? 'M' : 'L'} ${xs(d.cycle)} ${ys(d.strong)}`
+  ).join(' ')
+  const weakPath = FORGET_CURVE_POINTS.map(
+    (d, i) => `${i === 0 ? 'M' : 'L'} ${xs(d.cycle)} ${ys(d.weak)}`
+  ).join(' ')
   return (
     <figure style={{ margin: '32px 0' }}>
       <div style={{ fontSize: 12, color: DIM, marginBottom: 4 }}>survival (%)</div>
@@ -719,19 +776,30 @@ export function ForgetCurve() {
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label="Decay curve showing strong observations persisting while weak observations fall below threshold over 10 dream cycles"
+        aria-label="Decay curve showing strong observations persisting near 80% while weak observations fall below 10% over 10 dream cycles"
         style={{ width: '100%', height: 'auto', display: 'block' }}
       >
+        {/* Axes */}
         <line x1={PL} y1={H - PB} x2={W - PR} y2={H - PB} stroke={BORDER} strokeWidth={1} />
         <line x1={PL} y1={PT} x2={PL} y2={H - PB} stroke={BORDER} strokeWidth={1} />
+        {/* Y gridlines */}
         {[0, 25, 50, 75, 100].map((pct) => (
           <g key={pct}>
-            <line x1={PL} y1={ys(pct)} x2={W - PR} y2={ys(pct)} stroke={BORDER} strokeWidth={0.5} strokeDasharray="2 4" />
+            <line
+              x1={PL}
+              y1={ys(pct)}
+              x2={W - PR}
+              y2={ys(pct)}
+              stroke={BORDER}
+              strokeWidth={0.5}
+              strokeDasharray="2 4"
+            />
             <text x={PL - 8} y={ys(pct) + 4} textAnchor="end" fontSize={11} fill={DIM} fontFamily={MONO}>
               {pct}
             </text>
           </g>
         ))}
+        {/* X ticks */}
         {[0, 2, 4, 6, 8, 10].map((c) => (
           <text key={c} x={xs(c)} y={H - PB + 16} textAnchor="middle" fontSize={11} fill={DIM} fontFamily={MONO}>
             {c}
@@ -740,16 +808,55 @@ export function ForgetCurve() {
         <text x={(W - PR + PL) / 2} y={H - 12} textAnchor="middle" fontSize={12} fill={MUTED}>
           dream cycles (weeks)
         </text>
+        {/* Curves */}
         <path d={strongPath} stroke={ACCENT} strokeWidth={2.5} fill="none" />
-        <path d={weakPath} stroke={TEXT} strokeWidth={1.5} fill="none" strokeDasharray="5 4" opacity={0.55} />
-        <g transform={`translate(${W - 260}, ${PT + 6})`}>
-          <line x1={0} y1={0} x2={24} y2={0} stroke={ACCENT} strokeWidth={2.5} />
-          <text x={30} y={4} fontSize={12} fill={TEXT}>strong (high access × depth)</text>
-          <line x1={0} y1={20} x2={24} y2={20} stroke={TEXT} strokeWidth={1.5} strokeDasharray="5 4" opacity={0.55} />
-          <text x={30} y={24} fontSize={12} fill={TEXT}>weak (bare facts, unused)</text>
-        </g>
+        <path
+          d={weakPath}
+          stroke={TEXT}
+          strokeWidth={1.5}
+          fill="none"
+          strokeDasharray="5 4"
+          opacity={0.55}
+        />
       </svg>
-      <figcaption style={{ fontSize: 12, color: DIM, fontStyle: 'italic', marginTop: 8 }}>
+      {/* Legend in HTML below the SVG so it never overlaps the curve
+          on narrow viewports. Flex wraps on mobile. */}
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '12px 24px',
+          marginTop: 12,
+          fontSize: 12,
+          color: TEXT,
+        }}
+      >
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <span
+            style={{
+              display: 'inline-block',
+              width: 24,
+              height: 3,
+              background: ACCENT,
+              borderRadius: 1,
+            }}
+          />
+          strong (high access × depth)
+        </span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <span
+            style={{
+              display: 'inline-block',
+              width: 24,
+              height: 0,
+              borderTop: `2px dashed ${TEXT}`,
+              opacity: 0.55,
+            }}
+          />
+          weak (bare facts, unused)
+        </span>
+      </div>
+      <figcaption style={{ fontSize: 12, color: DIM, fontStyle: 'italic', marginTop: 12 }}>
         Synaptic Homeostasis (SHY) translated to a daemon: proportional decay every cycle, ranking
         preserved, weak observations fall below the retention threshold and archive.
       </figcaption>
@@ -909,103 +1016,44 @@ export function ReverieAmbitionList() {
 }
 
 // ──────────────────────────────────────────────────────────────────────
-// Install guide — plain headings + fenced code, no card chrome
+// Install guide — plain headings + fenced code, no card chrome.
+// Iterates INSTALL_STEPS from data.js (each step has a nested array
+// of code snippets with optional lang labels).
 // ──────────────────────────────────────────────────────────────────────
 
 export function InstallGuide() {
-  // Small, inline, newbie-friendly walk-through of the current setup.
-  // Reads as a numbered list of prose + code, not a grid of cards.
-  const steps = [
-    {
-      n: 1,
-      title: 'Install Claude Code',
-      why: 'The CLI is what executes the hooks, loads CLAUDE.md, and talks to MCP servers.',
-      code: 'curl -fsSL https://claude.ai/install.sh | sh\nclaude --version',
-    },
-    {
-      n: 2,
-      title: 'Install Engram',
-      why: 'The persistent memory daemon. Runs as a local HTTP server on localhost:7437 and exposes MCP tools for writes.',
-      code: 'cargo install --git https://github.com/todie/engram-rs\nengram serve &\nmem raw "/health"   # → {"status":"ok"}',
-    },
-    {
-      n: 3,
-      title: 'Install RTK',
-      why: 'The shell-output compression proxy. Wraps git / curl / docker / gh / kubectl and returns schema-extracted stdout.',
-      code: 'cargo install --git https://github.com/todie/rtk\nrtk --version\nrtk git status   # try it directly',
-    },
-    {
-      n: 4,
-      title: 'Wire the PreToolUse hook',
-      why: 'Makes Claude Code rewrite bash calls through rtk transparently. This is where the 60–90% savings come from.',
-      code: `# ~/.claude/settings.json (excerpt)
-{
-  "hooks": {
-    "PreToolUse": [
-      { "matcher": "Bash", "command": "~/.claude/hooks/rtk-rewrite.sh" }
-    ]
-  }
-}`,
-    },
-    {
-      n: 5,
-      title: 'Add the secret-leak guard',
-      why: 'Blocks echo $SECRET_VAR, ${VAR:-fallback} expansions on credential names, and curl|sh patterns. Absolute, not probabilistic.',
-      code: `# Download and enable
-curl -o ~/.claude/hooks/guard-dangerous-commands.sh \\
-  https://raw.githubusercontent.com/todie/claude-hooks/main/guard-dangerous-commands.sh
-chmod +x ~/.claude/hooks/guard-dangerous-commands.sh`,
-    },
-    {
-      n: 6,
-      title: 'Populate CLAUDE.md and auto-memory',
-      why: 'The zero-cost context layer. CLAUDE.md holds behavioral rules, auto-memory holds who-you-are facts. Both load on every session.',
-      code: `~/.claude/CLAUDE.md                    # global rules
-~/.claude/memory/MEMORY.md             # auto-memory index
-~/.claude/memory/user_profile.md       # "who is this engineer"
-~/.claude/memory/feedback_testing.md   # "never mock the DB in tests"`,
-    },
-    {
-      n: 7,
-      title: 'Add the MCP servers',
-      why: 'Linear, Obsidian, Gmail, Google Calendar — whatever external systems the work touches. Managed in claude.ai for cloud servers, settings.json for local ones.',
-      code: `# Local MCP server entry in ~/.claude/settings.json
-"mcpServers": {
-  "obsidian": {
-    "command": "node",
-    "args": ["~/.claude/mcp/obsidian/index.js"]
-  }
-}`,
-    },
-  ]
   return (
     <section style={{ margin: '16px 0' }}>
-      {steps.map((s) => (
-        <div key={s.n} style={{ marginBottom: 28 }}>
+      {INSTALL_STEPS.map((step, i) => (
+        <div key={step.id} style={{ marginBottom: 32 }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: TEXT, marginBottom: 4 }}>
             <span style={{ color: DIM, fontFamily: MONO, fontSize: 13, marginRight: 10 }}>
-              {String(s.n).padStart(2, '0')}
+              {String(i + 1).padStart(2, '0')}
             </span>
-            {s.title}
+            {step.title}
           </div>
-          <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.7, margin: '0 0 8px 32px' }}>
-            {s.why}
+          <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.7, margin: '0 0 10px 32px' }}>
+            {step.why}
           </p>
-          <pre
-            style={{
-              margin: '0 0 0 32px',
-              padding: 14,
-              background: SURFACE,
-              borderLeft: `2px solid ${BORDER}`,
-              fontSize: 12,
-              color: TEXT,
-              fontFamily: MONO,
-              lineHeight: 1.65,
-              overflow: 'auto',
-            }}
-          >
-            {s.code}
-          </pre>
+          {step.steps.map((snippet, j) => (
+            <pre
+              key={j}
+              style={{
+                margin: '0 0 8px 32px',
+                padding: 14,
+                background: SURFACE,
+                borderLeft: `2px solid ${BORDER}`,
+                fontSize: 12,
+                color: TEXT,
+                fontFamily: MONO,
+                lineHeight: 1.65,
+                overflow: 'auto',
+                whiteSpace: 'pre',
+              }}
+            >
+              {snippet.code}
+            </pre>
+          ))}
         </div>
       ))}
     </section>
@@ -1013,97 +1061,15 @@ chmod +x ~/.claude/hooks/guard-dangerous-commands.sh`,
 }
 
 // ──────────────────────────────────────────────────────────────────────
-// Memory examples — good/bad pairs, hairlines only
+// Memory examples — good/bad pairs per layer, hairlines only.
+// Iterates MEMORY_EXAMPLES from data.js. Color is used ONLY to teach
+// good/bad binary semantics — the single case .impeccable.md allows.
 // ──────────────────────────────────────────────────────────────────────
 
 export function MemoryExamples() {
-  // Inline examples per layer. Color is used only to teach good/bad
-  // semantics — that's the one case .impeccable.md allows.
-  const layers = [
-    {
-      layer: 'CLAUDE.md (behavioral directive)',
-      when: 'A rule that must be true on every turn. Blast radius justifies always-on cost.',
-      examples: [
-        {
-          kind: 'good',
-          text: '- **sudo:** password-protected. Suggest userspace alternatives first; ask before using sudo.',
-          why: 'Short, imperative, names the action, gives the fallback.',
-        },
-        {
-          kind: 'bad',
-          text: '- We usually prefer not to use sudo unless really needed, and even then we should probably ask first most of the time.',
-          why: 'Hedged, verbose, no imperative. The model cannot honor "usually" / "probably" reliably.',
-        },
-      ],
-    },
-    {
-      layer: 'Auto-memory (always-loaded fact)',
-      when: 'Stable fact about the user or project that must be present before the first question is asked.',
-      examples: [
-        {
-          kind: 'good',
-          text: '---\ntype: user\n---\nChristian Todie: platform/infra engineer. Rust-first. Deep C++/systems/security background. Frame explanations for a peer.',
-          why: 'Typed, short, names the audience frame so the model can adjust register automatically.',
-        },
-        {
-          kind: 'bad',
-          text: 'User is probably an engineer and likes Rust',
-          why: 'No front-matter, no type, hedged. Will not be treated as load-bearing.',
-        },
-      ],
-    },
-    {
-      layer: 'Engram (atomic project fact)',
-      when: 'Decision, bug root cause, convention, or discovery that only matters inside a project scope.',
-      examples: [
-        {
-          kind: 'good',
-          text: 'mem_save(topic_key="bug/anthropic-key-leak", project="explainers", content="${VAR:-fallback} echoes the VALUE when set, not the fallback. Hook guard-dangerous-commands.sh now blocks this class end-anchored. 35/35 adversarial tests pass.")',
-          why: 'Topic-key named under a family, scoped to project, describes cause + fix + evidence.',
-        },
-        {
-          kind: 'bad',
-          text: 'mem_save(content="fixed a bug with env vars today")',
-          why: 'No topic key (unfindable), no project (will leak across scopes), no cause, no fix, no evidence.',
-        },
-      ],
-    },
-    {
-      layer: 'Obsidian (long-form prose)',
-      when: 'Design doc, post-mortem, research notes — anything that flows over multiple paragraphs and wants wikilinks.',
-      examples: [
-        {
-          kind: 'good',
-          text: '# Reverie — consolidation daemon\n\n## Problem\n[[engram]] is flat-keyword-only. 62% tombstone rate after proactive-save Goodharted itself...',
-          why: 'H1 title, wikilinks to related notes, structured sections, lives in ~/vault/projects/ for PARA.',
-        },
-        {
-          kind: 'bad',
-          text: 'engram notes.md: "engram is good but we need more"',
-          why: 'No structure, no links, no context, will rot. Also a single atomic claim — belongs in Engram, not Obsidian.',
-        },
-      ],
-    },
-    {
-      layer: 'Linear (specification)',
-      when: 'The contract for a unit of work. Must be written before the model starts, and must refuse drift.',
-      examples: [
-        {
-          kind: 'good',
-          text: 'Title: Reduce session-token TTL from 3600s to 900s.\nAC: existing sessions stay valid, /health returns 200, tests in test_auth pass.\nOut of scope: refresh path, cookie domain, OAuth migration.',
-          why: 'Acceptance criteria are testable. Out-of-scope is explicit. The model can refuse drift.',
-        },
-        {
-          kind: 'bad',
-          text: 'Title: Fix the auth bug',
-          why: 'No criteria. The model will wander. The PR will sprawl. The review will reopen settled questions.',
-        },
-      ],
-    },
-  ]
   return (
     <section style={{ margin: '16px 0' }}>
-      {layers.map((layer) => (
+      {MEMORY_EXAMPLES.map((layer) => (
         <div key={layer.layer} style={{ marginBottom: 32 }}>
           <div style={{ fontSize: 16, fontWeight: 700, color: TEXT, marginBottom: 2 }}>
             {layer.layer}
@@ -1120,7 +1086,13 @@ export function MemoryExamples() {
                 borderLeft: `2px solid ${ex.kind === 'good' ? SEMANTIC_GOOD : SEMANTIC_BAD}`,
               }}
             >
-              <div style={{ fontSize: 12, color: ex.kind === 'good' ? SEMANTIC_GOOD : SEMANTIC_BAD, marginBottom: 4 }}>
+              <div
+                style={{
+                  fontSize: 12,
+                  color: ex.kind === 'good' ? SEMANTIC_GOOD : SEMANTIC_BAD,
+                  marginBottom: 4,
+                }}
+              >
                 <SmallCaps muted={false}>{ex.kind === 'good' ? 'Good' : 'Bad'}</SmallCaps>
               </div>
               <pre
@@ -1149,31 +1121,13 @@ export function MemoryExamples() {
 }
 
 // ──────────────────────────────────────────────────────────────────────
-// Engineer + scientist asides — inline, hairline only
+// Engineer + scientist asides — hairline-only, iterate data from data.js
 // ──────────────────────────────────────────────────────────────────────
-
-const IMPLEMENTATION_NOTES = [
-  {
-    title: 'Why FTS5 over a vector DB',
-    body:
-      'FTS5 gives you bm25 + prefix matching + phrase queries + boolean operators in one query language, with sub-millisecond latency on sub-gigabyte indexes, with zero infrastructure beyond a SQLite file. Vector stores add an embedding step at write, another at read, and a similarity-not-semantics failure mode where a query and its negation are near-neighbors. For a single-user coding harness the payoff curve favors keyword search by a wide margin. The LoCoMo leaderboard agrees: consolidation-based systems outperform vector-based systems across the board, and the substrate is not the differentiator.',
-  },
-  {
-    title: 'Topic-key conventions',
-    body:
-      'Every Engram write uses a topic_key of the form family/slug. Families are fixed: pattern/, bug/, decision/, discovery/, convention/, reference/, user/, feedback/, project/. Slugs are kebab-case, project-scoped, and deterministic given the content — which is what makes upsert-not-append work. Writing the same fact twice under the same topic_key updates the existing observation; writing it under a different topic_key creates a second row and starts the drift we spent the audit cleaning up.',
-  },
-  {
-    title: 'Read vs. write split in practice',
-    body:
-      'The bash client (mem raw, hitting localhost:7437 via curl) is used for every search, every context load, every session-start pull. The MCP tools (mem_save, mem_update) are used only when actually writing. The split exists because MCP round-trips are ~60× slower than the bash client, and a 200ms cost per read would cause the model to skip memory entirely on most turns — and atrophied memory is the failure mode of every memory system that exists today.',
-  },
-]
 
 export function ImplementationDetails() {
   return (
     <section>
-      {IMPLEMENTATION_NOTES.map((d) => (
+      {IMPLEMENTATION_DETAILS.map((d) => (
         <div key={d.title} style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: TEXT, marginBottom: 6 }}>
             {d.title}
@@ -1185,33 +1139,10 @@ export function ImplementationDetails() {
   )
 }
 
-const NEURO_NOTES = [
-  {
-    title: 'Why FIFO is the wrong scheduler',
-    body:
-      'Sharp-wave ripple replay during NREM is reward-modulated and novelty-biased, not chronological. Buzsáki 2015 measured the replay bias directly in rodents and humans — the experiences that mattered for performance the next day were preferentially reactivated during sleep. A replay queue scored purely on recency is throwing away the signal that decides what should be consolidated at all.',
-  },
-  {
-    title: 'Why catastrophic interference is a Complementary Learning Systems failure',
-    body:
-      'McClelland, McNaughton & O\'Reilly 1995 is the foundational paper. The argument: you need fast one-shot learning (hippocampus) and slow statistical learning (neocortex) because they solve different problems and fight each other if you try to do both in one substrate. Writing directly to a distributed representation overwrites prior learning in predictable, mathematical ways. Every agent-that-learns-from-its-conversations that skips the staging buffer is re-running the same experiment the paper already ran, and getting the same answer.',
-  },
-  {
-    title: 'Why "infinite memory" is biologically illiterate',
-    body:
-      'Tononi & Cirelli 2014 — the Synaptic Homeostasis Hypothesis — argues that slow-wave sleep exists primarily to proportionally downscale synaptic weights across the brain. Awake learning saturates synapses; sleep prunes the weakest. Without the pruning, signal-to-noise collapses. Patient H.M. (Scoville & Milner 1957) is the existence proof that forgetting and remembering are dual operations on the same substrate: remove the hippocampus, lose both. A memory system that cannot forget is not more powerful — it is failing in a way that biology already warned about.',
-  },
-  {
-    title: 'Why spacing > frequency',
-    body:
-      'Cepeda et al. 2008 meta-analyzed hundreds of spacing studies: the optimal retention interval is 10–30% of the target retention period. Five distinct sessions spread over two weeks beats fifty accesses in one afternoon by a wide margin. Engram\'s current importance proxy is access count; Reverie\'s will be session_spread with an exponential stability parameter, following the Ebbinghaus-style model A-MEM (Feb 2025) and EverMemOS (Jan 2026) are already using.',
-  },
-]
-
 export function NeuroAsides() {
   return (
     <section>
-      {NEURO_NOTES.map((d) => (
+      {NEUROINFORMATICS_NOTES.map((d) => (
         <div key={d.title} style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: TEXT, marginBottom: 6 }}>
             {d.title}

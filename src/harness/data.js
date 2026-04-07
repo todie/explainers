@@ -11,64 +11,37 @@
  */
 
 // Section IDs must match rehype-slug output of <h2>'s in content.mdx.
-// If you change a heading, update the corresponding id here for TOC scroll-spy.
+// If you change a heading, update the corresponding id here for TOC
+// scroll-spy. Icons intentionally omitted per the /impeccable post-audit
+// cleanup — TableOfContents only renders the icon span when truthy, so
+// empty strings leave the TOC as a clean typographic list of titles.
 export const SECTIONS = [
-  { id: 'three-framings', title: 'Framings', icon: '§' },
-  { id: 'the-misconception', title: 'Heresy', icon: '!' },
-  { id: 'the-hierarchy', title: 'Hierarchy', icon: '▤' },
-  { id: 'rtk-the-shell-that-lies', title: 'RTK', icon: '◇' },
-  { id: 'engram-the-database', title: 'Engram', icon: '◈' },
-  { id: 'auto-memory-the-cache', title: 'Auto-mem', icon: '◊' },
-  { id: 'obsidian-the-prose-layer', title: 'Obsidian', icon: '▦' },
-  { id: 'linear-the-spec-layer', title: 'Linear', icon: '⬢' },
-  { id: 'hooks-not-hopes', title: 'Hooks', icon: '▣' },
-  { id: 'programmer-as-brain', title: 'Brain', icon: '◉' },
-  { id: 'where-engram-falls-short', title: 'Audit', icon: '▼' },
-  { id: 'reverie-the-cortex', title: 'Reverie', icon: '☾' },
-  { id: 'dreaming', title: 'Dreaming', icon: '✦' },
-  { id: 'selective-forgetting', title: 'Forgetting', icon: '∅' },
-  { id: 'the-leaderboard', title: 'LoCoMo', icon: '∎' },
-  { id: 'why-it-compounds', title: 'Compounds', icon: '∞' },
-  { id: 'the-shape-of-it', title: 'Shape', icon: '◐' },
-  { id: 'references', title: 'Sources', icon: '⁂' },
+  { id: 'three-framings',         title: 'Framings',   icon: '' },
+  { id: 'the-misconception',      title: 'Heresy',     icon: '' },
+  { id: 'the-hierarchy',          title: 'Hierarchy',  icon: '' },
+  { id: 'rtk-the-shell-that-lies', title: 'RTK',       icon: '' },
+  { id: 'engram-the-database',    title: 'Engram',     icon: '' },
+  { id: 'auto-memory-the-cache',  title: 'Auto-mem',   icon: '' },
+  { id: 'obsidian-the-prose-layer', title: 'Obsidian', icon: '' },
+  { id: 'linear-the-spec-layer',  title: 'Linear',     icon: '' },
+  { id: 'hooks-not-hopes',        title: 'Hooks',      icon: '' },
+  { id: 'programmer-as-brain',    title: 'Brain',      icon: '' },
+  { id: 'where-engram-falls-short', title: 'Audit',    icon: '' },
+  { id: 'reverie-the-cortex',     title: 'Reverie',    icon: '' },
+  { id: 'dreaming',               title: 'Dreaming',   icon: '' },
+  { id: 'selective-forgetting',   title: 'Forgetting', icon: '' },
+  { id: 'the-leaderboard',        title: 'LoCoMo',     icon: '' },
+  { id: 'why-it-compounds',       title: 'Compounds',  icon: '' },
+  { id: 'the-shape-of-it',        title: 'Shape',      icon: '' },
+  { id: 'references',             title: 'Sources',    icon: '' },
 ]
 
-// ─── HERO STATS ──────────────────────────────────────────────────────
-
-export const HERO_STATS = [
-  { label: 'Token savings', value: '60–90%', sub: 'on shell calls via RTK', color: '#22d3ee' },
-  { label: 'Tombstone rate', value: '62%',   sub: 'unconstrained writes go feral', color: '#f87171' },
-  { label: 'Engram baseline', value: '~80', sub: 'LoCoMo F1 (FTS5 + topic-key)', color: '#facc15' },
-  { label: 'Reverie target',  value: '92+', sub: 'EverMemOS band, brain-inspired', color: '#a855f7' },
-  { label: 'Layers',          value: '5',   sub: 'CPU cache hierarchy isomorphism', color: '#4ade80' },
-  { label: 'Mechanisms',      value: '10',  sub: 'neuroscience → daemon', color: '#60a5fa' },
-]
-
-// ─── THREE FRAMINGS ──────────────────────────────────────────────────
-
-export const FRAMINGS = [
-  {
-    id: 'intensity',
-    label: 'For the infra crowd',
-    title: 'The other end of the intensity curve',
-    body: 'Claude Code is a great product, but the defaults are tuned for casual use. This is what it looks like when one engineer ships across a dozen Rust, Python, and TypeScript projects daily and treats the model less like an oracle and more like the limb of a much larger organism.',
-    color: '#22d3ee',
-  },
-  {
-    id: 'gap',
-    label: 'For the AI researcher',
-    title: 'Solved in research, unsolved in practice',
-    body: 'LLM memory has been hitting 88–93% on LoCoMo for over a year. Production tooling still ships with "context window + RAG + hope." This piece is the gap, sized honestly, and the bridge we are building across it.',
-    color: '#a855f7',
-  },
-  {
-    id: 'component',
-    label: 'For the skeptic',
-    title: 'The model is one component, not the system',
-    body: 'Most AI tooling treats the model as the system. We treat the model as one component in a system. The component is fast, fluent, and confidently wrong about ~5% of things in ways the next token never reveals. Production work needs guarantees, not probabilities.',
-    color: '#facc15',
-  },
-]
+// HERO_STATS and FRAMINGS deleted in the post-audit cleanup — the
+// hero-metric template and framings-triad card grid both violated
+// .impeccable.md §"Clean and sharp, not gamified" and the components
+// that rendered them (HeroStats, FramingsTriad) were removed. The three
+// framings now live inline in content.mdx as italic-labeled prose
+// paragraphs, and the stats are woven into the opening lede.
 
 // ─── RTK SAVINGS BREAKDOWN ───────────────────────────────────────────
 
@@ -215,24 +188,10 @@ export const DIVISION_OF_LABOR = [
   },
 ]
 
-// ─── PLACEMENT DECISION TREE NODES ───────────────────────────────────
-
-export const PLACEMENT_TREE = {
-  root: {
-    question: 'Is it derivable from code or git?',
-    yes: { leaf: true, label: "DON'T STORE", color: '#6b7280', reason: 'Let the source of truth win.' },
-    no: {
-      question: 'Is it a behavioral directive?',
-      yes: { leaf: true, label: 'CLAUDE.md / auto-memory', color: '#ef4444', reason: 'Always loaded. Zero-sum capacity. Highest blast radius first.' },
-      no: {
-        question: 'Is it atomic or prose?',
-        atomic: { leaf: true, label: 'ENGRAM', color: '#facc15', reason: 'Searchable. Topic-key upsertable. Project-scoped.' },
-        prose: { leaf: true, label: 'OBSIDIAN', color: '#22c55e', reason: 'Browsable. Wikilinks. MOCs. Long-form thinking.' },
-        spec: { leaf: true, label: 'LINEAR', color: '#a855f7', reason: 'Acceptance criteria. Out of scope. The contract.' },
-      },
-    },
-  },
-}
+// PLACEMENT_TREE data deleted in the post-audit cleanup — the new
+// PlacementTree component in components.jsx renders the decision tree
+// directly from inline JSX (reflows on mobile via auto-fit grid), so
+// the per-node color fields are no longer consumed by any renderer.
 
 // ─── ENGRAM AUDIT — KEY FINDINGS (subset shown inline) ───────────────
 
@@ -619,8 +578,8 @@ export const ADVERSARIAL_TARGETS = [
     name: 'CrewAI / AutoGen',
     section: 'brain',
     claim: 'Multi-agent role-play improves quality via specialization.',
-    rebuttal: 'Performative organizational charts. The "manager agent delegates to coder agent who reports to QA agent" pattern is the same model talking to itself with different system prompts. The bureaucracy is theater. Adds latency, adds cost, adds zero capability over a single well-prompted call against the same model.',
-    evidence: 'Benchmark deltas vs. single-agent baselines on the same model are inside noise on every public eval that uses both. The tax is real; the lift is not.',
+    rebuttal: 'Performative organizational charts. The "manager agent delegates to coder agent who reports to QA agent" pattern is the same model talking to itself with different system prompts. The bureaucracy is theater — the agents share a weight file, a context window shape, and a failure mode. Adding more of them does not add capability; it adds turns, and every turn is a new chance for drift. The actual wins from multi-agent setups come from orchestration over specialized tools (search, code execution, memory lookup), not from role-playing job titles.',
+    evidence: 'Multi-agent frameworks do not report wins over a single well-prompted agent on any public eval with a clean comparison. The latency and token tax are measurable; the quality lift is not. When you see a multi-agent case study, check whether the baseline was the same model with the same tools and the same context — it almost never is.',
   },
   {
     id: 'mem0',
