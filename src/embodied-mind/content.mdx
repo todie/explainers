@@ -1,0 +1,96 @@
+import MdxExplainer from '../shared/MdxExplainer'
+import {
+  SECTIONS,
+  HERO_STATS,
+  FRAMINGS,
+  FINDINGS,
+  MODEL,
+  EVIDENCE,
+  PRACTICAL,
+  SOURCES,
+} from './data'
+import {
+  HeroStatsGrid,
+  FramingGrid,
+  FindingList,
+  TenetGrid,
+  EvidenceList,
+  PracticalGrid,
+  SourceList,
+  Callout,
+} from './components'
+
+<MdxExplainer accent="#f87171" sections={SECTIONS}>
+
+# The Body Is Not A Vessel
+
+Also: the mind is not a chip. Both framings are still dualism. A short tour of
+the evidence that mind and body are not two systems with a relationship —
+they are one system at two levels of description.
+
+<HeroStatsGrid stats={HERO_STATS} />
+
+## The question
+
+Two framings you'll hear. Both wrong. Both wrong in the same way — they assume
+the thing they should be explaining.
+
+<FramingGrid positions={FRAMINGS.positions} />
+
+<Callout color="#f87171" label="The structural error">
+  Both framings are structurally identical: two things with a relationship.
+  The actual answer — and this is what 40 years of neuroscience and embodied
+  cognition converge on — is that there is only one thing. The mind is not
+  in the body, not on the body, not produced by the body. The mind IS a
+  body-wide process. The distinction is a residue of 17th-century metaphysics,
+  not a feature of the world.
+</Callout>
+
+## Four findings
+
+Each of these is a research program spanning decades, not a single paper.
+Any one of them would be enough to falsify strict dualism. Together, the
+picture is decisive.
+
+<FindingList findings={FINDINGS} />
+
+## What replaces dualism
+
+Here's what the convergent evidence actually supports. Not a philosophical
+claim — a description of what brains do.
+
+<TenetGrid tenets={MODEL.tenets} />
+
+<Callout color="#ec4899" label="Conclusion">
+  Given all of this, "where is the mind" is the wrong question. There is no
+  locus. The mind is a pattern of activity maintained across a body that is
+  itself the system doing the maintaining. Asking "is the body a vessel for
+  the mind, or is the mind a chip for the body?" is like asking "is the song
+  a vessel for the dance, or is the dance a chip for the song?" — neither.
+  They're the same process described at different levels.
+</Callout>
+
+## Evidence lines
+
+Specific studies and cases. Not a complete survey — eight rows that each, in
+their own way, would have embarrassed Descartes.
+
+<EvidenceList items={EVIDENCE} />
+
+## So what
+
+<PracticalGrid items={PRACTICAL} />
+
+## Sources
+
+Canonical references. Books link to publishers / archive.org; journal papers
+link to the publisher version. Nothing here is cited on vibes.
+
+<SourceList sources={SOURCES} />
+
+---
+
+Written 2026-04-06 in response to a Threads exchange. Built by
+[todie.io](https://todie.io).
+
+</MdxExplainer>

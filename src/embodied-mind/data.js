@@ -356,11 +356,14 @@ export const SOURCES = [
   },
 ]
 
+// Note: IDs match the slugs rehype-slug auto-generates from the h2 heading
+// text in content.mdx ("The question" → "the-question", etc.). If you change
+// a heading in the .mdx, update the corresponding id here.
 export const SECTIONS = [
-  { id: 'framings', title: 'The Question', icon: '?' },
-  { id: 'findings', title: 'Findings', icon: '!' },
-  { id: 'model', title: 'The Model', icon: '◉' },
-  { id: 'evidence', title: 'Evidence', icon: '▲' },
-  { id: 'practical', title: 'So What', icon: '→' },
+  { id: 'the-question', title: 'The Question', icon: '?' },
+  { id: 'four-findings', title: 'Findings', icon: '!' },
+  { id: 'what-replaces-dualism', title: 'The Model', icon: '◉' },
+  { id: 'evidence-lines', title: 'Evidence', icon: '▲' },
+  { id: 'so-what', title: 'So What', icon: '→' },
   { id: 'sources', title: 'Sources', icon: '§' },
 ]
