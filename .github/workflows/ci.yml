@@ -135,7 +135,7 @@ jobs:
           ls -la dist/functions/ 2>/dev/null || echo "(functions compiled at deploy time, not in dist/)"
 
       - name: Upload dist artifact
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: dist
@@ -146,6 +146,80 @@ jobs:
             public/_headers
           retention-days: 1
           include-hidden-files: false
+
+  preview:
+    name: Deploy preview to Cloudflare Pages
+    needs: build
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+      pull-requests: write
+    steps:
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+
+      - name: Sanity check artifact
+        run: |
+          set -euo pipefail
+          test -f dist/index.html || (echo "::error::dist/index.html missing from artifact" && exit 1)
+          test -d functions/api/private || (echo "::error::functions/api/private/ missing from artifact" && exit 1)
+          test -f wrangler.toml || (echo "::error::wrangler.toml missing from artifact" && exit 1)
+          echo "✓ artifact looks sane"
+
+      - name: Compute preview branch slug
+        id: slug
+        run: |
+          set -euo pipefail
+          # CF Pages branch aliases must be lowercase and can only contain
+          # [a-z0-9-]. Map everything else to '-', collapse runs, trim ends.
+          # Max length 28 to stay well under the subdomain 63-char limit
+          # (project + branch + .pages.dev).
+          raw="${GITHUB_HEAD_REF}"
+          slug=$(echo "$raw" | tr 'A-Z' 'a-z' | sed -E 's/[^a-z0-9-]+/-/g; s/-+/-/g; s/^-//; s/-$//' | cut -c1-28 | sed -E 's/-$//')
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+          echo "Preview branch slug: $slug"
+
+      - name: Deploy preview to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=explainers --branch=${{ steps.slug.outputs.slug }} --commit-dirty=true
+          wranglerVersion: "4.80.0"
+
+      - name: Comment preview URL on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const slug = '${{ steps.slug.outputs.slug }}';
+            const url = `https://${slug}.explainers.pages.dev`;
+            const marker = '<!-- impeccable-preview -->';
+            const body = `${marker}\n\n## Cloudflare Pages preview\n\n**${url}**\n\nBranch alias: \`${slug}\`\nDeploys automatically on every push to this PR.\n\nQuick links:\n- [${url}/](${url}/)\n- [${url}/gestalt/](${url}/gestalt/)\n- [${url}/embodied-mind/](${url}/embodied-mind/)\n- [${url}/pidgin-tokens/](${url}/pidgin-tokens/)`;
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                ...context.repo,
+                comment_id: existing.id,
+                body,
+              });
+              core.info(`Updated preview comment ${existing.id}`);
+            } else {
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+              core.info('Created preview comment');
+            }
 
   deploy:
     name: Deploy to Cloudflare Pages
