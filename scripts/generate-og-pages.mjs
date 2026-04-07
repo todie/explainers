@@ -9,7 +9,7 @@
  * OG images are generated separately by uri-snapshot in CI.
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from 'fs'
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs'
 import { resolve, join } from 'path'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
@@ -39,7 +39,6 @@ const FALLBACK_IMAGE = `${SITE}${BASE}/previews/home.jpeg`
 
 // Check whether a route-specific preview exists in the built dist/previews
 // directory. If not, fall back to the home preview so unfurlers never 404.
-import { existsSync } from 'fs'
 function previewFor(id) {
   const jpeg = join(DIST, 'previews', `${id}.jpeg`)
   return existsSync(jpeg) ? `${SITE}${BASE}/previews/${id}.jpeg` : FALLBACK_IMAGE
@@ -110,6 +109,6 @@ for (const page of extraPages) {
 
 const total = EXPLAINERS.length + extraPages.length
 console.log(
-  `\nGenerated OG pages for ${EXPLAINERS.length} explainers + ${extraPages.length} extra pages.` +
-  (fellBack > 0 ? ` (${fellBack} using fallback image — run Playwright preview workflow to refresh.)` : '')
+  `\nGenerated ${total} OG pages (${EXPLAINERS.length} explainers + ${extraPages.length} extra).` +
+  (fellBack > 0 ? ` ${fellBack} using fallback image — run Playwright preview workflow to refresh.` : '')
 )
