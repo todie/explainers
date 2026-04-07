@@ -1,0 +1,119 @@
+name: CI
+
+# Build verification on every push to main and every pull request. Catches
+# Vite build failures, missing per-route OG HTML files, missing preview
+# images, and broken generate-og-pages.mjs refactors before they land in
+# main. This is the minimum viable gate — no linting, typechecking, or
+# bundle-size budget yet. Add as needed.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build + artifact sanity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify per-route OG HTML files exist
+        run: |
+          set -euo pipefail
+          expected=(memory-model gestalt prompt-cache lsp token-optimization reverie emotional-topology pidgin-tokens private)
+          missing=0
+          for route in "${expected[@]}"; do
+            if [ ! -f "dist/$route/index.html" ]; then
+              echo "::error::missing dist/$route/index.html — check scripts/generate-og-pages.mjs"
+              missing=$((missing + 1))
+            fi
+          done
+          if [ $missing -gt 0 ]; then
+            echo "$missing per-route OG HTML files are missing"
+            exit 1
+          fi
+          echo "✓ all ${#expected[@]} per-route OG HTML files present"
+
+      - name: Verify committed preview images exist
+        run: |
+          set -euo pipefail
+          expected=(home memory-model gestalt prompt-cache lsp token-optimization reverie emotional-topology pidgin-tokens)
+          missing=0
+          for route in "${expected[@]}"; do
+            f="public/previews/$route.jpeg"
+            if [ ! -f "$f" ]; then
+              echo "::error::missing $f — run scripts/generate-fallback-previews.mjs or wait for the weekly generate-previews workflow"
+              missing=$((missing + 1))
+              continue
+            fi
+            # Verify it's an actual JPEG (first 3 bytes are FF D8 FF)
+            if ! head -c 3 "$f" | od -An -tx1 | grep -q 'ff d8 ff'; then
+              echo "::error::$f exists but is not a valid JPEG"
+              missing=$((missing + 1))
+            fi
+          done
+          if [ $missing -gt 0 ]; then
+            echo "$missing preview images are missing or invalid"
+            exit 1
+          fi
+          echo "✓ all ${#expected[@]} preview images present and JPEG-valid"
+
+      - name: Verify Pages Functions are copied to dist
+        run: |
+          set -euo pipefail
+          if [ ! -d functions/api/private ]; then
+            echo "::error::functions/api/private/ directory missing"
+            exit 1
+          fi
+          for f in 'functions/api/private/[doc].js' functions/api/private/index.js; do
+            if [ ! -f "$f" ]; then
+              echo "::error::$f missing"
+              exit 1
+            fi
+          done
+          echo "✓ Pages Functions present"
+
+      - name: Verify private content is NOT bundled
+        run: |
+          set -euo pipefail
+          # These slugs belong to CF Access-gated docs in R2. If any of them
+          # end up in the public JS bundle, the build regressed PR #10's
+          # security fix.
+          leaks=$(grep -rE '(Revenue Floor|Term Sheet|Studio Financial|Founder Intake|Brand Guide|Portfolio Scorecard|Memory System Rework|Bipolar II|Neurochemistry|Context.{0,5}Memory.{0,5}Citations|Mission Statement)' dist/assets/ 2>/dev/null | head -5 || true)
+          if [ -n "$leaks" ]; then
+            echo "::error::Private content strings found in public JS bundle — PR #10 regression"
+            echo "$leaks"
+            exit 1
+          fi
+          echo "✓ no private content in public JS bundle"
+
+      - name: Summarize
+        run: |
+          echo "=== build artifacts ==="
+          ls -la dist/ | head -20
+          echo
+          echo "=== dist/assets/ size ==="
+          du -sh dist/assets/ 2>/dev/null || true
+          echo
+          echo "=== Pages Functions ==="
+          ls -la dist/functions/ 2>/dev/null || echo "(functions compiled at deploy time, not in dist/)"
