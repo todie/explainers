@@ -56,6 +56,14 @@ const ACCENTS = {
   'home':              '#60a5fa',
 }
 
+// Pick the largest pointsize that keeps `title` on one line inside the
+// 1056px-wide content box. DejaVu-Sans-Bold averages ~0.55× pointsize per
+// char in width; the 0.6 fudge factor adds headroom for wide caps (W, M).
+function fitTitlePt(title, maxWidth = 1056, maxPt = 88, minPt = 40) {
+  const est = Math.floor(maxWidth / (title.length * 0.6))
+  return Math.max(minPt, Math.min(maxPt, est))
+}
+
 function render({ id, title, short }, outfile) {
   const accent = ACCENTS[id] || '#60a5fa'
   // Escape single quotes in strings passed to annotate
@@ -70,10 +78,17 @@ function render({ id, title, short }, outfile) {
     '-pointsize', '16',
     '-gravity', 'NorthWest',
     '-annotate', '+72+84', 'TODIE.IO / EXPLAINERS',
-    // Huge title
+    // Huge title — pointsize scaled to title length so long titles never
+    // clip the right edge of the 1200×630 canvas. Previously fixed at 88pt,
+    // which overflowed for "The Harness: Beyond Vibes" and "The Body Is Not
+    // A Vessel". Heuristic: DejaVu-Sans-Bold averages ~0.55× pointsize per
+    // character; with a 1056px-wide content box (1200 - 72 left - 72 right),
+    // the largest pointsize that keeps `len` characters on one line is
+    // floor(1056 / (len * 0.55)). Capped at 88 for short titles, floored at
+    // 40 so tiny text never happens.
     '-fill', '#f3f4f6',
     '-font', 'DejaVu-Sans-Bold',
-    '-pointsize', '88',
+    '-pointsize', String(fitTitlePt(title)),
     '-annotate', '+72+140', esc(title),
     // Subtitle
     '-fill', '#9ca3af',
