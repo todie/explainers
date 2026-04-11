@@ -49,7 +49,7 @@ export const NEW_NODES = [
   { id: 'gate', label: 'reverie-gate', type: 'component', x: 380, y: 260, status: 'healthy', desc: 'Write gate — placement tree check, dedup detection, derivability check, budget enforcement. Runs BEFORE every mem_save.' },
   { id: 'store', label: 'reverie-store', type: 'component', x: 520, y: 260, status: 'healthy', desc: 'SQLite + FTS5 + sqlite-vec + fastembed. Hybrid search with RRF. Chunk model with strength, depth, session_spread.' },
   { id: 'dream', label: 'reverie-dream', type: 'component', x: 620, y: 340, status: 'healthy', desc: 'Consolidation engine — 6-phase pipeline. Session-end / nightly / weekly / monthly cycles.' },
-  { id: 'sync_mod', label: 'reverie-sync', type: 'component', x: 300, y: 340, status: 'healthy', desc: 'Layer adapters — writes to Obsidian, generates auto-memory, proposes CLAUDE.md edits. topic_key dedup.' },
+  { id: 'sync_mod', label: 'reverie-sync', type: 'component', x: 400, y: 360, status: 'healthy', desc: 'Layer adapters — writes to Obsidian, generates auto-memory, proposes CLAUDE.md edits. topic_key dedup.' },
   { id: 'sqlite', label: 'SQLite + vec', type: 'store', x: 520, y: 420, status: 'healthy', desc: 'engram.db — observations + FTS5 + sqlite-vec vectors. Chunk schema with neuroscience-grounded fields.' },
   { id: 'code', label: 'Code + Git', type: 'external', x: 100, y: 340, status: 'healthy', desc: 'Cold storage — authoritative. Write gate checks derivability before allowing saves.' },
 ]
@@ -82,11 +82,11 @@ export const NEW_EDGES = [
 ]
 
 export const NEW_IMPROVEMENTS = [
-  { component: 'reverie-gate', improvement: 'Write gate prevents misplacement at save time. No more gravitational collapse — knowledge routed to correct layer before storage.' },
-  { component: 'reverie-store', improvement: 'Hybrid search (FTS5 + vector + RRF) catches synonyms FTS5 misses. Chunk model tracks strength, depth, session_spread for evidence-based retention.' },
-  { component: 'reverie-dream', improvement: 'Offline consolidation modeled on biological sleep. 6-phase pipeline. 4-tier schedule (session/nightly/weekly/monthly). Forgetting is a feature.' },
-  { component: 'reverie-sync', improvement: 'topic_key-based dedup eliminates duplicate notes. Auto-generates auto-memory from consolidated store. Proposes CLAUDE.md edits (procedural memory).' },
-  { component: 'reveried', improvement: 'Single Rust binary replaces Go engram (12MB) + Python sync script + manual file management. One process, zero external dependencies.' },
+  { node: 'gate', improvement: 'Write gate prevents misplacement at save time. No more gravitational collapse — knowledge routed to correct layer before storage.' },
+  { node: 'store', improvement: 'Hybrid search (FTS5 + vector + RRF) catches synonyms FTS5 misses. Chunk model tracks strength, depth, session_spread for evidence-based retention.' },
+  { node: 'dream', improvement: 'Offline consolidation modeled on biological sleep. 6-phase pipeline. 4-tier schedule (session/nightly/weekly/monthly). Forgetting is a feature.' },
+  { node: 'sync_mod', improvement: 'topic_key-based dedup eliminates duplicate notes. Auto-generates auto-memory from consolidated store. Proposes CLAUDE.md edits (procedural memory).' },
+  { node: 'reveried', improvement: 'Single Rust binary replaces Go engram (12MB) + Python sync script + manual file management. One process, zero external dependencies.' },
 ]
 
 // ─── NODE STYLING ────────────────────────────────────────────────────
