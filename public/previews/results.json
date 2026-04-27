@@ -4,104 +4,104 @@
     "url": "https://nahbro.dev",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/nahbro.jpeg",
-    "durationMs": 401
+    "durationMs": 314
   },
   {
     "id": "mcp-honeypot",
     "url": "https://honeypot.vip",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/mcp-honeypot.jpeg",
-    "durationMs": 802
+    "durationMs": 328
   },
   {
     "id": "reach",
     "url": "https://github.com/todie/reach",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/reach.jpeg",
-    "durationMs": 1993
+    "durationMs": 1885
   },
   {
     "id": "revenant",
     "url": "https://github.com/todie/revenant",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/revenant.jpeg",
-    "durationMs": 1000
+    "durationMs": 867
   },
   {
     "id": "sessionswipe",
     "url": "https://github.com/todie/sessionswipe",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/sessionswipe.jpeg",
-    "durationMs": 1002
+    "durationMs": 812
   },
   {
     "id": "tradecraft",
     "url": "https://github.com/todie/engram-rs",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/tradecraft.jpeg",
-    "durationMs": 1863
+    "durationMs": 1585
   },
   {
     "id": "home",
     "url": "http://localhost:4173/",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/home.jpeg",
-    "durationMs": 509
+    "durationMs": 192
   },
   {
     "id": "memory-model",
     "url": "http://localhost:4173/memory-model",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/memory-model.jpeg",
-    "durationMs": 514
+    "durationMs": 258
   },
   {
     "id": "gestalt",
     "url": "http://localhost:4173/gestalt",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/gestalt.jpeg",
-    "durationMs": 505
+    "durationMs": 278
   },
   {
     "id": "prompt-cache",
     "url": "http://localhost:4173/prompt-cache",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/prompt-cache.jpeg",
-    "durationMs": 529
+    "durationMs": 245
   },
   {
     "id": "lsp",
     "url": "http://localhost:4173/lsp",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/lsp.jpeg",
-    "durationMs": 491
+    "durationMs": 233
   },
   {
     "id": "token-optimization",
     "url": "http://localhost:4173/token-optimization",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/token-optimization.jpeg",
-    "durationMs": 502
+    "durationMs": 249
   },
   {
     "id": "reverie",
     "url": "http://localhost:4173/reverie",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/reverie.jpeg",
-    "durationMs": 607
+    "durationMs": 304
   },
   {
     "id": "emotional-topology",
     "url": "http://localhost:4173/emotional-topology",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/emotional-topology.jpeg",
-    "durationMs": 498
+    "durationMs": 247
   },
   {
     "id": "pidgin-tokens",
     "url": "http://localhost:4173/pidgin-tokens",
     "status": "ok",
     "outPath": "/home/runner/work/explainers/explainers/public/previews/pidgin-tokens.jpeg",
-    "durationMs": 539
+    "durationMs": 272
   }
 ]
