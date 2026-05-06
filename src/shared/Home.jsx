@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { EXPLAINERS } from './explainers'
+import Emoji from './Emoji'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -47,7 +48,7 @@ export default function Home() {
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#374151'; e.currentTarget.style.background = '#162031' }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = '#1f2937'; e.currentTarget.style.background = '#111827' }}
           >
-            <span style={{ fontSize: 28 }}>{ex.icon}</span>
+            <Emoji size={28}>{ex.icon}</Emoji>
             <div>
               <div style={{ fontSize: 16, fontWeight: 700, color: '#e5e7eb', marginBottom: 2 }}>{ex.title}</div>
               <div style={{ fontSize: 13, color: '#6b7280' }}>{ex.short}</div>

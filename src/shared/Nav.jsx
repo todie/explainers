@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { EXPLAINERS } from './explainers'
+import Emoji from './Emoji'
 
 function fuzzyMatch(query, text) {
   const q = query.toLowerCase()
@@ -207,7 +208,9 @@ export default function Nav() {
                     borderLeft: i === selectedIdx ? '2px solid #60a5fa' : '2px solid transparent',
                   }}
                 >
-                  <span style={{ fontSize: 18, width: 28, textAlign: 'center' }}>{ex.icon}</span>
+                  <span style={{ width: 28, display: 'flex', justifyContent: 'center' }}>
+                    <Emoji size={18}>{ex.icon}</Emoji>
+                  </span>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: i === selectedIdx ? '#e5e7eb' : '#9ca3af' }}>
                       {ex.title}
