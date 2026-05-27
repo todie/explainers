@@ -85,9 +85,11 @@ export default function ReverieApp() {
             fontSize: 'clamp(15px, 2vw, 18px)', color: '#6b7280', maxWidth: 680,
             margin: '0 auto', lineHeight: 1.7,
           }}>
-            Neuroscience-grounded memory consolidation for LLM coding harnesses.
-            How a daemon modeled on biological sleep manages knowledge across five
-            persistence layers — from CPU registers to cold storage.
+            Coding agents forget. Or worse, they remember the wrong thing — load the stale
+            rule, search the store that doesn't hold the answer, save the same fact for the
+            fourth time. Memory isn't a database problem or a model problem. Reverie treats
+            it as a <em style={{ color: '#a855f7', fontStyle: 'normal' }}>context management and injection</em> problem:
+            what loads before the prompt, what gets evicted between turns, what consolidates overnight.
           </p>
 
           <div style={{
@@ -118,8 +120,9 @@ export default function ReverieApp() {
           <p style={{ fontSize: 12, color: '#4b5563' }}>
             Built by{' '}
             <a href="https://todie.io" style={{ color: '#a855f7', textDecoration: 'none' }}>todie.io</a>
-            {' '}with Claude Code. Reverie is{' '}
-            <a href="https://github.com/todie/reverie" style={{ color: '#6366f1', textDecoration: 'none' }}>open source</a>.
+            {' '}with Claude Code. Reverie is proprietary —{' '}
+            <a href="https://cerebral.work/reverie/" style={{ color: '#6366f1', textDecoration: 'none' }}>cerebral.work/reverie</a>
+            {' '}for product details.
           </p>
           <p style={{ fontSize: 11, color: '#374151', marginTop: 4 }}>
             "A designer knows he has achieved perfection not when there is nothing left to add,
