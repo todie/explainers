@@ -6,8 +6,11 @@ export default function AntiPatterns() {
       <h2 style={{ fontSize: 24, fontWeight: 700, color: '#e5e7eb', marginBottom: 8 }}>
         Anti-Patterns
       </h2>
-      <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 32, lineHeight: 1.6 }}>
-        Six documented failure modes in multi-layer memory systems, each with a specific fix.
+      <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 8, lineHeight: 1.6 }}>
+        None of the failure modes below are model problems. They are <em>placement</em> problems — the
+        same class of failure that operating systems solved with a cache hierarchy and brains solved with
+        hippocampal consolidation. Six documented failure modes from auditing a real harness, each with
+        a specific fix.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
