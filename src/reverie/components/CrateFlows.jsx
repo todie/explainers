@@ -11,7 +11,11 @@ export default function CrateFlows() {
         Crate Data Flows
       </h2>
       <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 20, lineHeight: 1.6 }}>
-        How data moves through each crate. Select a crate to see its modules and internal data flow.
+        Reverie compiles into four crates: <code style={{ color: '#a855f7', fontSize: 12 }}>reverie-store</code> (the knowledge layer),{' '}
+        <code style={{ color: '#a855f7', fontSize: 12 }}>reverie-gate</code> (the pre-write placement filter),{' '}
+        <code style={{ color: '#a855f7', fontSize: 12 }}>reverie-dream</code> (offline consolidation), and{' '}
+        <code style={{ color: '#a855f7', fontSize: 12 }}>reverie-sync</code> (cross-layer replication).
+        Select a crate to trace its internal data flow.
       </p>
 
       {/* Crate selector tabs */}
@@ -34,7 +38,7 @@ export default function CrateFlows() {
       </div>
 
       {crate && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
           {/* Modules */}
           <div style={{
             background: '#111827', border: `1px solid ${crate.color}20`,

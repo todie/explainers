@@ -100,7 +100,7 @@ function GraphEdge({ edge, nodes, animated }) {
       {/* Animated flow particles */}
       {animated && (
         <circle r={2} fill={color} opacity={0.8}>
-          <animateMotion dur={`${2 + Math.random() * 2}s`} repeatCount="indefinite" path={path} />
+          <animateMotion dur={`${2 + ((path.length * 7) % 200) / 100}s`} repeatCount="indefinite" path={path} />
         </circle>
       )}
 

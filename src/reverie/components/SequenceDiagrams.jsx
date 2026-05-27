@@ -47,6 +47,11 @@ export default function SequenceDiagrams() {
             {seq.description}
           </div>
 
+          {canvasW > 900 && (
+            <div style={{ fontSize: 11, color: '#4b5563', marginBottom: 6, textAlign: 'right', fontFamily: 'var(--mono)' }}>
+              ← scroll →
+            </div>
+          )}
           <div style={{
             background: '#0a0a0f', border: '1px solid #1f2937', borderRadius: 12,
             overflow: 'auto', padding: '8px 0',

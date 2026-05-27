@@ -18,7 +18,7 @@ export default function AntiPatterns() {
           <div key={ap.id} style={{
             background: '#111827', border: '1px solid #1f2937', borderRadius: 10,
             padding: '16px 20px',
-            display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16,
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16,
           }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
