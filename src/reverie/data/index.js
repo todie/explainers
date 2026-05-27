@@ -46,7 +46,7 @@ export const LAYERS = [
   },
   {
     id: 'ram',
-    name: 'Engram (SQLite+FTS5)',
+    name: 'reveried (SQLite+FTS5+vec)',
     cpuAnalog: 'RAM',
     brainAnalog: 'Episodic Memory (Hippocampus)',
     autoLoaded: false,
@@ -54,9 +54,9 @@ export const LAYERS = [
     latency: '~3ms',
     bestFor: 'Project decisions, bugs, architecture',
     color: '#eab308',
-    description: 'Searched on-demand via keyword queries. Project-scoped with topic_key upsert for dedup. The workhorse for project-specific knowledge that\'s only relevant in context.',
+    description: 'Searched on-demand via the reveried daemon (Rust, HTTP :7437 + MCP). Hybrid search: FTS5 keyword + sqlite-vec (BGE-large 1024d) + literal token-coverage, fused with RRF k=30. MRR 0.628 on LoCoMo baseline. Multi-user Postgres backend (reverie-pg) available for teams.',
     examples: ['Architecture decisions', 'Bug root causes', 'Deployment status', 'Session summaries'],
-    constraint: 'FTS5 keyword search — misses synonyms. Hybrid search (Phase 1) adds vector similarity.',
+    constraint: 'Vector index requires fastembed at write time. Multi-user (reverie-pg) is in-progress — SQLite default for single-user.',
   },
   {
     id: 'disk',
