@@ -1,0 +1,47 @@
+name: Sync Roadmap
+
+# Refresh milestone progress + target dates from Linear 3× per day.
+# On any change, commits and pushes to main, which triggers the CI
+# build+deploy workflow automatically.
+#
+# Required secrets:
+#   LINEAR_API_TOKEN  — Linear personal API key (lin_api_...)
+
+on:
+  schedule:
+    - cron: '0 7,13,19 * * *'   # 07:00, 13:00, 19:00 UTC
+  workflow_dispatch:              # allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Sync roadmap from Linear
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Sync roadmap data
+        env:
+          LINEAR_API_TOKEN: ${{ secrets.LINEAR_API_TOKEN }}
+        run: node scripts/sync-roadmap.mjs
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet src/reverie/data/roadmap.js; then
+            echo "No changes — roadmap is up to date"
+          else
+            git add src/reverie/data/roadmap.js
+            git commit -m "chore(roadmap): sync milestone progress from Linear"
+            git push
+            echo "Committed and pushed roadmap update"
+          fi

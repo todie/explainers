@@ -35,7 +35,7 @@ export const MILESTONES = [
     version: 'v0.9.13',
     name: 'MCP surface + dream output wiring',
     status: 'shipped',
-    date: '2026-05-27',
+    date: '2026-05-29',
     progress: 100,
     highlights: [
       'Native MCP surface expanded to 6 tools: search_memory, smart_context, add_observation, add_observation_passive, dream_status, dream_last_report',
