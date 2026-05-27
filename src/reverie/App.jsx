@@ -9,6 +9,7 @@ import DreamPipeline from './components/DreamPipeline'
 import LeaderboardChart from './components/LeaderboardChart'
 import FindingsGrid from './components/FindingsGrid'
 import AntiPatterns from './components/AntiPatterns'
+import Roadmap from './components/Roadmap'
 import References from './components/References'
 
 const SECTIONS = [
@@ -22,6 +23,7 @@ const SECTIONS = [
   { id: 'object-model', title: 'Object Model', icon: '▣' },
   { id: 'crate-flows', title: 'Crate Data Flows', icon: '↔' },
   { id: 'sequences', title: 'Sequence Diagrams', icon: '↓' },
+  { id: 'roadmap', title: 'Roadmap', icon: '→' },
   { id: 'references', title: 'References', icon: '↗' },
 ]
 
@@ -106,6 +108,7 @@ export default function ReverieApp() {
         <div id="object-model" style={{ scrollMarginTop: 60 }}><ObjectModel /></div>
         <div id="crate-flows" style={{ scrollMarginTop: 60 }}><CrateFlows /></div>
         <div id="sequences" style={{ scrollMarginTop: 60 }}><SequenceDiagrams /></div>
+        <div id="roadmap" style={{ scrollMarginTop: 60 }}><Roadmap /></div>
         <div id="references" style={{ scrollMarginTop: 60 }}><References /></div>
 
         <footer style={{ textAlign: 'center', paddingTop: 32, borderTop: '1px solid #1f2937' }}>

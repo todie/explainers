@@ -96,7 +96,7 @@ export const CRATE_FLOWS = [
       { name: 'chunk', role: 'Data model — Chunk struct, enums, serialization' },
       { name: 'sqlite', role: 'SQLite connection, schema migrations, CRUD operations' },
       { name: 'search', role: 'Hybrid search: FTS5 keyword → vector similarity → RRF fusion' },
-      { name: 'mcp', role: 'MCP stdio adapter — mem_save, mem_search, mem_update, mem_context' },
+      { name: 'mcp', role: 'Shared MCP business logic — add_observation_inner, passive_capture_inner (engram-compat plugin tools delegate here)' },
       { name: 'http', role: 'HTTP API — backward-compatible with mem raw (GET/POST/PUT/DELETE)' },
     ],
     dataFlow: [
@@ -160,6 +160,25 @@ export const CRATE_FLOWS = [
       { from: 'dedup', to: 'obsidian', label: 'unique chunks', protocol: 'Vec<Chunk>' },
       { from: 'dedup', to: 'automemory', label: 'behavioral chunks', protocol: 'Vec<Chunk>' },
       { from: 'dedup', to: 'claudemd', label: 'directive proposals', protocol: 'Vec<Chunk>' },
+    ],
+  },
+  {
+    crate: 'reveried',
+    description: 'Daemon binary — HTTP + MCP server, dream scheduler, worker lifecycle, Prometheus metrics',
+    color: '#a855f7',
+    modules: [
+      { name: 'http', role: 'HTTP server (:7437) — /search, /observations, /health, /v1/workers/*, /metrics' },
+      { name: 'mcp', role: 'Native MCP surface (6 tools): search_memory, smart_context, add_observation, add_observation_passive, dream_status, dream_last_report' },
+      { name: 'scheduler', role: 'Dream cycle scheduler — session-end / nightly / weekly / monthly triggers' },
+      { name: 'workers', role: 'Mesh worker lifecycle — register, heartbeat, drain, evict via /v1/workers/*' },
+      { name: 'metrics', role: 'Prometheus metrics endpoint — operation counters, latency histograms, worker gauges' },
+      { name: 'config', role: 'SIGHUP hot-reload — apply config changes without restart' },
+    ],
+    dataFlow: [
+      { from: 'http', to: 'mcp', label: 'shared store handle', protocol: 'Arc<dyn Store>' },
+      { from: 'mcp', to: 'http', label: 'tool dispatch', protocol: 'function call' },
+      { from: 'scheduler', to: 'http', label: 'trigger dream cycle', protocol: 'channel' },
+      { from: 'workers', to: 'metrics', label: 'worker events', protocol: 'counter' },
     ],
   },
 ]

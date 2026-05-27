@@ -11,10 +11,11 @@ export default function CrateFlows() {
         Crate Data Flows
       </h2>
       <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 20, lineHeight: 1.6 }}>
-        Reverie compiles into four crates: <code style={{ color: '#a855f7', fontSize: 12 }}>reverie-store</code> (the knowledge layer),{' '}
-        <code style={{ color: '#a855f7', fontSize: 12 }}>reverie-gate</code> (the pre-write placement filter),{' '}
-        <code style={{ color: '#a855f7', fontSize: 12 }}>reverie-dream</code> (offline consolidation), and{' '}
-        <code style={{ color: '#a855f7', fontSize: 12 }}>reverie-sync</code> (cross-layer replication).
+        Reverie's core workspace: <code style={{ color: '#a855f7', fontSize: 12 }}>reverie-store</code> (knowledge layer + hybrid search),{' '}
+        <code style={{ color: '#a855f7', fontSize: 12 }}>reverie-gate</code> (pre-write placement filter),{' '}
+        <code style={{ color: '#a855f7', fontSize: 12 }}>reverie-dream</code> (offline consolidation),{' '}
+        <code style={{ color: '#a855f7', fontSize: 12 }}>reverie-sync</code> (cross-layer replication), and{' '}
+        <code style={{ color: '#a855f7', fontSize: 12 }}>reveried</code> (daemon binary — HTTP + MCP + scheduler + workers).
         Select a crate to trace its internal data flow.
       </p>
 
