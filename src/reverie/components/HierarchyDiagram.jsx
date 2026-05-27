@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { LAYERS } from '../data'
 
 export default function HierarchyDiagram() {
-  const [selected, setSelected] = useState(null)
+  const [selected, setSelected] = useState(0)
   const sel = selected !== null ? LAYERS[selected] : null
 
   return (
@@ -98,7 +98,7 @@ export default function HierarchyDiagram() {
             background: '#0f172a', border: '1px solid #1e293b',
             fontSize: 12, color: '#f87171', fontFamily: 'var(--mono)',
           }}>
-            {'\u26A0\uFE0F'} {sel.constraint}
+            <strong>Note:</strong> {sel.constraint}
           </div>
         </div>
       )}

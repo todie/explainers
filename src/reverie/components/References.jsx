@@ -25,6 +25,8 @@ export default function References() {
             }}
             onMouseEnter={e => e.currentTarget.style.borderColor = '#374151'}
             onMouseLeave={e => e.currentTarget.style.borderColor = '#1f2937'}
+            onFocus={e => e.currentTarget.style.borderColor = '#374151'}
+            onBlur={e => e.currentTarget.style.borderColor = '#1f2937'}
           >
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: '#e5e7eb', marginBottom: 2 }}>

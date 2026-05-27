@@ -8,12 +8,17 @@ export default function LeaderboardChart() {
       <h2 style={{ fontSize: 24, fontWeight: 700, color: '#e5e7eb', marginBottom: 8 }}>
         LoCoMo Benchmark
       </h2>
-      <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 24, lineHeight: 1.6 }}>
+      <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 8, lineHeight: 1.6 }}>
         The standard benchmark for long-term conversational memory.{' '}
         <strong style={{ color: '#9ca3af' }}>{LOCOMO_STATS.conversations} conversations</strong>,{' '}
         <strong style={{ color: '#9ca3af' }}>{LOCOMO_STATS.totalQuestions.toLocaleString()} questions</strong>,{' '}
         human ceiling at <strong style={{ color: '#a855f7' }}>{LOCOMO_STATS.questionTypes.singleHop.humanScore}%</strong> single-hop to{' '}
         <strong style={{ color: '#a855f7' }}>{LOCOMO_STATS.questionTypes.openDomain.humanScore}%</strong> open-domain.
+      </p>
+      <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 24, lineHeight: 1.6 }}>
+        <strong style={{ color: '#3b82f6' }}>Engram</strong> (highlighted) is the predecessor system —
+        SQLite + FTS5 keyword search — and is the baseline Reverie is built to beat. Every system above
+        it on the chart represents a retrieval architecture Reverie's hybrid pipeline is designed to match or surpass.
       </p>
 
       {/* Key finding callout */}

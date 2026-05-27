@@ -96,7 +96,7 @@ export default function TableOfContents({ sections, accent = '#60a5fa' }) {
       </nav>
 
       <style>{`
-        @media (max-width: 1200px) {
+        @media (max-width: 1024px) {
           .toc-panel { display: none !important; }
           .toc-panel.toc-open { display: block !important; top: auto !important; bottom: 72px !important; right: 16px !important; }
           .toc-mobile-toggle { display: flex !important; }

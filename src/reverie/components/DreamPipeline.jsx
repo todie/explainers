@@ -16,43 +16,45 @@ export default function DreamPipeline() {
       </p>
 
       {/* Pipeline visualization */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 40 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 40 }}>
         {DREAM_PHASES.map((phase, i) => (
-          <div key={phase.id} style={{
-            display: 'flex', gap: 16, alignItems: 'flex-start',
-            padding: '16px 20px',
-            background: '#111827', borderRadius: 10,
-            borderLeft: `3px solid ${phase.color}`,
-          }}>
-            {/* Phase number */}
+          <div key={phase.id}>
             <div style={{
-              width: 28, height: 28, borderRadius: '50%',
-              background: phase.color + '15', border: `1px solid ${phase.color}30`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 12, fontWeight: 700, color: phase.color, flexShrink: 0,
-            }}>{i + 1}</div>
+              display: 'flex', gap: 16, alignItems: 'flex-start',
+              padding: '16px 20px',
+              background: '#111827', borderRadius: 10,
+              borderLeft: `3px solid ${phase.color}`,
+            }}>
+              {/* Phase number */}
+              <div style={{
+                width: 28, height: 28, borderRadius: '50%',
+                background: phase.color + '15', border: `1px solid ${phase.color}30`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 12, fontWeight: 700, color: phase.color, flexShrink: 0,
+              }}>{i + 1}</div>
 
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                <span style={{ fontSize: 15, fontWeight: 700, color: '#e5e7eb' }}>{phase.name}</span>
-                <span style={{
-                  fontSize: 10, fontFamily: 'var(--mono)', color: phase.color,
-                  background: phase.color + '10', padding: '2px 8px', borderRadius: 4,
-                }}>{phase.mechanism}</span>
-              </div>
-              <div style={{ fontSize: 13, color: '#d1d5db', fontFamily: 'var(--mono)', marginBottom: 4 }}>
-                {phase.action}
-              </div>
-              <div style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.6 }}>
-                {phase.details}
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: '#e5e7eb' }}>{phase.name}</span>
+                  <span style={{
+                    fontSize: 10, fontFamily: 'var(--mono)', color: phase.color,
+                    background: phase.color + '10', padding: '2px 8px', borderRadius: 4,
+                  }}>{phase.mechanism}</span>
+                </div>
+                <div style={{ fontSize: 13, color: '#d1d5db', fontFamily: 'var(--mono)', marginBottom: 4 }}>
+                  {phase.action}
+                </div>
+                <div style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.6 }}>
+                  {phase.details}
+                </div>
               </div>
             </div>
 
-            {/* Arrow to next */}
+            {/* Connector between phases */}
             {i < DREAM_PHASES.length - 1 && (
               <div style={{
-                position: 'relative', top: 20,
-                fontSize: 16, color: '#374151',
+                display: 'flex', justifyContent: 'center',
+                padding: '4px 0', fontSize: 14, color: '#374151',
               }}>↓</div>
             )}
           </div>
