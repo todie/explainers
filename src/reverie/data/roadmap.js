@@ -49,7 +49,7 @@ export const MILESTONES = [
     version: 'v0.9.14',
     name: 'Substrate tenancy + urgent ops',
     status: 'in-progress',
-    progress: 46,
+    progress: 54,
     highlights: [
       'Substrate tenancy completion — gates v1.0.0',
       'Critical ops blockers',
