@@ -5,7 +5,7 @@
  */
 
 export const ROADMAP_META = {
-  generatedAt: '2026-06-02',
+  generatedAt: '2026-06-03',
   currentVersion: 'v0.9.7',
   nextRelease: 'v0.9.14',
   v1Target: '2026-09-15',
@@ -49,7 +49,7 @@ export const MILESTONES = [
     version: 'v0.9.14',
     name: 'Substrate tenancy + urgent ops',
     status: 'in-progress',
-    progress: 54,
+    progress: 94,
     highlights: [
       'Substrate tenancy completion — gates v1.0.0',
       'Critical ops blockers',
@@ -59,7 +59,7 @@ export const MILESTONES = [
     version: 'v0.10.0',
     name: 'Audit-driven cleanup',
     status: 'in-progress',
-    progress: 6,
+    progress: 5,
     highlights: [
       'Tier 0–3 code-grounded audit remediation',
       'Sequenced ahead of all other milestones (2026-05-22 grooming decision)',
