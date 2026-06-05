@@ -5,7 +5,7 @@
  */
 
 export const ROADMAP_META = {
-  generatedAt: '2026-06-04',
+  generatedAt: '2026-06-05',
   currentVersion: 'v0.9.7',
   nextRelease: 'v0.9.14',
   v1Target: '2026-09-15',
@@ -59,7 +59,7 @@ export const MILESTONES = [
     version: 'v0.10.0',
     name: 'Audit-driven cleanup',
     status: 'in-progress',
-    progress: 7,
+    progress: 6,
     highlights: [
       'Tier 0–3 code-grounded audit remediation',
       'Sequenced ahead of all other milestones (2026-05-22 grooming decision)',
@@ -80,7 +80,7 @@ export const MILESTONES = [
     version: 'v0.13.0',
     name: 'Auth, API surface & deploy-readiness',
     status: 'in-progress',
-    progress: 17,
+    progress: 10,
     date: '2026-06-15',
     highlights: [
       'JWT auth on reveried HTTP + MCP endpoints',
