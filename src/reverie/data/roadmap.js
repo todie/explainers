@@ -80,7 +80,7 @@ export const MILESTONES = [
     version: 'v0.13.0',
     name: 'Auth, API surface & deploy-readiness',
     status: 'in-progress',
-    progress: 10,
+    progress: 35,
     date: '2026-06-15',
     highlights: [
       'JWT auth on reveried HTTP + MCP endpoints',
