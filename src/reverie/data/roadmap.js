@@ -59,7 +59,7 @@ export const MILESTONES = [
     version: 'v0.10.0',
     name: 'Audit-driven cleanup',
     status: 'in-progress',
-    progress: 13,
+    progress: 71,
     highlights: [
       'Tier 0–3 code-grounded audit remediation',
       'Sequenced ahead of all other milestones (2026-05-22 grooming decision)',
@@ -68,8 +68,8 @@ export const MILESTONES = [
   {
     version: 'v0.10.5',
     name: 'Hexagonal port migration',
-    status: 'upcoming',
-    progress: 0,
+    status: 'in-progress',
+    progress: 11,
     highlights: [
       'Migrate 377 callsites from EngramCompatStore → dyn Store trait',
       '55 files across 9 crates',
