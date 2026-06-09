@@ -59,7 +59,7 @@ export const MILESTONES = [
     version: 'v0.10.0',
     name: 'Audit-driven cleanup',
     status: 'in-progress',
-    progress: 86,
+    progress: 88,
     highlights: [
       'Tier 0–3 code-grounded audit remediation',
       'Sequenced ahead of all other milestones (2026-05-22 grooming decision)',
