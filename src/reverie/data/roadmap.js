@@ -5,7 +5,7 @@
  */
 
 export const ROADMAP_META = {
-  generatedAt: '2026-06-09',
+  generatedAt: '2026-06-10',
   currentVersion: 'v0.9.7',
   nextRelease: 'v0.9.14',
   v1Target: '2026-09-15',
@@ -34,9 +34,9 @@ export const MILESTONES = [
   {
     version: 'v0.9.13',
     name: 'MCP surface + dream output wiring',
-    status: 'shipped',
+    status: 'in-progress',
     date: '2026-05-29',
-    progress: 100,
+    progress: 75,
     highlights: [
       'Native MCP surface expanded to 6 tools: search_memory, smart_context, add_observation, add_observation_passive, dream_status, dream_last_report',
       'ObsidianAdapter wired into dream sync phase',
@@ -48,8 +48,8 @@ export const MILESTONES = [
   {
     version: 'v0.9.14',
     name: 'Substrate tenancy + urgent ops',
-    status: 'shipped',
-    progress: 100,
+    status: 'in-progress',
+    progress: 92,
     highlights: [
       'Substrate tenancy completion — gates v1.0.0',
       'Critical ops blockers',
@@ -58,8 +58,8 @@ export const MILESTONES = [
   {
     version: 'v0.10.0',
     name: 'Audit-driven cleanup',
-    status: 'in-progress',
-    progress: 88,
+    status: 'shipped',
+    progress: 100,
     highlights: [
       'Tier 0–3 code-grounded audit remediation',
       'Sequenced ahead of all other milestones (2026-05-22 grooming decision)',
@@ -69,7 +69,7 @@ export const MILESTONES = [
     version: 'v0.10.5',
     name: 'Hexagonal port migration',
     status: 'in-progress',
-    progress: 11,
+    progress: 9,
     highlights: [
       'Migrate 377 callsites from EngramCompatStore → dyn Store trait',
       '55 files across 9 crates',
@@ -80,7 +80,7 @@ export const MILESTONES = [
     version: 'v0.13.0',
     name: 'Auth, API surface & deploy-readiness',
     status: 'in-progress',
-    progress: 35,
+    progress: 29,
     date: '2026-06-15',
     highlights: [
       'JWT auth on reveried HTTP + MCP endpoints',
@@ -93,7 +93,7 @@ export const MILESTONES = [
     version: 'v0.13.5',
     name: 'HTTP/MCP surface completeness',
     status: 'in-progress',
-    progress: 9,
+    progress: 8,
     highlights: [
       'GET /observations endpoint',
       'reverie-gate HTTP endpoints',
