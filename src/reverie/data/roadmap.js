@@ -80,7 +80,7 @@ export const MILESTONES = [
     version: 'v0.13.0',
     name: 'Auth, API surface & deploy-readiness',
     status: 'in-progress',
-    progress: 46,
+    progress: 61,
     date: '2026-06-15',
     highlights: [
       'JWT auth on reveried HTTP + MCP endpoints',
@@ -126,8 +126,8 @@ export const MILESTONES = [
   {
     version: 'v0.18.0',
     name: 'Cluster + federation deploy',
-    status: 'upcoming',
-    progress: 0,
+    status: 'in-progress',
+    progress: 2,
     date: '2026-08-30',
     highlights: [
       'Production deploy target (Railway/K8s)',
