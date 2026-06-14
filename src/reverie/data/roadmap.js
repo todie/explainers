@@ -138,8 +138,8 @@ export const MILESTONES = [
   {
     version: 'v0.20.0',
     name: 'LoCoMo benchmark harness',
-    status: 'upcoming',
-    progress: 0,
+    status: 'in-progress',
+    progress: 8,
     highlights: [
       'Reproducible harness: 4 agents, 6 configs, phase gates',
       'Current baseline: R@5=77.0%, MRR=0.628',
