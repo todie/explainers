@@ -5,7 +5,7 @@
  */
 
 export const ROADMAP_META = {
-  generatedAt: '2026-06-14',
+  generatedAt: '2026-06-15',
   currentVersion: 'v0.9.7',
   nextRelease: 'v0.9.14',
   v1Target: '2026-09-15',
@@ -127,7 +127,7 @@ export const MILESTONES = [
     version: 'v0.18.0',
     name: 'Cluster + federation deploy',
     status: 'in-progress',
-    progress: 2,
+    progress: 8,
     date: '2026-08-30',
     highlights: [
       'Production deploy target (Railway/K8s)',
@@ -139,7 +139,7 @@ export const MILESTONES = [
     version: 'v0.20.0',
     name: 'LoCoMo benchmark harness',
     status: 'in-progress',
-    progress: 8,
+    progress: 7,
     highlights: [
       'Reproducible harness: 4 agents, 6 configs, phase gates',
       'Current baseline: R@5=77.0%, MRR=0.628',
