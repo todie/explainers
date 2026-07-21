@@ -5,7 +5,7 @@
  */
 
 export const ROADMAP_META = {
-  generatedAt: '2026-07-20',
+  generatedAt: '2026-07-21',
   currentVersion: 'v0.9.7',
   nextRelease: 'v0.9.14',
   v1Target: '2026-09-15',
